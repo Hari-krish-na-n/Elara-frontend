@@ -36,3 +36,14 @@
   .badge-orbit::after{animation:none}
   .badge-orbit::before{animation:none}
 }
+
+/* Mobile sizing adjustments for hero */
+@media (max-width: 480px) {
+  .home-hero{ min-height:auto; padding:24px 16px; }
+  .hero-card{ padding:24px 20px; border-radius:16px; }
+  .badge-orbit{ width:140px; height:140px; margin:0 auto 16px; }
+  .hero-badge{ width:120px; height:120px; border-width:4px; font-size:24px; }
+  .hero-title{ font-size:28px; margin:8px 0; }
+  .hero-subtitle{ font-size:14px; margin-bottom:18px; }
+  .hero-button{ width:100%; padding:12px 18px; font-size:16px; border-radius:12px; }
+}
