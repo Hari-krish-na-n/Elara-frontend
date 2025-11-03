@@ -1,5 +1,6 @@
 // src/api/client.js
-const baseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:3000').replace(/\/$/, '');
+const baseUrl = (import.meta.env.VITE_API_URL || 'https://elara-backend-up86.onrender.com').replace(/\/$/, '');
+
 
 export async function fetchPlayCounts() {
   try {
