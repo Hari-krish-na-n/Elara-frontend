@@ -5,7 +5,7 @@ import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import MusicList from './components/MusicList';
 import PlayerControls from './components/PlayerControls';
-import PlaylistsView from './components/Playlistview';
+import PlaylistsView from './components/PlaylistView';
 import PlaylistDetail from './components/PlaylistDetail';
 import PlaylistSidebar from './components/PlaylistSidebar';
 import QueueView from './components/QueueView';
