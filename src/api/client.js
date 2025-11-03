@@ -2,6 +2,7 @@
 const baseUrl = (import.meta.env.VITE_API_URL || 'https://elara-backend-up86.onrender.com').replace(/\/$/, '');
 
 
+
 export async function fetchPlayCounts() {
   try {
     const res = await fetch(`${baseUrl}/api/plays`);
