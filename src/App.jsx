@@ -1,8 +1,8 @@
 // src/App.js
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Sidebar from './components/Sidebar';
 import Header from './components/Header';
+import Sidebar from './components/Sidebar';
 import MusicList from './components/MusicList';
 import PlayerControls from './components/PlayerControls';
 import PlaylistsView from './components/PlaylistView';
@@ -653,7 +653,6 @@ function App() {
         <Router>
             <div className="player-layout">
                 <Sidebar onSearch={handleSearch} />
-                
                 {/* Playlist Sidebar */}
                 {playlistSidebar.isOpen && (
                     <PlaylistSidebar 
@@ -669,8 +668,8 @@ function App() {
                 <div className="main-content-area">
                     {/* Header Routes */}
                     <Routes> 
-                        <Route path="/" element={<Header loadFiles={loadFiles} onShufflePlay={shuffleAndPlay} />} />
-                        <Route path="/library" element={<Header loadFiles={loadFiles} onShufflePlay={shuffleAndPlay} />} />
+                        <Route path="/" element={<Header loadFiles={loadFiles} onShufflePlay={shuffleAndPlay} currentSong={playerState.currentSong} isCurrentLiked={playerState.currentSong ? isSongLiked(playerState.currentSong.id) : false} onToggleCurrentLike={toggleLike} />} />
+                        <Route path="/library" element={<Header loadFiles={loadFiles} onShufflePlay={shuffleAndPlay} currentSong={playerState.currentSong} isCurrentLiked={playerState.currentSong ? isSongLiked(playerState.currentSong.id) : false} onToggleCurrentLike={toggleLike} />} />
                         <Route path="/liked" element={<h2 className='header-placeholder'>Liked Songs</h2>} />
                         <Route path="/queue" element={<h2 className='header-placeholder'>Queue</h2>} />
                         <Route path="/playlists" element={

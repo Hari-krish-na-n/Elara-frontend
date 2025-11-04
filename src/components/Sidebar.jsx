@@ -33,8 +33,7 @@ function Sidebar({ onSearch }) {
     return (
         
         <div className="sidebar">
-            <button className="sidebar-toggle" aria-label="Toggle menu" onClick={(e)=>{e.preventDefault();document.body.classList.toggle('sidebar-open');}}>☰</button>
-            <img src={defaultAlbumArt} alt="App Logo" />
+           <div className='logos'> <img src={defaultAlbumArt} alt="App Logo" /></div>
             <form className="search-bar" onSubmit={handleSearchSubmit}>
                 <input 
                     type="text" 

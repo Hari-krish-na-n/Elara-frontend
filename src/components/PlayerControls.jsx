@@ -64,7 +64,6 @@ function PlayerControls({
 
             {/* Main Playback Controls */}
             <div className="main-controls">
-                <button onClick={toggleShuffle} className={`shuffle-btn ${isShuffled ? 'active' : ''}`} aria-pressed={isShuffled} title="Shuffle">🔀</button>
                 <button onClick={playPrevSong} disabled={!song}>⏮️</button>
                 <button onClick={togglePlayPause} disabled={!song}>
                     {isPlaying ? '⏸️' : '▶️'}
