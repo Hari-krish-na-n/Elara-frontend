@@ -515,7 +515,9 @@
 
   /* Responsive */
   @media (max-width: 768px) {
-    .hamburger { display:inline-flex; align-items:center; justify-content:center; width:40px; height:40px; margin-right:10px; border-radius:8px; border:1px solid #2d2d4d; background: rgba(255,255,255,0.06); color:#e0e0e0; font-size:20px; }
+    .hamburger { display:inline-flex; align-items:center; justify-content:center; width:40px; height:40px; margin-right:10px; border-radius:8px; border:1px solid #2d2d4d; background: rgba(255,255,255,0.06); color:#e0e0e0; font-size:20px; position: relative; z-index: 40; }
+    .tabs { display: none; }
+    .logo-container h1 { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60vw; }
   
     .playlist-sidebar {
         width: 100%;
@@ -2109,6 +2111,10 @@ body {
     border: 1px solid #2d2d4d;
     backdrop-filter: blur(10px);
   }
+  @media (max-width: 768px) {
+    .music-list-container { overflow: visible; }
+    .song-title { font-size: 14px; }
+  }
 
   .list-header {
       display: grid;
@@ -2189,6 +2195,11 @@ body {
   /* Lock scroll when modal open */
   body.modal-open { overflow: hidden !important; height: 100vh; }
 
+  /* Base smaller typography on phones for clearer fit */
+  @media (max-width: 768px) {
+    html, body, .player-layout { font-size: 14px; }
+  }
+
   .add-btn:hover {
     background: rgba(99, 102, 241, 0.3);
     color: #e0e0ff;
@@ -2244,14 +2255,14 @@ body {
   /* Small-phone optimizations */
   @media (max-width: 480px) {
     .list-header { display: none; }
-    .playlist-item { position: relative; grid-template-columns: 1fr auto; gap: 10px; padding: 12px 64px 12px 12px; overflow: visible; }
+    .playlist-item { position: relative; grid-template-columns: 1fr auto; gap: 10px; padding: 12px 64px 12px 12px; overflow: visible; min-height: 56px; }
     .desktop-actions { display: none; }
     /* hide non-essential columns on small phones */
     .playlist-item .col-artist,
     .playlist-item .col-album,
     .playlist-item .col-plays,
     .playlist-item .col-duration { display: none; }
-    .more-btn { display:inline-flex; align-items:center; justify-content:center; position:absolute; right:12px; top:50%; transform:translateY(-50%); width:44px; height:44px; border-radius:14px; border:1px solid rgba(99,102,241,0.35); background: rgba(99,102,241,0.18); color:#e0e0e0; font-size:22px; backdrop-filter: blur(8px); box-shadow: 0 8px 20px rgba(0,0,0,0.35); z-index:3; pointer-events:auto; }
+    .more-btn { display:inline-flex; align-items:center; justify-content:center; position:absolute; right:12px; top:50%; transform:translateY(-50%); width:44px; height:44px; border-radius:14px; border:1px solid rgba(99,102,241,0.35); background: rgba(99,102,241,0.18); color:#e0e0e0; font-size:22px; backdrop-filter: blur(8px); box-shadow: 0 8px 20px rgba(0,0,0,0.35); z-index:5000; pointer-events:auto; }
     .more-btn:hover { background: rgba(99,102,241,0.28); }
     .more-btn:focus-visible { outline: 2px solid #8b5cf6; outline-offset: 2px; }
     .more-btn:active { transform: translateY(-50%) scale(0.98); }
