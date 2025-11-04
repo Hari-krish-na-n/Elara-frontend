@@ -56,6 +56,7 @@ function MusicList({ songs = [], playSong, currentSongId, playlists = [], addSon
                             onOpenPlaylistSidebar={onOpenPlaylistSidebar}
                             isLiked={isSongLiked ? isSongLiked(song.id) : false}
                             onToggleLike={onToggleLike}
+                            onAddToQueue={onAddToQueue}
                         />
                     );
                 })}

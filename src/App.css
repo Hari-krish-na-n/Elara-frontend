@@ -2180,6 +2180,9 @@ body {
     transition: all 0.3s ease;
   }
 
+  /* Hidden by default; shown on small screens */
+  .more-btn { display: none; }
+
   .add-btn:hover {
     background: rgba(99, 102, 241, 0.3);
     color: #e0e0ff;
@@ -2235,14 +2238,20 @@ body {
   /* Small-phone optimizations */
   @media (max-width: 480px) {
     .list-header { display: none; }
-    .playlist-item { grid-template-columns: 1fr auto; gap: 10px; padding: 12px; }
-    .action-buttons { gap: 12px; }
-    .action-btn { padding: 10px; }
+    .playlist-item { position: relative; grid-template-columns: 1fr auto; gap: 10px; padding: 12px 56px 12px 12px; }
+    .desktop-actions { display: none; }
+    .more-btn { display:inline-flex; align-items:center; justify-content:center; position:absolute; right:10px; top:50%; transform:translateY(-50%); width:40px; height:40px; border-radius:12px; border:1px solid rgba(99,102,241,0.35); background: rgba(99,102,241,0.15); color:#e0e0e0; font-size:22px; backdrop-filter: blur(6px); box-shadow: 0 6px 16px rgba(0,0,0,0.35); }
+    .more-btn:hover { background: rgba(99,102,241,0.25); }
+    .more-btn:focus-visible { outline: 2px solid #8b5cf6; outline-offset: 2px; }
+    .more-btn:active { transform: translateY(-50%) scale(0.98); }
 
     /* Make playlist dropdown a bottom sheet */
-    .playlist-dropdown { position: fixed; left: 0; right: 0; bottom: 0; top: auto; min-width: 0; width: 100%; border-radius: 16px 16px 0 0; padding-bottom: 16px; max-height: 60vh; overflow-y: auto; z-index: 1002; }
-    .menu-header { position: sticky; top: 0; background: rgba(15,15,35,0.95); }
-    .menu-item { padding: 16px 20px; font-size: 16px; }
+    .bottom-sheet { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; display:flex; align-items:flex-end; }
+    .sheet-card { width: 100%; background: #121428; border-top-left-radius: 16px; border-top-right-radius: 16px; padding: 12px; box-shadow: 0 -10px 30px rgba(0,0,0,0.4); }
+    .sheet-handle { width: 40px; height: 4px; background: #2d2d4d; border-radius: 2px; margin: 6px auto 12px; }
+    .sheet-item { width: 100%; text-align: left; background: transparent; border: 1px solid #2d2d4d; color: #e0e0e0; padding: 14px 16px; border-radius: 10px; margin: 6px 0; }
+    .sheet-item:active { background: rgba(99,102,241,0.15); }
+    .sheet-cancel { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid #2d2d4d; color:#e0e0e0; padding: 14px 16px; border-radius: 10px; margin-top: 10px; }
 
     /* Bigger touch targets */
     .add-btn { padding: 10px 16px; font-size: 14px; }
