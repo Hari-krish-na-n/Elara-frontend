@@ -41,3 +41,23 @@ export async function extractMetadata(file) {
     return null;
   }
 }
+
+export async function scanPaths(paths) {
+  try {
+    const res = await fetch(`${baseUrl}/api/scan-paths`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ paths })
+    });
+    if (!res.ok) throw new Error('scan error');
+    const data = await res.json();
+    const items = (data.items || []).map(it => ({
+      ...it,
+      coverUrl: it.coverUrl && it.coverUrl.startsWith('/') ? `${baseUrl}${it.coverUrl}` : it.coverUrl
+    }));
+    return items;
+  } catch (e) {
+    console.warn('scanPaths failed', e);
+    return [];
+  }
+}

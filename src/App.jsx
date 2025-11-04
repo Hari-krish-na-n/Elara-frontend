@@ -11,7 +11,7 @@ import PlaylistSidebar from './components/PlaylistSidebar';
 import QueueView from './components/QueueView';
 import Home from './components/Home';
 import './App.css';
-import { fetchPlayCounts, incrementPlayCount, extractMetadata } from './api/client';
+import { fetchPlayCounts, incrementPlayCount, extractMetadata, scanPaths } from './api/client';
 
 // LocalStorage keys for persistence
 const LOCAL_STORAGE_PLAYLISTS_KEY = 'musicPlayer.playlists';
@@ -235,6 +235,7 @@ function App() {
                 duration: 0,
                 coverUrl: null,
                 file,
+                filePath: file.path || null,
             };
         });
         setPlayerState(prevState => ({
@@ -242,7 +243,30 @@ function App() {
             songList: [...prevState.songList, ...newSongs],
         }));
 
-        // Ask backend for real metadata and merge in as it arrives
+        // Prefer path-based bulk scan when file paths are available (Electron/local backend)
+        const pathList = newSongs.map(s => s.filePath).filter(Boolean);
+        if (pathList.length) {
+            (async () => {
+                const items = await scanPaths(pathList);
+                setPlayerState(prev => ({
+                    ...prev,
+                    songList: prev.songList.map(s => {
+                        const found = items.find(it => it.path === s.filePath);
+                        if (!found) return s;
+                        return {
+                            ...s,
+                            title: found.title || s.title,
+                            artist: found.artist || s.artist,
+                            album: found.album || s.album,
+                            duration: typeof found.duration === 'number' ? found.duration : s.duration,
+                            coverUrl: found.coverUrl || s.coverUrl,
+                        };
+                    })
+                }));
+            })();
+        }
+
+        // Ask backend for real metadata and merge in as it arrives (web fallback)
         newSongs.forEach(async (song, idx) => {
             try {
                 const meta = await extractMetadata(audioFiles[idx]);
