@@ -10,7 +10,7 @@ export default function Home() {
         <div className="badge-orbit">
           <div className="hero-badge">ELARA</div>
         </div>
-        <h1 className="hero-title">Welcome to Elara</h1>
+        <h1 className="hero-title">Welcome to Elaraaaa</h1>
         <p className="hero-subtitle">Your Music Companion, All Day</p>
         <button className="hero-button" onClick={() => navigate('/library')}>
           Start Listening
