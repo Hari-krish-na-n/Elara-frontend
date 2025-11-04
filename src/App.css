@@ -513,8 +513,10 @@
     background: linear-gradient(135deg, #8b5cf6, #a855f7);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hamburger { display:inline-flex; align-items:center; justify-content:center; width:40px; height:40px; margin-right:10px; border-radius:8px; border:1px solid #2d2d4d; background: rgba(255,255,255,0.06); color:#e0e0e0; font-size:20px; }
+  
     .playlist-sidebar {
         width: 100%;
         max-width: 380px;
@@ -2183,6 +2185,9 @@ body {
   /* Hidden by default; shown on small screens */
   .more-btn { display: none; }
 
+  /* Lock scroll when modal open */
+  body.modal-open { overflow: hidden !important; height: 100vh; }
+
   .add-btn:hover {
     background: rgba(99, 102, 241, 0.3);
     color: #e0e0ff;
@@ -2246,8 +2251,8 @@ body {
     .more-btn:active { transform: translateY(-50%) scale(0.98); }
 
     /* Make playlist dropdown a bottom sheet */
-    .bottom-sheet { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; display:flex; align-items:flex-end; }
-    .sheet-card { width: 100%; background: #121428; border-top-left-radius: 16px; border-top-right-radius: 16px; padding: 12px; box-shadow: 0 -10px 30px rgba(0,0,0,0.4); }
+    .bottom-sheet { position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 10000; display:flex; align-items:flex-end; }
+    .sheet-card { width: 100%; background: #121428; border-top-left-radius: 16px; border-top-right-radius: 16px; padding: 12px; box-shadow: 0 -10px 30px rgba(0,0,0,0.4); max-height: 90vh; overflow-y: auto; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
     .sheet-handle { width: 40px; height: 4px; background: #2d2d4d; border-radius: 2px; margin: 6px auto 12px; }
     .sheet-item { width: 100%; text-align: left; background: transparent; border: 1px solid #2d2d4d; color: #e0e0e0; padding: 14px 16px; border-radius: 10px; margin: 6px 0; }
     .sheet-item:active { background: rgba(99,102,241,0.15); }

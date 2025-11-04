@@ -14,6 +14,7 @@ function Header({ loadFiles, onShufflePlay }) {
     return (
         
         <header className="header">
+            <button className="hamburger" aria-label="Open menu" onClick={(e)=>{e.preventDefault();document.body.classList.toggle('sidebar-open')}}>☰</button>
                 <div className="logo-container">
                
                 <h1>ELARA YOUR Music companion</h1>

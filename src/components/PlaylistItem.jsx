@@ -35,8 +35,8 @@ function PlaylistItem({ song, playSong, isCurrent, onOpenPlaylistSidebar, isLike
     if (!song) return null;
 
     const [showMobileMenu, setShowMobileMenu] = useState(false);
-    const openMobileMenu = (e) => { e.stopPropagation(); setShowMobileMenu(true); };
-    const closeMobileMenu = (e) => { e?.stopPropagation?.(); setShowMobileMenu(false); };
+    const openMobileMenu = (e) => { e.stopPropagation(); setShowMobileMenu(true); try{ document.body.classList.add('modal-open'); }catch(_){} };
+    const closeMobileMenu = (e) => { e?.stopPropagation?.(); setShowMobileMenu(false); try{ document.body.classList.remove('modal-open'); }catch(_){} };
 
     return (
         <div className={`playlist-item ${isCurrent ? 'playing' : ''}`} onClick={handleSongClick} data-song-id={song.id}>
