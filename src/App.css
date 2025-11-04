@@ -2184,6 +2184,7 @@ body {
 
   /* Hidden by default; shown on small screens */
   .more-btn { display: none; }
+  .hamburger { display: none; }
 
   /* Lock scroll when modal open */
   body.modal-open { overflow: hidden !important; height: 100vh; }
@@ -2243,10 +2244,15 @@ body {
   /* Small-phone optimizations */
   @media (max-width: 480px) {
     .list-header { display: none; }
-    .playlist-item { position: relative; grid-template-columns: 1fr auto; gap: 10px; padding: 12px 56px 12px 12px; }
+    .playlist-item { position: relative; grid-template-columns: 1fr auto; gap: 10px; padding: 12px 64px 12px 12px; overflow: visible; }
     .desktop-actions { display: none; }
-    .more-btn { display:inline-flex; align-items:center; justify-content:center; position:absolute; right:10px; top:50%; transform:translateY(-50%); width:40px; height:40px; border-radius:12px; border:1px solid rgba(99,102,241,0.35); background: rgba(99,102,241,0.15); color:#e0e0e0; font-size:22px; backdrop-filter: blur(6px); box-shadow: 0 6px 16px rgba(0,0,0,0.35); }
-    .more-btn:hover { background: rgba(99,102,241,0.25); }
+    /* hide non-essential columns on small phones */
+    .playlist-item .col-artist,
+    .playlist-item .col-album,
+    .playlist-item .col-plays,
+    .playlist-item .col-duration { display: none; }
+    .more-btn { display:inline-flex; align-items:center; justify-content:center; position:absolute; right:12px; top:50%; transform:translateY(-50%); width:44px; height:44px; border-radius:14px; border:1px solid rgba(99,102,241,0.35); background: rgba(99,102,241,0.18); color:#e0e0e0; font-size:22px; backdrop-filter: blur(8px); box-shadow: 0 8px 20px rgba(0,0,0,0.35); z-index:3; pointer-events:auto; }
+    .more-btn:hover { background: rgba(99,102,241,0.28); }
     .more-btn:focus-visible { outline: 2px solid #8b5cf6; outline-offset: 2px; }
     .more-btn:active { transform: translateY(-50%) scale(0.98); }
 
