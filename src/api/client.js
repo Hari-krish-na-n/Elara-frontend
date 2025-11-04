@@ -1,5 +1,5 @@
 // src/api/client.js
-const baseUrl = (import.meta.env.VITE_API_URL || 'https://elara-backend-up86.onrender.com').replace(/\/$/, '');
+const baseUrl = (import.meta.env.VITE_API_URL || 'https://elara-backend-1.onrender.com/').replace(/\/$/, '');
 
 
 
