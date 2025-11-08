@@ -11,7 +11,7 @@ import PlaylistSidebar from './components/PlaylistSidebar';
 import QueueView from './components/QueueView';
 import Home from './components/Home';
 import './App.css';
-import { fetchPlayCounts, incrementPlayCount, extractMetadata, scanPaths } from './api/client';
+import { fetchTracks, incrementPlayCount, streamUrlFor, extractMetadata, scanPaths } from './api/client';
 
 // LocalStorage keys for persistence
 const LOCAL_STORAGE_PLAYLISTS_KEY = 'musicPlayer.playlists';
@@ -104,18 +104,50 @@ function App() {
         setFilteredSongs(playerState.songList);
     }, [playerState.songList]);
 
-    // Fetch and merge play counts from backend
-    useEffect(() => {
-        (async () => {
-            const counts = await fetchPlayCounts();
-            if (!counts) return;
-            setPlayerState(prev => ({
-                ...prev,
-                songList: prev.songList.map(s => ({ ...s, playCount: counts[s.id] ?? s.playCount ?? 0 })),
-                currentSong: prev.currentSong ? ({ ...prev.currentSong, playCount: counts[prev.currentSong.id] ?? prev.currentSong.playCount ?? 0 }) : null,
-            }));
-        })();
-    }, []);
+    // --- Sort Functionality ---
+    const handleSort = useCallback((sortType) => {
+        const sorted = [...filteredSongs];
+        
+        switch(sortType) {
+            case 'title-asc':
+                sorted.sort((a, b) => a.title.localeCompare(b.title));
+                break;
+            case 'title-desc':
+                sorted.sort((a, b) => b.title.localeCompare(a.title));
+                break;
+            case 'artist-asc':
+                sorted.sort((a, b) => a.artist.localeCompare(b.artist));
+                break;
+            case 'artist-desc':
+                sorted.sort((a, b) => b.artist.localeCompare(a.artist));
+                break;
+            case 'duration-asc':
+                sorted.sort((a, b) => {
+                    const durA = (typeof a.duration === 'number' && !isNaN(a.duration)) ? a.duration : 0;
+                    const durB = (typeof b.duration === 'number' && !isNaN(b.duration)) ? b.duration : 0;
+                    return durA - durB;
+                });
+                break;
+            case 'duration-desc':
+                sorted.sort((a, b) => {
+                    const durA = (typeof a.duration === 'number' && !isNaN(a.duration)) ? a.duration : 0;
+                    const durB = (typeof b.duration === 'number' && !isNaN(b.duration)) ? b.duration : 0;
+                    return durB - durA;
+                });
+                break;
+            case 'plays-asc':
+                sorted.sort((a, b) => (a.plays || 0) - (b.plays || 0));
+                break;
+            case 'plays-desc':
+                sorted.sort((a, b) => (b.plays || 0) - (a.plays || 0));
+                break;
+            default:
+                break;
+        }
+        
+        setFilteredSongs(sorted);
+    }, [filteredSongs]);
+
 
     // --- Persistence Effects (localStorage) ---
     useEffect(() => {
@@ -145,53 +177,17 @@ function App() {
         return () => window.removeEventListener('beforeunload', handler);
     }, []);
 
-    // --- File Loading Logic ---
-    // Extract cover art and tags from audio files
-    const extractSongData = async (file) => {
-        let coverUrl = null;
-        let title = file.name.replace(/\.[^/.]+$/, "");
-        let artist = 'Local Artist';
-        let album = 'Local Files';
-        let durationTag = undefined;
-        try {
-            const { parseBlob } = await import('music-metadata-browser');
-            const metadata = await parseBlob(file);
-            const pic = metadata?.common?.picture?.[0];
-            if (pic && pic.data) {
-                const blob = new Blob([pic.data], { type: pic.format || 'image/jpeg' });
-                coverUrl = URL.createObjectURL(blob);
-            }
-            if (metadata?.common?.title) title = metadata.common.title;
-            if (metadata?.common?.artist) artist = metadata.common.artist;
-            if (metadata?.common?.album) album = metadata.common.album;
-            if (typeof metadata?.format?.duration === 'number') durationTag = metadata.format.duration;
-        } catch (_) {
-            // ignore parsing errors
-        }
-        // If still no cover, try jsmediatags immediately for better UX
-        if (!coverUrl) {
+    // --- Backend library load ---
+    useEffect(() => {
+        (async () => {
             try {
-                const jsmt = await import('jsmediatags');
-                await new Promise((resolve) => {
-                    const reader = (jsmt.default || jsmt);
-                    reader.read(file, {
-                        onSuccess: ({ tags }) => {
-                            const p = tags?.picture;
-                            if (p && p.data) {
-                                const mime = p.format || 'image/jpeg';
-                                const byteArray = new Uint8Array(p.data);
-                                const blob = new Blob([byteArray], { type: mime });
-                                coverUrl = URL.createObjectURL(blob);
-                            }
-                            resolve();
-                        },
-                        onError: () => resolve()
-                    });
-                });
-            } catch {}
-        }
-        return { coverUrl, title, artist, album, durationTag };
-    };
+                const items = await fetchTracks({ page: 1, pageSize: 500 });
+                setPlayerState(prev => ({ ...prev, songList: items }));
+            } catch (e) {
+                console.warn('tracks load failed', e);
+            }
+        })();
+    }, []);
 
     // Update a song's duration in state by id
     const updateSongDuration = (songId, duration) => {
@@ -220,15 +216,15 @@ function App() {
         } catch {}
     };
 
+    // Local file import restored: enrich via backend (/api/metadata) or scanPaths (Electron)
     const loadFiles = (files) => {
         const audioFiles = Array.from(files).filter(file =>
             (file.type && file.type.startsWith('audio/')) || /\.(mp3|m4a|aac|flac|wav|ogg|opus)$/i.test(file.name)
         );
         const newSongs = audioFiles.map((file) => {
             const id = URL.createObjectURL(file);
-            // Fast path: basic fields first
             return {
-                id,
+                id, // blob URL id for local playback
                 title: file.name.replace(/\.[^/.]+$/, ''),
                 artist: 'Unknown',
                 album: 'Unknown',
@@ -238,12 +234,9 @@ function App() {
                 filePath: file.path || null,
             };
         });
-        setPlayerState(prevState => ({
-            ...prevState,
-            songList: [...prevState.songList, ...newSongs],
-        }));
+        setPlayerState(prev => ({ ...prev, songList: [...prev.songList, ...newSongs] }));
 
-        // Prefer path-based bulk scan when file paths are available (Electron/local backend)
+        // If we have absolute paths (Electron), batch scan for faster results
         const pathList = newSongs.map(s => s.filePath).filter(Boolean);
         if (pathList.length) {
             (async () => {
@@ -266,43 +259,21 @@ function App() {
             })();
         }
 
-        // Ask backend for real metadata and merge in as it arrives (web fallback)
+        // Fallback: upload file to backend for metadata (web)
         newSongs.forEach(async (song, idx) => {
             try {
                 const meta = await extractMetadata(audioFiles[idx]);
                 if (!meta) return;
-                let fallback = {};
-                try {
-                    if (!meta.coverUrl || !meta.duration || !meta.title || !meta.artist || !meta.album) {
-                        const data = await extractSongData(audioFiles[idx]);
-                        fallback = { title: data?.title, artist: data?.artist, album: data?.album, duration: data?.durationTag, coverUrl: data?.coverUrl };
-                    }
-                } catch {}
-                const merged = {
-                    title: meta.title || fallback.title,
-                    artist: meta.artist || fallback.artist,
-                    album: meta.album || fallback.album,
-                    duration: (typeof meta.duration === 'number' ? meta.duration : undefined) ?? fallback.duration ?? 0,
-                    coverUrl: meta.coverUrl || fallback.coverUrl || null,
-                };
                 setPlayerState(prev => ({
                     ...prev,
                     songList: prev.songList.map(s => s.id === song.id ? {
                         ...s,
-                        title: merged.title || s.title,
-                        artist: merged.artist || s.artist,
-                        album: merged.album || s.album,
-                        duration: typeof merged.duration === 'number' ? merged.duration : s.duration,
-                        coverUrl: merged.coverUrl || s.coverUrl,
-                    } : s),
-                    currentSong: prev.currentSong && prev.currentSong.id === song.id ? {
-                        ...prev.currentSong,
-                        title: merged.title || prev.currentSong.title,
-                        artist: merged.artist || prev.currentSong.artist,
-                        album: merged.album || prev.currentSong.album,
-                        duration: typeof merged.duration === 'number' ? merged.duration : prev.currentSong.duration,
-                        coverUrl: merged.coverUrl || prev.currentSong.coverUrl,
-                    } : prev.currentSong,
+                        title: meta.title || s.title,
+                        artist: meta.artist || s.artist,
+                        album: meta.album || s.album,
+                        duration: typeof meta.duration === 'number' ? meta.duration : s.duration,
+                        coverUrl: meta.coverUrl || s.coverUrl,
+                    } : s)
                 }));
             } catch {}
         });
@@ -311,23 +282,14 @@ function App() {
     // Refresh metadata for already-loaded songs
     const refreshAllMetadata = async () => {
         const songs = playerState.songList;
-        const updated = await Promise.all(
-            songs.map(async (s) => {
-                if (!s?.file) return s;
-                try {
-                    const data = await extractSongData(s.file);
-                    return {
-                        ...s,
-                        title: data.title || s.title,
-                        artist: data.artist || s.artist,
-                        album: data.album || s.album,
-                        coverUrl: data.coverUrl || s.coverUrl,
-                    };
-                } catch {
-                    return s;
-                }
-            })
-        );
+        const pathList = songs.map(x=>x.filePath).filter(Boolean);
+        if (pathList.length === 0) return alert('No file paths to refresh.');
+        const items = await scanPaths(pathList);
+        const updated = songs.map(s => {
+            const found = items.find(it => it.path === s.filePath);
+            if (!found) return s;
+            return { ...s, title: found.title || s.title, artist: found.artist || s.artist, album: found.album || s.album, coverUrl: found.coverUrl || s.coverUrl, duration: typeof found.duration==='number'?found.duration:s.duration };
+        });
         setPlayerState(prev => ({
             ...prev,
             songList: updated,
@@ -432,55 +394,37 @@ function App() {
             return;
         }
 
-        const updatedSong = { ...song, playCount: (song.playCount || 0) + 1 };
+        const updatedSong = { ...song };
 
         const audio = audioRef.current;
-        // Create a fresh blob URL if we still have the File, else use stored id
-        const src = song.file ? URL.createObjectURL(song.file) : updatedSong.id;
-        audio.src = src;
-        // Start immediately; let the browser buffer in background
-        audio.play().catch(err => console.warn('Audio play() failed', err));
-        // Revoke temp object URL shortly after to free memory
-        if (song.file && src.startsWith('blob:')) {
-            setTimeout(() => URL.revokeObjectURL(src), 1000);
+        // Stream from backend if this is a backend track (numeric id). Otherwise play local blob URL.
+        if (typeof updatedSong.id === 'number') {
+            audio.src = streamUrlFor(updatedSong.id);
+            audio.play().catch(err => console.warn('Audio play() failed', err));
+            // Optimistic play count bump for UI and backend
+            setPlayerState(prev => ({
+                ...prev,
+                currentSong: updatedSong,
+                isPlaying: true,
+                songList: prev.songList.map(s => s.id === updatedSong.id ? { ...s, plays: (s.plays || 0) + 1 } : s)
+            }));
+            incrementPlayCount(updatedSong.id);
+        } else {
+            const src = updatedSong.file ? URL.createObjectURL(updatedSong.file) : updatedSong.id;
+            audio.src = src;
+            audio.play().catch(err => console.warn('Audio play() failed', err));
+            // Set current song and increment play count for local files
+            setPlayerState(prev => ({
+                ...prev,
+                currentSong: updatedSong,
+                isPlaying: true,
+                songList: prev.songList.map(s => s.id === updatedSong.id ? { ...s, plays: (s.plays || 0) + 1 } : s)
+            }));
+            if (updatedSong.file && src.startsWith('blob:')) {
+                setTimeout(() => URL.revokeObjectURL(src), 1000);
+            }
         }
 
-        setPlayerState(prevState => ({
-            ...prevState,
-            currentSong: updatedSong,
-            isPlaying: true,
-            songList: prevState.songList.map(s => s.id === updatedSong.id ? updatedSong : s),
-        }));
-
-        // Lazily enrich metadata for the current song
-        if (updatedSong.file) {
-            (async () => {
-                try {
-                    const { parseBlob } = await import('music-metadata-browser');
-                    const meta = await parseBlob(updatedSong.file);
-                    const updates = {};
-                    if (meta?.common?.title) updates.title = meta.common.title;
-                    if (meta?.common?.artist) updates.artist = meta.common.artist;
-                    if (meta?.common?.album) updates.album = meta.common.album;
-                    if (typeof meta?.format?.duration === 'number') updates.duration = meta.format.duration;
-                    const p = meta?.common?.picture?.[0];
-                    if (p?.data) {
-                        const blob = new Blob([p.data], { type: p.format || 'image/jpeg' });
-                        updates.coverUrl = URL.createObjectURL(blob);
-                    }
-                    if (Object.keys(updates).length) {
-                        setPlayerState(prev => ({
-                            ...prev,
-                            currentSong: prev.currentSong && prev.currentSong.id === updatedSong.id ? { ...prev.currentSong, ...updates } : prev.currentSong,
-                            songList: prev.songList.map(s => s.id === updatedSong.id ? { ...s, ...updates } : s)
-                        }));
-                    }
-                } catch {}
-            })();
-        }
-
-        // Persist play count
-        incrementPlayCount(updatedSong.id);
     }, [playerState.currentSong]);
 
     const togglePlayPause = () => {
@@ -648,10 +592,112 @@ function App() {
         audioRef.current.volume = playerState.volume ?? 1;
     }, [playerState.volume]);
 
+    // Close sidebar when clicking overlay
+    const closeSidebar = () => {
+        document.body.classList.remove('sidebar-open');
+    };
+
+    // Auto-hide header/footer on scroll AND after 4s of inactivity (mobile only)
+    useEffect(() => {
+        let lastScrollY = 0;
+        let ticking = false;
+        let inactivityTimer = null;
+
+        const hideControls = () => {
+            const header = document.querySelector('.header');
+            const footer = document.querySelector('.player-controls');
+            const layout = document.querySelector('.player-layout');
+            header?.classList.add('hide-on-scroll');
+            footer?.classList.add('hide-on-scroll');
+            layout?.classList.add('fullscreen-mode');
+        };
+
+        const showControls = () => {
+            const header = document.querySelector('.header');
+            const footer = document.querySelector('.player-controls');
+            const layout = document.querySelector('.player-layout');
+            header?.classList.remove('hide-on-scroll');
+            footer?.classList.remove('hide-on-scroll');
+            layout?.classList.remove('fullscreen-mode');
+        };
+
+        const resetInactivityTimer = () => {
+            showControls();
+            if (inactivityTimer) clearTimeout(inactivityTimer);
+            inactivityTimer = setTimeout(hideControls, 4000);
+        };
+
+        const handleScroll = (e) => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    const scrollContainer = e.target;
+                    const currentScrollY = scrollContainer.scrollTop;
+                    
+                    if (currentScrollY > lastScrollY && currentScrollY > 50) {
+                        // Scrolling down - hide immediately
+                        hideControls();
+                        if (inactivityTimer) clearTimeout(inactivityTimer);
+                    } else {
+                        // Scrolling up - show and reset timer
+                        resetInactivityTimer();
+                    }
+                    
+                    lastScrollY = currentScrollY;
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        };
+
+        const handleInteraction = () => {
+            resetInactivityTimer();
+        };
+
+        // Target all scrollable areas
+        const musicArea = document.querySelector('.music-area');
+        const songList = document.querySelector('.song-list');
+        const playerLayout = document.querySelector('.player-layout');
+        
+        // Scroll listeners
+        musicArea?.addEventListener('scroll', handleScroll, { passive: true });
+        songList?.addEventListener('scroll', handleScroll, { passive: true });
+        
+        // Interaction listeners (touch, mouse, tap)
+        playerLayout?.addEventListener('touchstart', handleInteraction, { passive: true });
+        playerLayout?.addEventListener('mousemove', handleInteraction, { passive: true });
+        playerLayout?.addEventListener('click', handleInteraction, { passive: true });
+        
+        // Start initial timer on all devices
+        inactivityTimer = setTimeout(hideControls, 4000);
+        
+        return () => {
+            musicArea?.removeEventListener('scroll', handleScroll);
+            songList?.removeEventListener('scroll', handleScroll);
+            playerLayout?.removeEventListener('touchstart', handleInteraction);
+            playerLayout?.removeEventListener('mousemove', handleInteraction);
+            playerLayout?.removeEventListener('click', handleInteraction);
+            if (inactivityTimer) clearTimeout(inactivityTimer);
+        };
+    }, []);
+
     // --- UI Structure ---
     return (
         <Router>
-            <div className="player-layout">
+            <div className="player-layout" onClick={(e) => {
+                // Close sidebar if clicking on overlay (body.sidebar-open::before)
+                if (document.body.classList.contains('sidebar-open') && 
+                    !e.target.closest('.sidebar') && 
+                    !e.target.closest('.mobile-menu-btn')) {
+                    closeSidebar();
+                }
+            }}>
+                {/* Night sky elements */}
+                <div className="moon"></div>
+                <div className="cloud cloud-1"></div>
+                <div className="cloud cloud-2"></div>
+                <div className="cloud cloud-3"></div>
+                <div className="cloud cloud-4"></div>
+                
                 <Sidebar onSearch={handleSearch} />
                 {/* Playlist Sidebar */}
                 {playlistSidebar.isOpen && (
@@ -668,16 +714,37 @@ function App() {
                 <div className="main-content-area">
                     {/* Header Routes */}
                     <Routes> 
-                        <Route path="/" element={<Header loadFiles={loadFiles} onShufflePlay={shuffleAndPlay} currentSong={playerState.currentSong} isCurrentLiked={playerState.currentSong ? isSongLiked(playerState.currentSong.id) : false} onToggleCurrentLike={toggleLike} />} />
-                        <Route path="/library" element={<Header loadFiles={loadFiles} onShufflePlay={shuffleAndPlay} currentSong={playerState.currentSong} isCurrentLiked={playerState.currentSong ? isSongLiked(playerState.currentSong.id) : false} onToggleCurrentLike={toggleLike} />} />
-                        <Route path="/liked" element={<h2 className='header-placeholder'>Liked Songs</h2>} />
-                        <Route path="/queue" element={<h2 className='header-placeholder'>Queue</h2>} />
+                        <Route path="/" element={<Header loadFiles={loadFiles} onShufflePlay={shuffleAndPlay} onSort={handleSort} />} />
+                        <Route path="/library" element={<Header loadFiles={loadFiles} onShufflePlay={shuffleAndPlay} onSort={handleSort} />} />
+                        <Route path="/liked" element={
+                            <div className="header header-with-back">
+                                <button className="back-nav-btn" onClick={() => window.history.back()}>← Back</button>
+                                <h2>Liked Songs</h2>
+                            </div>
+                        } />
+                        <Route path="/queue" element={
+                            <div className="header header-with-back">
+                                <button className="back-nav-btn" onClick={() => window.history.back()}>← Back</button>
+                                <h2>Queue</h2>
+                            </div>
+                        } />
                         <Route path="/playlists" element={
                             selectedPlaylist ? 
-                                <h2 className='header-placeholder'>{selectedPlaylist.name}</h2> : 
-                                <h2 className='header-placeholder'>Playlists</h2>
+                                <div className="header header-with-back">
+                                    <button className="back-nav-btn" onClick={() => setSelectedPlaylist(null)}>← Back</button>
+                                    <h2>{selectedPlaylist.name}</h2>
+                                </div> : 
+                                <div className="header header-with-back">
+                                    <button className="back-nav-btn" onClick={() => window.history.back()}>← Back</button>
+                                    <h2>Playlists</h2>
+                                </div>
                         } />
-                        <Route path="/settings" element={<h2 className='header-placeholder'>Settings</h2>} />
+                        <Route path="/settings" element={
+                            <div className="header header-with-back">
+                                <button className="back-nav-btn" onClick={() => window.history.back()}>← Back</button>
+                                <h2>Settings</h2>
+                            </div>
+                        } />
                     </Routes>
                     
                     <div className="music-area">
@@ -768,6 +835,8 @@ function App() {
                     isShuffled={playerState.isShuffled}
                     toggleShuffle={toggleShuffle}
                     locateSong={locateSong}
+                    isCurrentLiked={playerState.currentSong ? isSongLiked(playerState.currentSong.id) : false}
+                    onToggleCurrentLike={toggleLike}
                 />
             </div>
            

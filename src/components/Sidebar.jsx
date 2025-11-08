@@ -22,13 +22,20 @@ function Sidebar({ onSearch }) {
         }
     };
 
+    const closeMobileSidebar = () => {
+        // Close sidebar on mobile when clicking a link
+        if (window.innerWidth <= 768) {
+            document.body.classList.remove('sidebar-open');
+        }
+    };
+
     const navItems = [
         { name: 'Home', icon: '🏠', path: '/' },
         { name: 'Music library', icon: '🎵', path: '/library' },
         { name: 'Liked Songs', icon: '❤️', path: '/liked' },
         { name: 'Queue', icon: '⏭️', path: '/queue' },
         { name: 'Playlists', icon: '📃', path: '/playlists' },
-        { name: 'Settings', icon: '⚙️', path: '/settings' },
+     
     ];
     return (
         
@@ -49,6 +56,7 @@ function Sidebar({ onSearch }) {
                         to={item.path} 
                         key={item.name} 
                         className={`nav-item ${location.pathname === item.path ? 'active' : ''}`}
+                        onClick={closeMobileSidebar}
                     >
                         {item.icon} {item.name}
                     </Link>

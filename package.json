@@ -15,11 +15,15 @@
   },
   "dependencies": {
     "-": "^0.0.1",
+    "axios": "^1.13.2",
+    "compression": "^1.8.1",
     "g": "^2.0.1",
     "jsmediatags": "^3.9.7",
+    "lucide-react": "^0.553.0",
     "music-metadata-browser": "^2.5.11",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-icons": "^5.5.0",
     "react-router-dom": "^7.9.3"
   },
   "devDependencies": {
@@ -40,12 +44,26 @@
   },
   "build": {
     "appId": "com.elara.app",
-    "files": ["dist/**/*", "electron/**/*"],
+    "files": [
+      "dist/**/*",
+      "electron/**/*"
+    ],
     "asar": true,
-    "extraResources": [{ "from": "../elarabackend", "to": "backend" }],
-    "win": { "target": "nsis" },
-    "mac": { "target": "dmg" },
-    "linux": { "target": "AppImage" }
+    "extraResources": [
+      {
+        "from": "../elarabackend",
+        "to": "backend"
+      }
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
   },
   "overrides": {
     "vite": "npm:rolldown-vite@7.1.12"

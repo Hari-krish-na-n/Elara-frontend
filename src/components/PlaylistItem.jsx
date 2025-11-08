@@ -1,5 +1,6 @@
 // src/components/PlaylistItem.js
 import React, { useState } from 'react';
+import { Heart, ListMusic, PlusCircle, Play } from 'lucide-react';
 
 const formatTime = (seconds) => {
     if (isNaN(seconds) || seconds === 0) return '00:00';
@@ -46,33 +47,47 @@ function PlaylistItem({ song, playSong, isCurrent, onOpenPlaylistSidebar, isLike
             </div>
             <div className="col-artist">{song.artist || 'Unknown Artist'}</div>
             <div className="col-album">{song.album || 'Unknown Album'}</div>
-            <div className="col-plays">{song.playCount || 0}</div>
+            <div className="col-plays">{(song.plays ?? song.playCount ?? 0)}</div>
             <div className="col-duration">{formatTime(song.duration)}</div>
-            <div className="add-menu-container desktop-actions">
+            <div className="col-actions">
                 <button 
-                    onClick={() => onToggleLike && onToggleLike(song)} 
-                    className="like-btn"
+                    onClick={(e) => { e.stopPropagation(); onToggleLike && onToggleLike(song); }} 
+                    className={`action-icon-btn like-btn ${isLiked ? 'active' : ''}`}
                     title={isLiked ? 'Unlike' : 'Like'}
+                    aria-label={isLiked ? 'Unlike' : 'Like'}
                 >
-                    {isLiked ? '❤️' : '🤍'}
+                    <Heart size={16} color={isLiked ? '#ef4444' : 'currentColor'} fill={isLiked ? '#ef4444' : 'none'} />
+                </button>
+                <button 
+                    onClick={(e) => { e.stopPropagation(); onAddToQueue && onAddToQueue(song); }} 
+                    className="action-icon-btn queue-btn"
+                    title="Add to Queue"
+                    aria-label="Add to Queue"
+                >
+                    <ListMusic size={16} />
                 </button>
                 <button 
                     onClick={handleAddToPlaylistClick} 
-                    className="add-btn"
+                    className="add-btn desktop-only"
                 >
-                    + Add to Playlist
+                    <PlusCircle size={16} style={{ marginRight: 6 }} /> Add to Playlist
                 </button>
+                <button className="more-btn mobile-only" aria-label="More actions" onClick={openMobileMenu}>⋯</button>
             </div>
-            <button className="more-btn" aria-label="More actions" onClick={openMobileMenu}>⋯</button>
 
             {showMobileMenu && (
                 <div className="bottom-sheet" role="dialog" aria-modal="true" onClick={closeMobileMenu}>
                     <div className="sheet-card" onClick={(e)=>e.stopPropagation()}>
                         <div className="sheet-handle" />
-                        <button className="sheet-item" onClick={()=>{ playSong && playSong(song); closeMobileMenu(); }}>Play ▶️</button>
-                        <button className="sheet-item" onClick={()=>{ onToggleLike && onToggleLike(song); closeMobileMenu(); }}>{isLiked ? 'Unlike ❤️' : 'Like 🤍'}</button>
-                        <button className="sheet-item" onClick={()=>{ onAddToQueue && onAddToQueue(song); closeMobileMenu(); }}>Add to Queue ⏭️</button>
-                        <button className="sheet-item" onClick={()=>{ handleAddToPlaylistClick(new Event('click')); closeMobileMenu(); }}>Add to Playlist 📃</button>
+                        <button className="sheet-item" onClick={()=>{ playSong && playSong(song); closeMobileMenu(); }}>
+                            <Play size={16} style={{ marginRight: 8 }} /> Play
+                        </button>
+                        <button className="sheet-item" onClick={()=>{ onAddToQueue && onAddToQueue(song); closeMobileMenu(); }}>
+                            <ListMusic size={16} style={{ marginRight: 8 }} /> Add to Queue
+                        </button>
+                        <button className="sheet-item" onClick={()=>{ handleAddToPlaylistClick(new Event('click')); closeMobileMenu(); }}>
+                            <PlusCircle size={16} style={{ marginRight: 8 }} /> Add to Playlist
+                        </button>
                         <button className="sheet-cancel" onClick={closeMobileMenu}>Cancel</button>
                     </div>
                 </div>
