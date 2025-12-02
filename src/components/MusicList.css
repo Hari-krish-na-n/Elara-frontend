@@ -1,0 +1,194 @@
+/* Mobile Responsive Styles - Apply below 768px */
+@media (max-width: 768px) {
+  /* General responsive text sizing */
+  .music-player-container,
+  .music-list-container,
+  .player-controls {
+    font-size: 12px;
+  }
+  
+  /* Header and song title responsive sizing */
+  .song-title,
+  .list-header,
+  .player-info .title {
+    font-size: 13px;
+  }
+  
+  /* Hide artist and album columns on mobile */
+  .col-artist,
+  .col-album,
+  .col-duration {
+    display: none !important;
+  }
+  
+  /* Mobile-specific grid layout */
+  .list-header {
+    grid-template-columns: 1fr auto !important;
+  }
+  
+  .desktop-layout {
+    grid-template-columns: 1fr auto !important;
+  }
+  
+  /* Mobile song item layout */
+  .song-item.mobile-layout {
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+  }
+  
+  .mobile-song-info {
+    flex: 1;
+    min-width: 0; /* Allow text truncation */
+  }
+  
+  .song-title-mobile {
+    font-weight: 500;
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+  }
+  
+  .song-stats-mobile {
+    font-size: 11px;
+    color: #6b7280;
+  }
+  
+  /* Mobile actions container */
+  .mobile-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-left: 12px;
+  }
+  
+  /* Compact buttons for mobile */
+  .mobile-btn {
+    width: 30px !important;
+    height: 30px !important;
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    transition: background-color 0.2s;
+  }
+  
+  .like-btn,
+  .queue-btn,
+  .menu-btn {
+    width: 30px !important;
+    height: 30px !important;
+    font-size: 13px !important;
+  }
+  
+  .like-btn.liked {
+    color: #ef4444;
+  }
+  
+  /* Player controls - change from vertical to horizontal */
+  .player-controls {
+    flex-direction: row !important;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+  }
+  
+  .control-button {
+    width: 34px !important;
+    height: 34px !important;
+    font-size: 13px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Main control buttons (play/pause) slightly larger */
+  .play-pause-btn {
+    width: 40px !important;
+    height: 40px !important;
+    font-size: 16px !important;
+  }
+  
+  /* Progress bar adjustments */
+  .progress-container {
+    margin: 6px 12px;
+  }
+  
+  /* Action buttons container (Sort, Shuffle, Add folder) */
+  .action-buttons {
+    display: flex;
+    gap: 8px;
+    padding: 8px 12px;
+  }
+  
+  .action-btn {
+    padding: 6px 10px !important;
+    font-size: 11px !important;
+    border-radius: 6px;
+  }
+  
+  /* Hide desktop elements, show mobile */
+  .desktop-header,
+  .desktop-layout {
+    display: none !important;
+  }
+  
+  .mobile-header,
+  .mobile-layout {
+    display: flex !important;
+  }
+  
+  /* Mobile header specific */
+  .mobile-header {
+    padding: 8px 12px;
+    border-bottom: 1px solid #e5e7eb;
+    font-weight: 600;
+    color: #6b7280;
+    font-size: 11px;
+  }
+  
+  /* Ensure proper spacing */
+  .music-list-container {
+    padding-bottom: 80px; /* Space for player controls */
+  }
+}
+
+/* Additional utility classes for mobile */
+.mobile-only {
+  display: none;
+}
+
+.desktop-only {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .mobile-only {
+    display: block;
+  }
+  
+  .desktop-only {
+    display: none;
+  }
+}
+
+/* Button hover states */
+@media (hover: hover) {
+  .mobile-btn:hover,
+  .control-button:hover,
+  .action-btn:hover {
+    background-color: #f3f4f6;
+  }
+  
+  .like-btn.liked:hover {
+    background-color: #fecaca;
+  }
+}
