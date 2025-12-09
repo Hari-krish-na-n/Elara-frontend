@@ -746,11 +746,9 @@
         display: none !important;
     }
 }
-/* PlaylistDetail.css - Stranger Things Night Sky Theme */
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
 
-/* ===== PLAYLIST DETAIL CONTAINER ===== */
+
 .playlist-detail {
     background: rgba(10, 15, 25, 0.85);
     backdrop-filter: blur(20px);
