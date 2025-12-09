@@ -1,7 +1,7 @@
 // src/components/MusicList.js
 import React, { useEffect } from 'react';
 import PlaylistItem from './PlaylistItem';
-
+import './MusicList.css';
 function MusicList({
   songs = [],
   playSong,

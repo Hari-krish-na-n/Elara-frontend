@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Heart, MapPin } from 'lucide-react';
-
+import './PlayerControl.css';
 const formatTime = (seconds) => {
     if (isNaN(seconds) || seconds < 0) return '00:00';
     const minutes = Math.floor(seconds / 60);

@@ -1,6 +1,7 @@
 // src/components/PlaylistSidebar.js
 import React, { useState } from 'react';
-
+import'./components/Entire.css'; 
+import './App1.css';
 const PlaylistSidebar = ({ song, playlists, addSongToPlaylist, onClose, createNewPlaylist }) => {
     const [newPlaylistName, setNewPlaylistName] = useState('');
     const [selectedPlaylists, setSelectedPlaylists] = useState([]);

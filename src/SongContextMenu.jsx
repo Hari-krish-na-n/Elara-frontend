@@ -1,6 +1,6 @@
 // src/components/SongContextMenu.js
 import React, { useState, useEffect, useRef } from 'react';
-
+import './App.css';
 const SongContextMenu = ({ song, playlists, addSongToPlaylist, position, onClose }) => {
     const menuRef = useRef(null);
 

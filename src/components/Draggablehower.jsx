@@ -1,6 +1,7 @@
 // src/components/DraggableSong.js
 import React, { useState } from 'react';
-
+import './Entire.css';
+import './App1.css';
 const DraggableSong = ({ song, playSong, isCurrent }) => {
     const [isDragging, setIsDragging] = useState(false);
 

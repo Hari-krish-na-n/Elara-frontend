@@ -1,6 +1,6 @@
 // src/components/QuickAddPanel.js
 import React, { useState } from 'react';
-
+import './App.css';
 const QuickAddPanel = ({ song, playlists, addSongToPlaylist, onClose }) => {
     const [selectedPlaylists, setSelectedPlaylists] = useState([]);
 

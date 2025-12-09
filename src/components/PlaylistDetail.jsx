@@ -1,7 +1,7 @@
 // src/components/PlaylistDetail.js
 import React from 'react';
 import PlaylistItem from './PlaylistItem';
-
+import './PlayerControl.css';
 function PlaylistDetail({ playlist, onBack, playSong, currentSongId, removeSongFromPlaylist, deletePlaylist }) {
     const handleRemoveSong = (songId) => {
         if (window.confirm('Are you sure you want to remove this song from the playlist?')) {

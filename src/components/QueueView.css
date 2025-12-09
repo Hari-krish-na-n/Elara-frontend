@@ -1,0 +1,413 @@
+/* src/components/QueueView.css */
+
+.queue-view {
+  background: rgba(10, 15, 30, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 24px;
+  height: 100%;
+  border: 1px solid rgba(100, 149, 237, 0.1);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.queue-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(100, 149, 237, 0.2);
+}
+
+.queue-header h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #f0f0ff;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  text-shadow: 0 0 10px rgba(135, 206, 235, 0.3);
+}
+
+.queue-count {
+  font-size: 0.9rem;
+  color: rgba(200, 200, 220, 0.6);
+  margin-left: 8px;
+  font-weight: 400;
+}
+
+.clear-queue-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(220, 53, 69, 0.2);
+  border: 1px solid rgba(220, 53, 69, 0.3);
+  border-radius: 8px;
+  color: #ff6b7a;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Cormorant Garamond', serif;
+}
+
+.clear-queue-btn:hover:not(:disabled) {
+  background: rgba(220, 53, 69, 0.3);
+  border-color: rgba(220, 53, 69, 0.5);
+  color: #ff8a95;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
+}
+
+.clear-queue-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.clear-queue-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Empty State */
+.queue-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  flex: 1;
+}
+
+.empty-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(100, 149, 237, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  color: rgba(100, 149, 237, 0.5);
+}
+
+.empty-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.2rem;
+  color: #f0f0ff;
+  margin-bottom: 8px;
+}
+
+.empty-subtitle {
+  font-family: 'Cormorant Garamond', serif;
+  color: rgba(200, 200, 220, 0.6);
+  font-size: 0.95rem;
+  max-width: 300px;
+  line-height: 1.4;
+}
+
+/* Queue Container */
+.queue-container {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.queue-list-header {
+  display: grid;
+  grid-template-columns: 50px 2fr 1fr 1fr 80px 60px;
+  gap: 16px;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(200, 200, 220, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.queue-col {
+  display: flex;
+  align-items: center;
+}
+
+.queue-col-duration {
+  justify-content: center;
+}
+
+/* Queue List */
+.queue-list {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.queue-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.queue-list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.queue-list::-webkit-scrollbar-thumb {
+  background: rgba(100, 149, 237, 0.4);
+  border-radius: 3px;
+}
+
+.queue-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 149, 237, 0.6);
+}
+
+/* Queue Item */
+.queue-item {
+  display: grid;
+  grid-template-columns: 50px 2fr 1fr 1fr 80px 60px;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+  margin-bottom: 8px;
+  background: rgba(30, 40, 60, 0.3);
+}
+
+.queue-item:hover {
+  background: rgba(40, 50, 80, 0.4);
+  border-color: rgba(100, 149, 237, 0.3);
+  transform: translateX(4px);
+}
+
+.queue-item-playing {
+  background: rgba(70, 130, 180, 0.15) !important;
+  border-color: rgba(70, 130, 180, 0.3) !important;
+  position: relative;
+}
+
+.queue-item-playing::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom, #4682b4, #87ceeb);
+  border-radius: 3px 0 0 3px;
+}
+
+.queue-index {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.2);
+  color: rgba(200, 200, 220, 0.8);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Playing Animation */
+.playing-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.playing-bars {
+  display: flex;
+  align-items: flex-end;
+  height: 20px;
+  gap: 3px;
+}
+
+.playing-bars span {
+  width: 3px;
+  background: linear-gradient(to bottom, #4682b4, #87ceeb);
+  border-radius: 2px;
+  animation: audioBar 1.5s infinite ease-in-out;
+}
+
+.playing-bars span:nth-child(1) {
+  height: 8px;
+  animation-delay: 0.1s;
+}
+
+.playing-bars span:nth-child(2) {
+  height: 12px;
+  animation-delay: 0.2s;
+}
+
+.playing-bars span:nth-child(3) {
+  height: 16px;
+  animation-delay: 0.3s;
+}
+
+@keyframes audioBar {
+  0%, 100% {
+    height: 8px;
+  }
+  50% {
+    height: 16px;
+  }
+}
+
+/* Song Info */
+.queue-song-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.queue-song-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #f0f0ff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.currently-playing-badge {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  background: linear-gradient(135deg, #4682b4, #87ceeb);
+  color: white;
+  border-radius: 10px;
+  font-weight: 500;
+  align-self: flex-start;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(70, 130, 180, 0.3);
+}
+
+.queue-song-artist,
+.queue-song-album {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.9rem;
+  color: rgba(200, 200, 220, 0.8);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.queue-song-duration {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.9rem;
+  color: rgba(200, 200, 220, 0.7);
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Actions */
+.queue-remove-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(220, 53, 69, 0.1);
+  border: 1px solid rgba(220, 53, 69, 0.2);
+  color: rgba(220, 53, 69, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.queue-remove-btn:hover {
+  background: rgba(220, 53, 69, 0.2);
+  border-color: rgba(220, 53, 69, 0.4);
+  color: #ff6b7a;
+  transform: scale(1.1);
+}
+
+.queue-remove-btn:active {
+  transform: scale(0.95);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .queue-list-header,
+  .queue-item {
+    grid-template-columns: 40px 2fr 1fr 80px 60px;
+  }
+  
+  .queue-col-album {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .queue-view {
+    padding: 16px;
+  }
+  
+  .queue-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .clear-queue-btn {
+    align-self: flex-end;
+  }
+  
+  .queue-list-header,
+  .queue-item {
+    grid-template-columns: 40px 1fr 80px 60px;
+  }
+  
+  .queue-col-artist {
+    display: none;
+  }
+  
+  .queue-song-info {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .queue-view {
+    padding: 12px;
+  }
+  
+  .queue-header h2 {
+    font-size: 1.2rem;
+  }
+  
+  .queue-list-header,
+  .queue-item {
+    grid-template-columns: 30px 1fr 60px 40px;
+    gap: 12px;
+    padding: 12px;
+  }
+  
+  .queue-col-duration {
+    font-size: 0.8rem;
+  }
+  
+  .queue-remove-btn {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .queue-song-title {
+    font-size: 0.9rem;
+  }
+}

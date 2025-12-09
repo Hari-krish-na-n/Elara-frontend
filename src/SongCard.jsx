@@ -1,6 +1,6 @@
 // src/components/SongCard.js
 import React, { useState } from 'react';
-
+import './App.css';
 const SongCard = ({ song, playSong, isCurrent, playlists, addSongToPlaylist }) => {
     const [showActions, setShowActions] = useState(false);
     const [showPlaylistMenu, setShowPlaylistMenu] = useState(false);

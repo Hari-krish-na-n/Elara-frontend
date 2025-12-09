@@ -1,6 +1,6 @@
 // src/views/PlaylistsView.js
 import React, { useState } from 'react';
-
+import'./Entire.css'; 
 function PlaylistsView({ playlists, createNewPlaylist, onPlaylistSelect }) {
     const [playlistName, setPlaylistName] = useState('');
 

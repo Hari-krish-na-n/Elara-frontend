@@ -1,7 +1,7 @@
 // src/components/PlaylistItem.js
 import React, { useState } from 'react';
 import { Heart, ListMusic, PlusCircle, Play } from 'lucide-react';
-
+import './Entire.css';
 const formatTime = (seconds) => {
     if (isNaN(seconds) || seconds === 0) return '00:00';
     const minutes = Math.floor(seconds / 60);
