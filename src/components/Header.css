@@ -1,7 +1,9 @@
-/* Add this to your Header.css file (replace the existing .sort-dropdown styles) */
+/* App.css - Move imports to VERY TOP */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
 
-/* ===== SORT DROPDOWN FIX ===== */
-.sort-container {
+/* ===== CSS VARIABLES ===== */
+:root {
+ .sort-container {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -99,4 +101,5 @@
 /* Make sure header doesn't clip the dropdown */
 .header {
     overflow: visible !important; /* Override any other overflow declarations */
+}
 }

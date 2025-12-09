@@ -4,24 +4,17 @@ import dns from 'node:dns'
 
 dns.setDefaultResultOrder('verbatim')
 
+// vite.config.js
+
+
 export default defineConfig({
   plugins: [react()],
-  server: {
-    host: true,
-    strictPort: false,
-    hmr: {
-      overlay: false
-    },
-    fs: {
-      strict: false
-    }
-  },
   build: {
     rollupOptions: {
-      onwarn(warning, warn) {
-        if (warning.code === 'MODULE_LEVEL_DIRECTIVE') return
-        warn(warning)
-      }
-    }
-  }
+      external: ['react-native-fs', 'fs'], // Add external modules
+    },
+  },
+  optimizeDeps: {
+    exclude: ['jsmediatags'], // Exclude from optimization
+  },
 })

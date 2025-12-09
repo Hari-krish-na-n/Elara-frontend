@@ -1,6 +1,12 @@
 /* App.css - Complete Application CSS */
-
+/* App.css - Move imports to VERY TOP */
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
+
+/* ===== CSS VARIABLES ===== */
+:root {
+  /* ... rest of your CSS ... */
+
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
 
 /* ===== CSS VARIABLES ===== */
 :root {
@@ -769,4 +775,5 @@ a:hover {
     --accent-primary: #00ffff;
     --border-color: #ffffff;
   }
+}
 }

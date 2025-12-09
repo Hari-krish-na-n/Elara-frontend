@@ -1,6 +1,13 @@
 /* global.css - Complete Theme for All Components */
 /* src/components/Sidebar.css */
-.sidebar {
+/* App.css - Move imports to VERY TOP */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
+
+/* ===== CSS VARIABLES ===== */
+:root {
+  /* ... rest of your CSS ... */
+
+  .sidebar {
   width: 250px;
   height: 100vh;
   background: var(--bg-primary);
@@ -1595,4 +1602,5 @@ small {
     p, span, div {
         color: #333;
     }
+}
 }

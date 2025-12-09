@@ -1,6 +1,11 @@
 /* src/components/QueueView.css */
+/* App.css - Move imports to VERY TOP */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
 
-.queue-view {
+/* ===== CSS VARIABLES ===== */
+:root {
+  /* ... rest of your CSS ... */
+  .queue-view {
   background: rgba(10, 15, 30, 0.8);
   backdrop-filter: blur(10px);
   border-radius: 16px;
@@ -410,4 +415,5 @@
   .queue-song-title {
     font-size: 0.9rem;
   }
+}
 }

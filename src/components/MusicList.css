@@ -1,6 +1,11 @@
 /* MusicList.css - Stranger Things Night Sky Theme */
-
+/* App.css - Move imports to VERY TOP */
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
+
+/* ===== CSS VARIABLES ===== */
+:root {
+  /* ... rest of your CSS ... */
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
 
 /* ===== MAIN CONTAINER ===== */
 .music-list-container {
@@ -886,4 +891,5 @@ body.modal-open {
     .col-actions, .bottom-sheet, .more-btn {
         display: none !important;
     }
+}
 }

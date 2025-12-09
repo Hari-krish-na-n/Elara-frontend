@@ -1,6 +1,12 @@
 /* NewComponents.css - Stranger Things Night Sky Theme */
-
+/* App.css - Move imports to VERY TOP */
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
+
+/* ===== CSS VARIABLES ===== */
+:root {
+  /* ... rest of your CSS ... */
+
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
 
 /* ===== DRAGGABLE SONG COMPONENT ===== */
 .draggable-song {
@@ -916,4 +922,5 @@
     background: linear-gradient(135deg, 
         rgba(100, 149, 237, 0.8), 
         rgba(135, 206, 235, 0.8));
+}
 }
