@@ -63,8 +63,8 @@
 }
 
 @keyframes wiggle {
-    from { transform: translateX(0); }
-    to { transform: translateX(2px); }
+    0% { transform: translateX(0); }
+    100% { transform: translateX(2px); }
 }
 
 .song-info {
@@ -115,10 +115,23 @@
 }
 
 @keyframes bounce {
-    from { transform: translateX(0); }
-    to { transform: translateX(-2px); }
+ 0%{
+    transform: translateX(0);
+  }
+ 100% {
+    transform: translateX(-2px);
+  }
 }
 
+/* Alternative percentage syntax */
+@keyframes bounce {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-2px);
+  }
+}
 /* ===== DROPPABLE PLAYLIST COMPONENT ===== */
 .droppable-playlist {
     background: rgba(15, 20, 35, 0.5);
