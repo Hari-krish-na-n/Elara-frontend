@@ -1,6 +1,8 @@
 // src/components/SongContextMenu.js
 import React, { useState, useEffect, useRef } from 'react';
-import './App.css';
+import './Entire.css';
+import './App1.css';
+import { playAddToPlaylistSound, playLikeSound } from './utils/soundEffects';
 const SongContextMenu = ({ song, playlists, addSongToPlaylist, position, onClose }) => {
     const menuRef = useRef(null);
 
@@ -16,6 +18,7 @@ const SongContextMenu = ({ song, playlists, addSongToPlaylist, position, onClose
     }, [onClose]);
 
     const handleAddToPlaylist = (playlistId) => {
+        playAddToPlaylistSound();
         addSongToPlaylist(song.id, playlistId);
         onClose();
     };
@@ -46,7 +49,7 @@ const SongContextMenu = ({ song, playlists, addSongToPlaylist, position, onClose
             <div className="context-menu-divider"></div>
             
             <div className="context-menu-section">
-                <div className="section-title">Add to playlist</div>
+                <div className="section-title"> Add to playlist</div>
                 {playlists.length > 0 ? (
                     playlists.map(playlist => (
                         <div 
@@ -67,7 +70,7 @@ const SongContextMenu = ({ song, playlists, addSongToPlaylist, position, onClose
 
             <div className="context-menu-divider"></div>
 
-            <div className="context-menu-item" onClick={() => {/* Add to liked songs */}}>
+            <div className="context-menu-item" onClick={() => { playLikeSound(); }}>
                 <span className="menu-icon">❤️</span>
                 Add to liked songs
             </div>

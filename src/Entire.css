@@ -1,277 +1,5 @@
 /* global.css - Complete Theme for All Components */
-/* Mobile Menu Toggle Button */
-/* Add to App.css */
-/* Add these styles to fix the playlist dropdown */
-
-/* Fix for playlist dropdown container */
-.playlist-dropdown-container {
-  position: relative;
-  z-index: 1001; /* Higher z-index to appear above other elements */
-}
-
-/* Enhanced playlist quick menu */
-.playlist-quick-menu {
-  position: absolute;
-  right: 0;
-  background: rgba(15, 20, 35, 0.98) !important;
-  backdrop-filter: blur(20px) !important;
-  border: 1px solid rgba(135, 206, 235, 0.4) !important;
-  border-radius: 12px;
-  padding: 12px !important;
-  min-width: 240px;
-  max-width: 280px;
-  max-height: 300px;
-  z-index: 9999 !important; /* Very high z-index */
-  box-shadow: 
-    0 20px 60px rgba(0, 0, 0, 0.8),
-    0 0 0 1px rgba(255, 255, 255, 0.05) inset,
-    0 0 40px rgba(135, 206, 235, 0.3) !important;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  animation: slideDown 0.2s ease-out;
-}
-
-/* Position variants */
-.playlist-quick-menu.menu-bottom {
-  top: calc(100% + 5px);
-  bottom: auto;
-}
-
-.playlist-quick-menu.menu-top {
-  bottom: calc(100% + 5px);
-  top: auto;
-}
-
-/* Menu header */
-.menu-header {
-  padding-bottom: 10px;
-  margin-bottom: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.menu-title {
-  font-family: 'Cinzel', serif;
-  font-size: 1rem !important;
-  font-weight: 700;
-  color: #f0f8ff !important;
-  margin-bottom: 2px;
-}
-
-.menu-subtitle {
-  font-size: 0.8rem;
-  color: rgba(200, 220, 255, 0.7);
-  display: block;
-}
-
-/* Scroll container for playlists */
-.playlists-scroll-container {
-  flex: 1;
-  overflow-y: auto;
-  max-height: 220px;
-  margin: 8px 0;
-  padding-right: 4px;
-}
-
-/* Enhanced scrollbar for playlist menu */
-.playlists-scroll-container::-webkit-scrollbar {
-  width: 6px;
-}
-
-.playlists-scroll-container::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
-}
-
-.playlists-scroll-container::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, 
-    rgba(70, 130, 180, 0.6), 
-    rgba(100, 149, 237, 0.6));
-  border-radius: 3px;
-}
-
-/* Enhanced playlist option */
-.playlist-option {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 12px !important;
-  border-radius: 8px !important;
-  cursor: pointer;
-  transition: all 0.2s ease !important;
-  font-family: 'Cormorant Garamond', Georgia, serif !important;
-  font-size: 0.95rem !important;
-  color: rgba(220, 230, 255, 0.9) !important;
-  background: transparent !important;
-  border: none !important;
-  width: 100% !important;
-  text-align: left !important;
-  margin-bottom: 4px !important;
-}
-
-.playlist-option:hover {
-  background: rgba(135, 206, 235, 0.15) !important;
-  color: #ffffff !important;
-  transform: translateX(3px) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
-}
-
-.playlist-icon {
-  font-size: 1.2rem;
-  opacity: 0.8;
-}
-
-.playlist-name {
-  flex: 1;
-  font-family: 'Cinzel', serif;
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.playlist-count {
-  font-size: 0.8rem;
-  color: rgba(200, 220, 255, 0.6);
-  background: rgba(0, 0, 0, 0.2);
-  padding: 2px 6px;
-  border-radius: 10px;
-  font-family: 'Cinzel', serif;
-  font-weight: 500;
-}
-
-/* Enhanced no playlists state */
-.no-playlists {
-  padding: 20px 15px !important;
-  text-align: center;
-  color: rgba(200, 220, 255, 0.7) !important;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.empty-icon {
-  font-size: 2rem;
-  opacity: 0.5;
-  margin-bottom: 5px;
-}
-
-.no-playlists p {
-  font-family: 'Cinzel', serif;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
-  margin: 0;
-}
-
-.no-playlists small {
-  font-size: 0.85rem;
-  color: rgba(200, 220, 255, 0.6);
-}
-
-/* Menu footer */
-.menu-footer {
-  padding-top: 10px;
-  margin-top: 8px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  justify-content: flex-end;
-}
-
-.close-menu-btn {
-  background: rgba(30, 40, 60, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  color: rgba(220, 230, 255, 0.8);
-  padding: 6px 12px;
-  font-size: 0.85rem;
-  font-family: 'Cinzel', serif;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.close-menu-btn:hover {
-  background: rgba(40, 50, 80, 0.7);
-  color: #ffffff;
-}
-
-/* Ensure song card has proper stacking context */
-.song-card {
-  position: relative;
-  z-index: 1;
-}
-
-/* Animation for dropdown */
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .playlist-quick-menu {
-    min-width: 200px;
-    max-width: 250px;
-    right: -10px; /* Adjust for mobile */
-  }
-  
-  .playlist-option {
-    padding: 8px 10px !important;
-    font-size: 0.9rem !important;
-  }
-}
-
-@media (max-width: 480px) {
-  .playlist-quick-menu {
-    position: fixed;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    max-width: none;
-    min-width: auto;
-    top: 50%;
-    max-height: 70vh;
-  }
-  
-  .playlist-quick-menu.menu-bottom,
-  .playlist-quick-menu.menu-top {
-    top: 50%;
-    bottom: auto;
-    transform: translate(-50%, -50%);
-  }
-}
-.dragging {
-    opacity: 0.5;
-    box-shadow: 0 0 20px rgba(135, 206, 235, 0.5) !important;
-}
-
-.drag-ghost {
-    opacity: 0.7;
-    transform: scale(0.95);
-    background: rgba(30, 60, 114, 0.8) !important;
-}
-.mobile-menu-toggle {
-  display: none;
-  position: fixed;
-  top: 15px;
-  left: 15px;
-  z-index: 1100;
-  /* ... rest of styles from demo */
-}
-
-@media (max-width: 768px) {
-  .mobile-menu-toggle {
-    display: flex;
-  }
-}
-/* Sidebar styles removed */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
 
 /* ===== GLOBAL RESET & BASE STYLES ===== */
 * {
@@ -351,10 +79,11 @@ small {
     flex: 1;
     padding: 20px;
     margin-left: 0;
+    margin-top: 80px; /* Space for fixed header */
     transition: margin-left 0.3s ease;
 }
 
-
+/* Sidebar styles removed */
 
 .logos {
     margin-bottom: 30px;
@@ -448,9 +177,10 @@ small {
         0 4px 30px rgba(0, 0, 0, 0.4),
         inset 0 1px 0 rgba(255, 255, 255, 0.05);
     position: relative;
-    overflow: visible; /* ← Changed from hidden to visible */
+    overflow: hidden;
     z-index: 100;
 }
+
 /* Star effect in header */
 .header::before {
     content: '';
@@ -1306,7 +1036,7 @@ small {
 /* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 1200px) {
     .main-content {
-        margin-left: 0;
+        margin-left: 220px;
     }
     
     .sidebar {

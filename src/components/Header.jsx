@@ -1,132 +1,254 @@
 // src/components/Header.js
 import React, { useState, useRef, useEffect } from 'react';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import './Header.css';
-import { Shuffle, ArrowUpDown, FolderPlus, Menu, X } from 'lucide-react';
+import {
+  Shuffle,
+  ArrowUpDown,
+  FolderPlus,
+  Menu,
+  X,
+  MoreVertical,
+  Home,
+  Music,
+  Heart,
+  ListMusic,
+  List,
+  Settings,
+  Search
+} from 'lucide-react';
 
-function Header({ loadFiles, onShufflePlay, onSort }) {
-    const [sortDropdown, setSortDropdown] = useState(false);
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const sortContainerRef = useRef(null);
-    const dropdownRef = useRef(null);
+function Header({ loadFiles, onShufflePlay, onSort, onSearch }) {
+  const [sortDropdown, setSortDropdown] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileActionsOpen, setMobileActionsOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (sortDropdown && 
-                dropdownRef.current && 
-                !dropdownRef.current.contains(event.target) &&
-                sortContainerRef.current &&
-                !sortContainerRef.current.contains(event.target)) {
-                setSortDropdown(false);
-            }
-        };
+  const sortContainerRef = useRef(null);
+  const dropdownRef = useRef(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [sortDropdown]);
+  /* Handle Search */
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (onSearch) {
+      onSearch(searchQuery);
+    }
+    if (!window.location.pathname.includes('/library')) {
+      navigate('/library');
+    }
+  };
 
-    const toggleMobileMenu = () => {
-        setMobileMenuOpen(!mobileMenuOpen);
-        document.body.classList.toggle('sidebar-open');
-    };
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch(e);
+    }
+  };
 
-    const handleFileChange = (event) => {
-        const files = event.target.files;
-        if (files.length) {
-            loadFiles(files);
-        }
-    };
-
-    const handleSort = (sortType) => {
-        onSort(sortType);
+  /* Close dropdown on outside click */
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        sortDropdown &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target) &&
+        sortContainerRef.current &&
+        !sortContainerRef.current.contains(e.target)
+      ) {
         setSortDropdown(false);
+      }
     };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [sortDropdown]);
 
-    return (
-        <header className="header">
-            <button className="mobile-menu-btn" onClick={toggleMobileMenu} aria-label="Toggle Menu">
-                {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
-            
-            <div className="logo-container">
-                <h1>Every song is a journey — Elara is your compass</h1>
-            </div>
-            
-            <div className="tabs">
-                <span className="">  </span>
-            </div>
-            
-            <div className="controls-right">
-                <div className="sort-container" ref={sortContainerRef}>
-                    <button 
-                        type="button" 
-                        className="sort-btn-big" 
-                        onClick={() => setSortDropdown(!sortDropdown)} 
-                        aria-label="Sort Songs"
-                        aria-expanded={sortDropdown}
-                    >
-                        <ArrowUpDown size={22} />
-                    </button>
-                    <span className="sort-caption">Sort</span>
-                    
-                    {sortDropdown && (
-                        <div className="sort-dropdown" ref={dropdownRef}>
-                            <div className="sort-header">Sort by</div>
-                            <button className="sort-option" onClick={() => handleSort('title-asc')}>
-                                Title A-Z
-                            </button>
-                            <button className="sort-option" onClick={() => handleSort('title-desc')}>
-                                Title Z-A
-                            </button>
-                            <button className="sort-option" onClick={() => handleSort('artist-asc')}>
-                                Artist A-Z
-                            </button>
-                            <button className="sort-option" onClick={() => handleSort('artist-desc')}>
-                                Artist Z-A
-                            </button>
-                            <button className="sort-option" onClick={() => handleSort('duration-asc')}>
-                                Duration (Short)
-                            </button>
-                            <button className="sort-option" onClick={() => handleSort('duration-desc')}>
-                                Duration (Long)
-                            </button>
-                            <button className="sort-option" onClick={() => handleSort('plays-desc')}>
-                                Most Played
-                            </button>
-                            <button className="sort-option" onClick={() => handleSort('plays-asc')}>
-                                Least Played
-                            </button>
-                        </div>
-                    )}
-                </div>
-                
-                <div className="shuffle-play">
-                    <button 
-                        type="button" 
-                        className="shuffle-btn-big" 
-                        onClick={onShufflePlay} 
-                        aria-label="Shuffle and Play"
-                    >
-                        <Shuffle size={24} />
-                    </button>
-                    <span className="shuffle-caption">Shuffle & Play</span>
-                </div>
-                
-                <input
-                    type="file"
-                    id="file-upload"
-                    multiple
-                    accept="audio/*"
-                    onChange={handleFileChange}
-                    style={{ display: 'none' }}
+  /* Close mobile actions on outside click */
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (mobileActionsOpen && !e.target.closest('.mobile-actions-btn') && !e.target.closest('.mobile-actions-panel')) {
+        setMobileActionsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [mobileActionsOpen]);
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen((v) => !v);
+  };
+
+  const handleFileChange = (e) => {
+    if (e.target.files.length) {
+      loadFiles(e.target.files);
+      setMobileActionsOpen(false);
+    }
+  };
+
+  const handleSort = (type) => {
+    onSort(type);
+    setSortDropdown(false);
+    setMobileActionsOpen(false);
+  };
+
+  const handleShuffleClick = () => {
+    onShufflePlay();
+    setMobileActionsOpen(false);
+  };
+
+  const navItems = [
+    { name: 'Home', icon: <Home size={20} />, path: '/' },
+    { name: 'Library', icon: <Music size={20} />, path: '/library' },
+    { name: 'Liked', icon: <Heart size={20} />, path: '/liked' },
+    { name: 'Queue', icon: <ListMusic size={20} />, path: '/queue' },
+    { name: 'Playlists', icon: <List size={20} />, path: '/playlists' },
+   
+  ];
+
+  return (
+    <header className="header-fixed">
+      <div className="header-content">
+        
+        {/* LEFT - Navigation */}
+        <nav className="header-nav desktop-nav">
+            {navItems.map((item) => (
+            <NavLink
+                key={item.path}
+                to={item.path}
+                className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+                title={item.name}
+            >
+                {item.icon}
+                <span className="nav-text">{item.name}</span>
+            </NavLink>
+            ))}
+        </nav>
+
+        {/* CENTER - Search Bar */}
+        <div className="header-search-container">
+            <div className="search-box">
+                <Search size={18} className="search-icon" />
+                <input 
+                    type="text" 
+                    placeholder="Search..." 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={handleKeyPress}
                 />
-                <label htmlFor="file-upload" className="add-folder-btn">
-                    <FolderPlus size={16} style={{ marginRight: 8 }} /> Add folder
-                </label>
             </div>
-        </header>
-    );
+        </div>
+
+        {/* RIGHT - Desktop Controls */}
+        <div className="controls-right desktop-controls">
+          {/* Sort Button */}
+          <div className="sort-container" ref={sortContainerRef}>
+            <button
+              className="control-btn sort-btn"
+              onClick={() => setSortDropdown(!sortDropdown)}
+              aria-expanded={sortDropdown}
+              aria-label="Sort options"
+            >
+              <ArrowUpDown size={20} />
+              <span className="btn-label">Sort</span>
+            </button>
+
+            {sortDropdown && (
+              <div className="sort-dropdown" ref={dropdownRef} role="menu">
+                <div className="sort-header">Sort by</div>
+                {[
+                  ['title-asc', '📝 Title A–Z'],
+                  ['title-desc', '📝 Title Z–A'],
+                  ['artist-asc', '🎤 Artist A–Z'],
+                  ['artist-desc', '🎤 Artist Z–A'],
+                  ['album-asc', '💿 Album A–Z'],
+                  ['album-desc', '💿 Album Z–A'],
+                  ['duration-asc', '⏱️ Duration (Short)'],
+                  ['duration-desc', '⏱️ Duration (Long)'],
+                  ['plays-desc', '🔥 Most Played'],
+                  ['plays-asc', '📊 Least Played']
+                ].map(([key, label]) => (
+                  <button
+                    key={key}
+                    className="sort-option"
+                    onClick={() => handleSort(key)}
+                    role="menuitem"
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Shuffle Button */}
+          <button
+            className="control-btn shuffle-btn"
+            onClick={onShufflePlay}
+            aria-label="Shuffle and play"
+          >
+            <Shuffle size={20} />
+            <span className="btn-label">s</span>
+          </button>
+
+          {/* Add Folder Button */}
+          <label htmlFor="file-upload" className="control-btn add-folder-btn">
+            <FolderPlus size={20} />
+            <span className="btn-label">Add Folder</span>
+          </label>
+        </div>
+
+        {/* RIGHT - Mobile Actions Button */}
+        <button
+          className="mobile-actions-btn mobile-controls"
+          onClick={() => setMobileActionsOpen((v) => !v)}
+          aria-label="More actions"
+        >
+          <MoreVertical size={22} />
+        </button>
+
+        {/* Mobile Actions Panel */}
+        {mobileActionsOpen && (
+          <div className="mobile-actions-panel">
+             {/* Mobile Navigation Links inside Action Panel or separate Menu? 
+                 User asked to remove sidebar. I'll add nav items here for mobile or create a mobile menu. 
+                 Existing code had mobile-menu-btn. I removed it from the render above.
+                 Let's add mobile nav back if needed. 
+                 For now, I'll put basic actions.
+             */}
+            <button className="mobile-action-item" onClick={() => setSortDropdown(true)}>
+              <ArrowUpDown size={18} />
+              <span>Sort</span>
+            </button>
+            <button className="mobile-action-item" onClick={handleShuffleClick}>
+              <Shuffle size={18} />
+              <span>Shuffle</span>
+            </button>
+            <label htmlFor="file-upload" className="mobile-action-item">
+              <FolderPlus size={18} />
+              <span>Add Folder</span>
+            </label>
+             <div className="mobile-nav-divider"></div>
+             {navItems.map((item) => (
+                <button key={item.path} className="mobile-action-item" onClick={() => { navigate(item.path); setMobileActionsOpen(false); }}>
+                    {item.icon}
+                    <span>{item.name}</span>
+                </button>
+             ))}
+          </div>
+        )}
+      </div>
+
+      {/* Hidden File Input */}
+      <input
+        id="file-upload"
+        type="file"
+        multiple
+        accept="audio/*"
+        hidden
+        onChange={handleFileChange}
+      />
+    </header>
+  );
 }
 
 export default Header;

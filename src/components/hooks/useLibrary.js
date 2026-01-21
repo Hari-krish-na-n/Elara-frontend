@@ -1,0 +1,346 @@
+// src/hooks/useLibrary.js
+import { useState, useEffect, useCallback } from 'react';
+import { extractMP3Metadata, fileToDataURL, sanitizeFilename, getAlbumArtURL } from '../utils/audioUtils';
+
+export const useLibrary = () => {
+  const [songs, setSongs] = useState([]);
+  const [filteredSongs, setFilteredSongs] = useState([]);
+  const [likedSongs, setLikedSongs] = useState(new Set());
+  const [isLoading, setIsLoading] = useState(false);
+  const [metadataCache, setMetadataCache] = useState(new Map());
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortConfig, setSortConfig] = useState({ field: 'title', direction: 'asc' });
+
+  // Load saved data
+  useEffect(() => {
+    try {
+      const savedSongs = localStorage.getItem('songsWithMetadata');
+      const savedLiked = localStorage.getItem('likedSongs');
+
+      if (savedSongs) {
+        const parsedSongs = JSON.parse(savedSongs);
+        setSongs(parsedSongs);
+        setFilteredSongs(parsedSongs);
+        console.log(`Loaded ${parsedSongs.length} songs from storage`);
+      }
+
+      if (savedLiked) {
+        setLikedSongs(new Set(JSON.parse(savedLiked)));
+      }
+    } catch (error) {
+      console.error('Error loading library data:', error);
+    }
+  }, []);
+
+  // Save songs
+  useEffect(() => {
+    try {
+      localStorage.setItem('songsWithMetadata', JSON.stringify(songs));
+    } catch (error) {
+      console.error('Error saving songs:', error);
+    }
+  }, [songs]);
+
+  // Save liked songs
+  useEffect(() => {
+    try {
+      localStorage.setItem('likedSongs', JSON.stringify([...likedSongs]));
+    } catch (error) {
+      console.error('Error saving liked songs:', error);
+    }
+  }, [likedSongs]);
+
+  // Load files with metadata
+  const loadFiles = useCallback(async (files) => {
+    const audioFiles = Array.from(files).filter(file => 
+      file.type.startsWith('audio/') || /\.(mp3|wav|ogg|m4a|flac|aac)$/i.test(file.name)
+    );
+
+    if (audioFiles.length === 0) {
+      // Alert removed
+      return;
+    }
+
+    setIsLoading(true);
+    console.log(`Loading ${audioFiles.length} files...`);
+
+    try {
+      const loadPromises = audioFiles.map(async (file, index) => {
+        try {
+          const fileId = `${file.name}-${file.size}-${file.lastModified}`;
+          
+          if (metadataCache.has(fileId)) {
+            return metadataCache.get(fileId);
+          }
+
+          const dataURL = await fileToDataURL(file);
+          
+          return new Promise(async (resolve) => {
+            const audio = new Audio();
+            
+            const handleLoad = async () => {
+              try {
+                const song = {
+                  id: `song-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`,
+                  title: sanitizeFilename(file.name),
+                  artist: 'Unknown Artist',
+                  album: 'Unknown Album',
+                  duration: audio.duration || 0,
+                  url: dataURL,
+                  plays: 0,
+                  fileName: file.name,
+                  fileType: file.type,
+                  fileSize: file.size,
+                  lastModified: file.lastModified,
+                  addedAt: new Date().toISOString(),
+                };
+
+                const isMP3 = file.type === 'audio/mpeg' || file.name.toLowerCase().endsWith('.mp3');
+                
+                if (isMP3) {
+                  const metadata = await extractMP3Metadata(file);
+                  if (metadata) {
+                    Object.assign(song, metadata);
+                    if (metadata.picture) {
+                      const artUrl = getAlbumArtURL(metadata.picture);
+                      if (artUrl) {
+                        song.coverUrl = artUrl;
+                      }
+                    }
+                  }
+                }
+
+                setMetadataCache(prev => new Map(prev).set(fileId, song));
+                resolve(song);
+              } catch (error) {
+                console.error(`Error processing ${file.name}:`, error);
+                resolve(null);
+              }
+            };
+            
+            audio.addEventListener('loadedmetadata', handleLoad);
+            audio.addEventListener('error', () => resolve(null));
+            
+            setTimeout(() => {
+              if (audio.readyState === 0) resolve(null);
+            }, 10000);
+            
+            audio.src = dataURL;
+          });
+        } catch (error) {
+          console.error(`Error processing ${file.name}:`, error);
+          return null;
+        }
+      });
+
+      const batchSize = 5;
+      const newSongs = [];
+      
+      for (let i = 0; i < loadPromises.length; i += batchSize) {
+        const batch = loadPromises.slice(i, i + batchSize);
+        const batchResults = await Promise.all(batch);
+        newSongs.push(...batchResults.filter(song => song !== null));
+      }
+
+      if (newSongs.length === 0) {
+        alert('Failed to load any audio files.');
+        return;
+      }
+      
+      const existingFileIds = new Set(songs.map(s => 
+        `${s.fileName}-${s.fileSize}-${s.lastModified}`
+      ));
+      
+      const uniqueNewSongs = newSongs.filter(song => 
+        !existingFileIds.has(`${song.fileName}-${song.fileSize}-${song.lastModified}`)
+      );
+      
+      if (uniqueNewSongs.length === 0) {
+        alert('All selected files are already in your library.');
+        return;
+      }
+      
+      const updatedSongs = [...songs, ...uniqueNewSongs];
+      setSongs(updatedSongs);
+      setFilteredSongs(updatedSongs);
+      alert(`Successfully added ${uniqueNewSongs.length} new songs!`);
+      
+    } catch (error) {
+      console.error('Error loading files:', error);
+      alert('An error occurred while loading files.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [songs, metadataCache]);
+
+  // Filter and Sort Effect
+  useEffect(() => {
+    let result = [...songs];
+
+    // 1. Filter
+    if (searchQuery.trim()) {
+      const queryLower = searchQuery.toLowerCase();
+      result = result.filter(song => 
+        (song.title && song.title.toLowerCase().includes(queryLower)) ||
+        (song.artist && song.artist.toLowerCase().includes(queryLower)) ||
+        (song.album && song.album.toLowerCase().includes(queryLower)) ||
+        (song.fileName && song.fileName.toLowerCase().includes(queryLower)) ||
+        (song.genre && song.genre.toLowerCase().includes(queryLower))
+      );
+    }
+
+    // 2. Sort
+    const { field, direction } = sortConfig;
+    if (field) {
+      result.sort((a, b) => {
+        let aVal = a[field];
+        let bVal = b[field];
+        
+        if (field === 'duration' || field === 'plays') {
+          aVal = aVal || 0;
+          bVal = bVal || 0;
+          return direction === 'asc' ? aVal - bVal : bVal - aVal;
+        }
+        
+        aVal = (aVal || '').toString().toLowerCase();
+        bVal = (bVal || '').toString().toLowerCase();
+        
+        if (direction === 'asc') {
+          return aVal.localeCompare(bVal);
+        } else {
+          return bVal.localeCompare(aVal);
+        }
+      });
+    }
+
+    setFilteredSongs(result);
+  }, [songs, searchQuery, sortConfig]);
+
+  // Search songs
+  const searchSongs = useCallback((query) => {
+    setSearchQuery(query);
+  }, []);
+
+  // Sort songs
+  const sortSongs = useCallback((field, direction) => {
+    setSortConfig({ field, direction });
+  }, []);
+
+  // Toggle like
+  const toggleLike = useCallback((song) => {
+    setLikedSongs(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(song.id)) {
+        newSet.delete(song.id);
+      } else {
+        newSet.add(song.id);
+      }
+      return newSet;
+    });
+  }, []);
+
+  // Increment play count
+  const incrementPlayCount = useCallback((songId) => {
+    setSongs(prev => prev.map(song => 
+      song.id === songId ? { ...song, plays: (song.plays || 0) + 1 } : song
+    ));
+    
+    setFilteredSongs(prev => prev.map(song => 
+      song.id === songId ? { ...song, plays: (song.plays || 0) + 1 } : song
+    ));
+  }, []);
+
+  // Delete song
+  const deleteSong = useCallback((songId) => {
+    const song = songs.find(s => s.id === songId);
+    if (song && !confirm(`Delete "${song.title}"? This cannot be undone.`)) {
+      return false;
+    }
+
+    setSongs(prev => prev.filter(s => s.id !== songId));
+    setFilteredSongs(prev => prev.filter(s => s.id !== songId));
+    setLikedSongs(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(songId);
+      return newSet;
+    });
+    
+    return true;
+  }, [songs]);
+
+  // Delete multiple songs
+  const deleteMultipleSongs = useCallback((songIds) => {
+    if (!confirm(`Delete ${songIds.length} songs? This cannot be undone.`)) {
+      return false;
+    }
+
+    setSongs(prev => prev.filter(s => !songIds.includes(s.id)));
+    setFilteredSongs(prev => prev.filter(s => !songIds.includes(s.id)));
+    setLikedSongs(prev => {
+      const newSet = new Set(prev);
+      songIds.forEach(id => newSet.delete(id));
+      return newSet;
+    });
+    
+    return true;
+  }, []);
+
+  // Get library statistics
+  const getLibraryStats = useCallback(() => {
+    const totalDuration = songs.reduce((sum, song) => sum + (song.duration || 0), 0);
+    const totalPlays = songs.reduce((sum, song) => sum + (song.plays || 0), 0);
+    const artists = new Set(songs.map(s => s.artist));
+    const albums = new Set(songs.map(s => s.album));
+    const genres = new Set(songs.filter(s => s.genre).map(s => s.genre));
+
+    return {
+      totalSongs: songs.length,
+      totalDuration,
+      totalPlays,
+      totalLiked: likedSongs.size,
+      uniqueArtists: artists.size,
+      uniqueAlbums: albums.size,
+      uniqueGenres: genres.size,
+      avgSongDuration: songs.length > 0 ? totalDuration / songs.length : 0,
+    };
+  }, [songs, likedSongs]);
+
+  // Get songs by artist
+  const getSongsByArtist = useCallback((artist) => {
+    return songs.filter(song => song.artist === artist);
+  }, [songs]);
+
+  // Get songs by album
+  const getSongsByAlbum = useCallback((album) => {
+    return songs.filter(song => song.album === album);
+  }, [songs]);
+
+  // Get songs by genre
+  const getSongsByGenre = useCallback((genre) => {
+    return songs.filter(song => song.genre === genre);
+  }, [songs]);
+
+  const likedSongsList = songs.filter(song => likedSongs.has(song.id));
+
+  return {
+    songs,
+    filteredSongs,
+    likedSongs,
+    likedSongsList,
+    isLoading,
+    searchQuery,
+    sortConfig,
+    loadFiles,
+    searchSongs,
+    sortSongs,
+    toggleLike,
+    isSongLiked: (songId) => likedSongs.has(songId),
+    incrementPlayCount,
+    deleteSong,
+    deleteMultipleSongs,
+    getLibraryStats,
+    getSongsByArtist,
+    getSongsByAlbum,
+    getSongsByGenre,
+  };
+};  

@@ -1,0 +1,70 @@
+/* src/components/DroppablePlaylistCard.css */
+.droppable-playlist-card {
+    background: rgba(15, 20, 35, 0.6);
+    border-radius: 15px;
+    padding: 20px;
+    border: 2px dashed rgba(135, 206, 235, 0.2);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.droppable-playlist-card:hover {
+    background: rgba(20, 25, 40, 0.8);
+    border-color: rgba(135, 206, 235, 0.4);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(135, 206, 235, 0.2);
+}
+
+.droppable-playlist-card.drag-over {
+    background: rgba(30, 60, 114, 0.3);
+    border-color: #87ceeb;
+    border-style: solid;
+    box-shadow: 0 0 30px rgba(135, 206, 235, 0.4);
+    animation: pulse 1s infinite alternate;
+}
+
+@keyframes pulse {
+    from { box-shadow: 0 0 20px rgba(135, 206, 235, 0.4); }
+    to { box-shadow: 0 0 40px rgba(135, 206, 235, 0.6); }
+}
+
+.playlist-icon {
+    color: #87ceeb;
+    margin-bottom: 10px;
+}
+
+.playlist-name {
+    font-family: 'Cinzel', serif;
+    font-size: 1.2rem;
+    color: #f0f8ff;
+    margin: 0;
+}
+
+.playlist-count {
+    font-size: 0.9rem;
+    color: rgba(200, 220, 255, 0.7);
+    margin: 0;
+}
+
+.drop-hint {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    background: rgba(70, 130, 180, 0.8);
+    color: white;
+    padding: 6px;
+    font-size: 0.8rem;
+    border-radius: 0 0 13px 13px;
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+}

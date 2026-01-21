@@ -1,7 +1,10 @@
 // src/components/PlaylistSidebar.js
 import React, { useState } from 'react';
 import './Entire.css';
-const PlaylistSidebar = ({ song, playlists, addSongToPlaylist, addToQueue, onClose, createNewPlaylist }) => {
+import '../App1.css';
+import './PlaylistSidebar.css';
+import { playAddToPlaylistSound } from '../utils/soundEffects';
+const PlaylistSidebar = ({ song, playlists, addSongToPlaylist, onClose, createNewPlaylist }) => {
     const [newPlaylistName, setNewPlaylistName] = useState('');
     const [selectedPlaylists, setSelectedPlaylists] = useState([]);
 
@@ -9,6 +12,7 @@ const PlaylistSidebar = ({ song, playlists, addSongToPlaylist, addToQueue, onClo
 
     const handleAddToPlaylist = (playlistId) => {
         if (addSongToPlaylist) {
+            playAddToPlaylistSound();
             addSongToPlaylist(song.id, playlistId);
             // Visual feedback
             setSelectedPlaylists(prev => [...prev, playlistId]);
@@ -27,6 +31,9 @@ const PlaylistSidebar = ({ song, playlists, addSongToPlaylist, addToQueue, onClo
     };
 
     const handleAddToSelected = () => {
+        if (selectedPlaylists.length > 0) {
+            playAddToPlaylistSound();
+        }
         selectedPlaylists.forEach(playlistId => {
             addSongToPlaylist(song.id, playlistId);
         });
@@ -42,24 +49,20 @@ const PlaylistSidebar = ({ song, playlists, addSongToPlaylist, addToQueue, onClo
     };
 
     return (
-        <div className="playlist-sidebar-overlay" onClick={onClose}>
-            <div className="playlist-sidebar" onClick={(e) => e.stopPropagation()}>
+        <div className="playlist-sidebar-overlay">
+            <div className="playlist-sidebar">
                 {/* Header */}
                 <div className="playlist-sidebar-header">
-                    <h2>🎵 ADD TO PLAYLIST</h2>
+                    <h2>Add to Playlist</h2>
                     <button className="close-btn" onClick={onClose}>×</button>
                 </div>
 
                 {/* Song Info */}
                 <div className="song-preview-card">
                     <div className="song-cover-large">
-                        {song.coverUrl ? (
-                            <img src={song.coverUrl} alt={song.title} className="cover-img-large" />
-                        ) : (
-                            <div className="cover-placeholder">
-                                {song.title.charAt(0).toUpperCase()}
-                            </div>
-                        )}
+                        <div className="cover-placeholder">
+                            {song.title.charAt(0)}
+                        </div>
                     </div>
                     <div className="song-info-large">
                         <h3 className="song-title-large">{song.title}</h3>
@@ -70,39 +73,40 @@ const PlaylistSidebar = ({ song, playlists, addSongToPlaylist, addToQueue, onClo
 
                 {/* Quick Actions */}
                 <div className="quick-actions">
-                   
-                    <button className="quick-action-btn" onClick={() => { addToQueue && addToQueue(song); onClose && onClose(); }}>
+                    <button className="quick-action-btn" onClick={() => {/* Add to liked songs */}}>
+                        ❤️ Add to Liked Songs
+                    </button>
+                    <button className="quick-action-btn" onClick={() => {/* Add to queue */}}>
                         ⏭️ Add to Queue
                     </button>
                 </div>
 
                 {/* Create New Playlist */}
                 <div className="create-playlist-section">
-                    <h4>📋 CREATE NEW PLAYLIST</h4>
+                    <h4>Create New Playlist</h4>
                     <form onSubmit={handleCreateAndAdd} className="create-playlist-form">
                         <input
                             type="text"
-                            placeholder="Enter playlist name..."
+                            placeholder="Enter playlist name"
                             value={newPlaylistName}
                             onChange={(e) => setNewPlaylistName(e.target.value)}
                             className="playlist-name-input"
                         />
                         <button type="submit" className="create-playlist-btn">
-                            ➕ Create
+                            + Create
                         </button>
                     </form>
                 </div>
 
                 {/* Existing Playlists */}
                 <div className="existing-playlists">
-                    <h4>📁 YOUR PLAYLISTS ({playlists.length})</h4>
+                    <h4>Your Playlists ({playlists.length})</h4>
                     <div className="playlists-list">
                         {playlists.length > 0 ? (
                             playlists.map(playlist => (
                                 <div 
                                     key={playlist.id} 
                                     className={`playlist-item-card ${selectedPlaylists.includes(playlist.id) ? 'selected' : ''}`}
-                                    onClick={() => togglePlaylistSelection(playlist.id)}
                                 >
                                     <div className="playlist-checkbox">
                                         <input
@@ -116,15 +120,12 @@ const PlaylistSidebar = ({ song, playlists, addSongToPlaylist, addToQueue, onClo
                                     <div className="playlist-info">
                                         <span className="playlist-name">{playlist.name}</span>
                                         <span className="playlist-song-count">
-                                            {playlist.songs.length} {playlist.songs.length === 1 ? 'song' : 'songs'}
+                                            {playlist.songs.length} songs
                                         </span>
                                     </div>
                                     <button 
                                         className="add-single-btn"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleAddToPlaylist(playlist.id);
-                                        }}
+                                        onClick={() => handleAddToPlaylist(playlist.id)}
                                         title={`Add to ${playlist.name}`}
                                     >
                                         +
@@ -133,8 +134,8 @@ const PlaylistSidebar = ({ song, playlists, addSongToPlaylist, addToQueue, onClo
                             ))
                         ) : (
                             <div className="no-playlists-message">
-                                <p>📭 NO PLAYLISTS FOUND</p>
-                                <small>Create your first playlist using the form above</small>
+                                <p>No playlists yet</p>
+                                <small>Create your first playlist above</small>
                             </div>
                         )}
                     </div>
@@ -143,14 +144,14 @@ const PlaylistSidebar = ({ song, playlists, addSongToPlaylist, addToQueue, onClo
                 {/* Action Buttons */}
                 <div className="sidebar-actions">
                     <button className="cancel-btn" onClick={onClose}>
-                        ✕ Cancel
+                        Cancel
                     </button>
                     <button 
                         className="add-to-selected-btn"
                         onClick={handleAddToSelected}
                         disabled={selectedPlaylists.length === 0}
                     >
-                        ✅ Add to {selectedPlaylists.length} Playlist{selectedPlaylists.length !== 1 ? 's' : ''}
+                        Add to {selectedPlaylists.length} Playlist{selectedPlaylists.length !== 1 ? 's' : ''}
                     </button>
                 </div>
             </div>

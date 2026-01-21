@@ -1,12 +1,6 @@
-/* App.css - Complete Application CSS */
-/* App.css - Move imports to VERY TOP */
+/* App.css - Complete Fixed CSS */
+/* Font imports at the very top */
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
-
-/* ===== CSS VARIABLES ===== */
-:root {
-  /* ... rest of your CSS ... */
-
-  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
 
 /* ===== CSS VARIABLES ===== */
 :root {
@@ -93,6 +87,240 @@ body {
   position: relative;
 }
 
+/* ===== PLAYLIST DROPDOWN FIXES ===== */
+/* Fix for playlist dropdown container */
+.playlist-dropdown-container {
+  position: relative;
+  z-index: 1001 !important;
+  display: inline-block;
+}
+
+/* Enhanced playlist quick menu - FIXED VERSION */
+.playlist-quick-menu {
+  position: fixed !important;
+  z-index: 99999 !important; /* Highest possible z-index */
+  background: rgba(15, 20, 35, 0.98) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(135, 206, 235, 0.4) !important;
+  border-radius: 12px;
+  padding: 12px !important;
+  min-width: 240px;
+  max-width: 280px;
+  max-height: 300px;
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.8),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+    0 0 40px rgba(135, 206, 235, 0.3) !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column;
+  animation: slideDown 0.2s ease-out;
+  pointer-events: auto !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Ensure dropdown is always visible when open */
+.playlist-quick-menu:not(.hidden) {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Fix positioning */
+.playlist-quick-menu.menu-bottom {
+  top: auto !important;
+  bottom: auto !important;
+}
+
+.playlist-quick-menu.menu-top {
+  top: auto !important;
+  bottom: auto !important;
+}
+
+/* Menu header */
+.menu-header {
+  padding-bottom: 10px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.menu-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem !important;
+  font-weight: 700;
+  color: #f0f8ff !important;
+  margin-bottom: 2px;
+}
+
+.menu-subtitle {
+  font-size: 0.8rem;
+  color: rgba(200, 220, 255, 0.7);
+  display: block;
+}
+
+/* Scroll container for playlists */
+.playlists-scroll-container {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 220px;
+  margin: 8px 0;
+  padding-right: 4px;
+}
+
+/* Enhanced scrollbar for playlist menu */
+.playlists-scroll-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.playlists-scroll-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.playlists-scroll-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, 
+    rgba(70, 130, 180, 0.6), 
+    rgba(100, 149, 237, 0.6));
+  border-radius: 3px;
+}
+
+/* Enhanced playlist option */
+.playlist-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px !important;
+  border-radius: 8px !important;
+  cursor: pointer;
+  transition: all 0.2s ease !important;
+  font-family: 'Cormorant Garamond', Georgia, serif !important;
+  font-size: 0.95rem !important;
+  color: rgba(220, 230, 255, 0.9) !important;
+  background: transparent !important;
+  border: none !important;
+  width: 100% !important;
+  text-align: left !important;
+  margin-bottom: 4px !important;
+}
+
+.playlist-option:hover {
+  background: rgba(135, 206, 235, 0.15) !important;
+  color: #ffffff !important;
+  transform: translateX(3px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+.playlist-icon {
+  font-size: 1.2rem;
+  opacity: 0.8;
+}
+
+.playlist-name {
+  flex: 1;
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.playlist-count {
+  font-size: 0.8rem;
+  color: rgba(200, 220, 255, 0.6);
+  background: rgba(0, 0, 0, 0.2);
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-family: 'Cinzel', serif;
+  font-weight: 500;
+}
+
+/* Enhanced no playlists state */
+.no-playlists {
+  padding: 20px 15px !important;
+  text-align: center;
+  color: rgba(200, 220, 255, 0.7) !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.empty-icon {
+  font-size: 2rem;
+  opacity: 0.5;
+  margin-bottom: 5px;
+}
+
+.no-playlists p {
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+}
+
+.no-playlists small {
+  font-size: 0.85rem;
+  color: rgba(200, 220, 255, 0.6);
+}
+
+/* Menu footer */
+.menu-footer {
+  padding-top: 10px;
+  margin-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.close-menu-btn {
+  background: rgba(30, 40, 60, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: rgba(220, 230, 255, 0.8);
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.close-menu-btn:hover {
+  background: rgba(40, 50, 80, 0.7);
+  color: #ffffff;
+}
+
+/* Ensure song card has proper stacking context */
+.song-card {
+  position: relative;
+  z-index: 1;
+  overflow: visible !important;
+}
+
+/* Animation for dropdown */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* CRITICAL FIX: Ensure parent containers don't hide dropdown */
+.song-list-container,
+.playlist-section,
+.main-content,
+.song-item,
+.song-list-item,
+.music-grid-item,
+.song-grid {
+  overflow: visible !important;
+}
+
 /* ===== TYPOGRAPHY ===== */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
@@ -150,9 +378,9 @@ a:hover {
 .main-content {
   flex: 1;
   padding: var(--space-xl);
-  margin-left: 250px;
-  transition: margin-left 0.3s ease;
+  margin-left: 0;
   min-height: calc(100vh - 120px);
+  overflow: visible !important;
 }
 
 /* ===== LOADING OVERLAY ===== */
@@ -396,6 +624,18 @@ a:hover {
   box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
 }
 
+/* ===== DRAG AND DROP STYLES ===== */
+.dragging {
+  opacity: 0.5;
+  box-shadow: 0 0 20px rgba(135, 206, 235, 0.5) !important;
+}
+
+.drag-ghost {
+  opacity: 0.7;
+  transform: scale(0.95);
+  background: rgba(30, 60, 114, 0.8) !important;
+}
+
 /* ===== UTILITY CLASSES ===== */
 .text-center {
   text-align: center;
@@ -438,11 +678,11 @@ a:hover {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 .visible {
-  display: block;
+  display: block !important;
 }
 
 .opacity-50 {
@@ -580,10 +820,35 @@ a:hover {
   scrollbar-color: var(--accent-secondary) rgba(0, 0, 0, 0.2);
 }
 
+/* ===== EMERGENCY FIX FOR PLAYLIST DROPDOWN ===== */
+/* If dropdown still not showing, use this fallback */
+.playlist-dropdown-fallback {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 99999 !important;
+  width: 90vw !important;
+  max-width: 400px !important;
+  max-height: 80vh !important;
+  background: rgba(15, 20, 35, 0.98) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(135, 206, 235, 0.4) !important;
+  border-radius: 12px !important;
+  padding: 12px !important;
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.8),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+    0 0 40px rgba(135, 206, 235, 0.3) !important;
+  display: flex !important;
+  flex-direction: column;
+  animation: slideDown 0.2s ease-out;
+}
+
 /* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 1200px) {
   .main-content {
-    margin-left: 220px;
+    margin-left: 0;
     padding: var(--space-lg);
   }
   
@@ -647,6 +912,18 @@ a:hover {
     font-size: 1rem !important;
     margin: var(--space-sm) var(--space-md) !important;
   }
+  
+  /* Responsive adjustments for playlist dropdown */
+  .playlist-quick-menu {
+    min-width: 200px;
+    max-width: 250px;
+    right: -10px;
+  }
+  
+  .playlist-option {
+    padding: 8px 10px !important;
+    font-size: 0.9rem !important;
+  }
 }
 
 @media (max-width: 480px) {
@@ -689,6 +966,25 @@ a:hover {
     height: 36px !important;
     font-size: 0.9rem !important;
   }
+  
+  /* Mobile playlist dropdown */
+  .playlist-quick-menu {
+    position: fixed !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 90% !important;
+    max-width: none !important;
+    min-width: auto !important;
+    top: 50% !important;
+    max-height: 70vh !important;
+  }
+  
+  .playlist-quick-menu.menu-bottom,
+  .playlist-quick-menu.menu-top {
+    top: 50% !important;
+    bottom: auto !important;
+    transform: translate(-50%, -50%) !important;
+  }
 }
 
 /* ===== PRINT STYLES ===== */
@@ -698,7 +994,8 @@ a:hover {
   .player-controls,
   .help-button,
   .loading-overlay,
-  .keyboard-help-overlay {
+  .keyboard-help-overlay,
+  .playlist-quick-menu {
     display: none !important;
   }
   
@@ -775,5 +1072,4 @@ a:hover {
     --accent-primary: #00ffff;
     --border-color: #ffffff;
   }
-}
 }

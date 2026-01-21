@@ -1,6 +1,8 @@
 // src/components/QuickAddPanel.js
 import React, { useState } from 'react';
-import './App.css';
+import './Entire.css';
+import './App1.css';
+import { playAddToPlaylistSound } from './utils/soundEffects';
 const QuickAddPanel = ({ song, playlists, addSongToPlaylist, onClose }) => {
     const [selectedPlaylists, setSelectedPlaylists] = useState([]);
 
@@ -13,6 +15,9 @@ const QuickAddPanel = ({ song, playlists, addSongToPlaylist, onClose }) => {
     };
 
     const handleAddToSelected = () => {
+        if (selectedPlaylists.length > 0) {
+            playAddToPlaylistSound();
+        }
         selectedPlaylists.forEach(playlistId => {
             addSongToPlaylist(song.id, playlistId);
         });
@@ -23,7 +28,7 @@ const QuickAddPanel = ({ song, playlists, addSongToPlaylist, onClose }) => {
         <div className="quick-add-panel-overlay">
             <div className="quick-add-panel">
                 <div className="panel-header">
-                    <h3>Add "{song.title}" to Playlists</h3>
+                    <h3>Add "{song.title}" Add to Playlists</h3>
                     <button className="close-btn" onClick={onClose}>×</button>
                 </div>
                 

@@ -1,105 +1,367 @@
-/* App.css - Move imports to VERY TOP */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
+/* src/components/Header.css */
 
-/* ===== CSS VARIABLES ===== */
-:root {
- .sort-container {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-xs);
+/* Base Header Styles */
+.header-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1100;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  height: 70px; /* Fixed height */
+  /* overflow: hidden; Removed to allow dropdowns to be visible */
+}
+
+/* Star effect in header */
+.header-fixed::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+      radial-gradient(1px 1px at 20px 30px, rgba(255, 255, 255, 0.9), transparent),
+      radial-gradient(1px 1px at 40px 70px, rgba(255, 255, 255, 0.7), transparent),
+      radial-gradient(1.5px 1.5px at 60px 20px, rgba(255, 255, 255, 0.8), transparent),
+      radial-gradient(1px 1px at 80px 50px, rgba(255, 255, 255, 0.6), transparent);
+  background-repeat: repeat;
+  z-index: -1;
+  opacity: 0.4;
+  animation: twinkle 4s infinite alternate;
+}
+
+@keyframes twinkle {
+  0% { opacity: 0.3; }
+  100% { opacity: 0.6; }
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  max-width: 100vw;
+  margin: 0 auto;
+  height: 100%;
+  gap: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Navigation */
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: 8px;
+  color: #94a3b8;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.nav-link.active {
+  color: #fff;
+  background: rgba(99, 102, 241, 0.2);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+}
+
+.nav-text {
+  white-space: nowrap;
+}
+
+/* Search Bar */
+.header-search-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  max-width: 500px;
+  min-width: 200px; /* Ensure search bar doesn't disappear completely but can shrink */
+  margin: 0 1rem; /* Add margin to separate from nav and controls */
+}
+
+.search-box {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 0.6rem 1rem 0.6rem 2.5rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.6);
+  color: #fff;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: rgba(99, 102, 241, 0.5);
+  background: rgba(15, 23, 42, 0.8);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+/* Controls - Desktop */
+.desktop-controls {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 1100px) {
+  .nav-text {
+    display: none;
+  }
+  
+  .nav-link {
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-nav {
+    display: none; /* Hide nav on mobile, move to dropdown */
+  }
+  
+  .header-search-container {
+    margin-right: 0.5rem;
+  }
+
+  .desktop-controls {
+    display: none;
+  }
+  
+  .mobile-controls {
+    display: block;
+  }
+}
+
+/* Mobile Actions Divider */
+.mobile-nav-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 0.5rem 0;
+}
+
+/* Control Buttons */
+.control-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  white-space: nowrap;
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.control-btn:active {
+  transform: translateY(0);
+}
+
+.btn-label {
+  font-weight: 500;
+}
+
+/* Sort Button & Dropdown */
+.sort-container {
+  position: relative;
 }
 
 .sort-dropdown {
-    position: absolute; /* Changed from fixed */
-    top: 100%; /* Position directly below the sort button */
-    left: 50%;
-    transform: translateX(-50%) translateY(10px); /* Center and add small offset */
-    background: linear-gradient(135deg, 
-        rgba(10, 15, 35, 0.98) 0%, 
-        rgba(5, 10, 25, 0.98) 100%);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(100, 149, 237, 0.3);
-    border-radius: 12px;
-    padding: 8px 0;
-    width: 220px;
-    box-shadow: 
-        0 15px 35px rgba(0, 0, 0, 0.5),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    z-index: 1000;
-    overflow: hidden;
-    animation: dropdownSlide 0.2s ease;
-    margin-top: 5px; /* Space from the button */
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  min-width: 220px;
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 0.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  animation: dropdownSlide 0.2s ease-out;
 }
 
 @keyframes dropdownSlide {
-    from { 
-        opacity: 0; 
-        transform: translateX(-50%) translateY(0); 
-    }
-    to { 
-        opacity: 1; 
-        transform: translateX(-50%) translateY(10px); 
-    }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .sort-header {
-    padding: 12px 16px;
-    font-family: var(--font-heading);
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: rgba(220, 220, 255, 0.9);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    margin-bottom: 4px;
-    background: rgba(0, 0, 0, 0.2);
-    text-transform: uppercase;
-    letter-spacing: 1px;
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #94a3b8;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 0.25rem;
 }
 
 .sort-option {
-    width: 100%;
-    padding: 10px 16px;
-    text-align: left;
-    background: transparent;
-    border: none;
-    color: rgba(220, 220, 255, 0.7);
-    font-family: var(--font-body);
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-}
-
-.sort-option::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: linear-gradient(to bottom, 
-        var(--accent-secondary), 
-        var(--accent-primary));
-    opacity: 0;
-    transition: opacity 0.2s ease;
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  color: #cbd5e1;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .sort-option:hover {
-    background: rgba(70, 130, 180, 0.15);
-    color: var(--text-primary);
-    padding-left: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
 }
 
-.sort-option:hover::before {
-    opacity: 1;
+/* Specific Button Colors */
+.shuffle-btn {
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  position: relative;
+  overflow: hidden;
 }
 
-/* Make sure header doesn't clip the dropdown */
-.header {
-    overflow: visible !important; /* Override any other overflow declarations */
+.shuffle-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: 0.5s;
 }
+
+.shuffle-btn:hover::before {
+  left: 100%;
+}
+
+.shuffle-btn:hover {
+  background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+}
+
+.shuffle-btn:active {
+  transform: translateY(0);
+}
+
+.add-folder-btn {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+}
+
+.add-folder-btn:hover {
+  background: rgba(34, 197, 94, 0.3);
+  color: #86efac;
+}
+
+/* Mobile Controls */
+.mobile-controls {
+  display: none;
+}
+
+.mobile-actions-btn {
+  background: none;
+  border: none;
+  color: #cbd5e1;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.mobile-actions-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.mobile-actions-panel {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 1.5rem;
+  min-width: 180px;
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 0.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  animation: dropdownSlide 0.2s ease-out;
+}
+
+.mobile-action-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  color: #cbd5e1;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mobile-action-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+/* Ensure dropdowns stay on top */
+.sort-dropdown,
+.mobile-actions-panel {
+  z-index: 1001;
 }

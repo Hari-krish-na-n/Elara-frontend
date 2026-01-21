@@ -1,106 +1,254 @@
-// src/components/PlaylistDetail.js
-import React from 'react';
-import PlaylistItem from './PlaylistItem';
-import './PlayerControl.css';
-function PlaylistDetail({ playlist, onBack, playSong, currentSongId, removeSongFromPlaylist, deletePlaylist }) {
-    const handleRemoveSong = (songId) => {
-        if (window.confirm('Are you sure you want to remove this song from the playlist?')) {
-            removeSongFromPlaylist(playlist.id, songId);
-        }
-    };
+// src/components/PlaylistDetail.jsx
+import React, { useState } from 'react';
+import PlaylistDisplay from './PlaylistDisplay';
+import './PlaylistDetail.css';
+import { MoreVertical, Play, ListMusic, Trash2, Plus } from 'lucide-react';
+import { playLikeSound } from '../utils/soundEffects';
 
-    const handleDeletePlaylist = () => {
-        if (window.confirm(`Are you sure you want to delete "${playlist.name}"?`)) {
-            deletePlaylist(playlist.id);
-        }
-    };
+function PlaylistDetail({ 
+  playlist, 
+  onBack, 
+  playSong, 
+  currentSongId, 
+  removeSongFromPlaylist,
+  deletePlaylist,
+  isPlaying,
+  togglePlayPause,
+  playNextSong,
+  playPrevSong,
+  isSongLiked,
+  onToggleLike,
+  addToQueue,
+  onOpenPlaylistSidebar
+}) {
+  if (!playlist) return null;
 
-    return (
-        <div className="playlist-detail">
-            <div className="playlist-header">
-                <button onClick={onBack} className="back-btn">← Back to Playlists</button>
-                <div className="playlist-actions">
-                    <button onClick={handleDeletePlaylist} className="delete-playlist-btn">
-                        Delete Playlist
-                    </button>
-                </div>
-            </div>
+  const [openMenuId, setOpenMenuId] = useState(null);
 
-            <div className="playlist-info-card">
-                <h2>{playlist.name}</h2>
-                <p>
-                    {playlist.songs.length} {playlist.songs.length === 1 ? 'song' : 'songs'}
-                    {" "}•{" "}
-                    {formatLongTime((playlist.songs || []).reduce((acc, s) => acc + (s?.duration || 0), 0))}
-                </p>
-            </div>
+  const currentSong = playlist.songs.find(song => song.id === currentSongId);
+  const isPlaylistPlaying = currentSong ? isPlaying : false;
+  
+  const handlePlayPlaylist = () => {
+    if (!playlist || playlist.songs.length === 0) return;
+    
+    if (isPlaylistPlaying) {
+      togglePlayPause();
+    } else if (currentSong) {
+      togglePlayPause();
+    } else {
+      playSong(playlist.songs[0]);
+    }
+  };
+  
+  const formatTime = (seconds) => {
+    if (!seconds) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+  
+  const totalDuration = playlist.songs.reduce((total, song) => total + (song.duration || 0), 0);
+  
+  const toggleSongMenu = (songId, e) => {
+    e.stopPropagation();
+    setOpenMenuId(openMenuId === songId ? null : songId);
+  };
 
-            {playlist.songs.length === 0 ? (
-                <div className="empty-playlist">
-                    <p>This playlist is empty</p>
-                    <p className="hint">Add songs from your music library using the "+ Playlist" button</p>
-                </div>
-            ) : (
-                    <div className="playlist-songs">
-                        <div className="list-header">
-                            <div className="col-title">Title</div>
-                            <div className="col-artist">Artist</div>
-                            <div className="col-album">Album</div>
-                            <div className="col-plays">Plays</div>
-                            <div className="col-duration">Time</div>
-                            <div className="col-actions">Actions</div>
-                        </div>
-                    <div className="song-list">
-                        {playlist.songs.map(song => (
-                            <div key={song.id} className="playlist-item-detail" onClick={() => playSong(song)}>
-                                <div className="col-title">
-                                    <span 
-                                        className="song-title clickable"
-                                        onClick={(e) => { e.stopPropagation(); playSong(song); }}
-                                    >
-                                        {song.title}
-                                    </span>
-                                    {currentSongId === song.id && <span className="playing-indicator">▶️</span>}
-                                </div>
-                                <div className="col-artist">{song.artist}</div>
-                                <div className="col-album">{song.album}</div>
-                                <div className="col-plays">{song.playCount || 0}</div>
-                                <div className="col-duration">{song.duration ? formatTime(song.duration) : '00:00'}</div>
-                                <div className="col-actions">
-                                    <button 
-                                        onClick={(e) => { e.stopPropagation(); handleRemoveSong(song.id); }}
-                                        className="remove-btn"
-                                        title="Remove from playlist"
-                                    >
-                                        🗑️
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
+  const handleRemoveFromPlaylist = (song) => {
+    if (removeSongFromPlaylist) {
+      removeSongFromPlaylist(playlist.id, song.id);
+    }
+    setOpenMenuId(null);
+  };
+
+  const handleAddToQueue = (song) => {
+    if (addToQueue) addToQueue(song);
+    setOpenMenuId(null);
+  };
+
+  return (
+    <div className="playlist-detail-container">
+      <div className="playlist-detail-header">
+        <button onClick={onBack} className="back-btn">
+          ← Back
+        </button>
+        
+        <div className="header-actions">
+          <button 
+            className="delete-btn"
+            onClick={() => {
+              if (window.confirm(`Are you sure you want to delete "${playlist.name}"?`)) {
+                deletePlaylist(playlist.id);
+              }
+            }}
+          >
+            Delete
+          </button>
         </div>
-    );
+      </div>
+      
+      <PlaylistDisplay
+        playlist={playlist}
+        isPlaying={isPlaylistPlaying}
+        onPlayToggle={handlePlayPlaylist}
+        onNext={playNextSong}
+        onPrev={playPrevSong}
+        currentSong={currentSong}
+        isLiked={currentSong ? isSongLiked(currentSong.id) : false}
+        onLike={() => {
+          if (!currentSong) return;
+          const liked = isSongLiked ? isSongLiked(currentSong.id) : false;
+          if (!liked) playLikeSound();
+          onToggleLike(currentSong);
+        }}
+      />
+      
+      <div className="playlist-songs-container">
+        <div className="songs-list-header">
+          <div className="songs-header-info">
+            <h2 className="playlist-title">{playlist.name}</h2>
+            <div className="playlist-stats">
+              <span className="stat-item">{playlist.songs.length} songs</span>
+              <span className="stat-divider">•</span>
+              <span className="stat-item">{formatTime(totalDuration)}</span>
+            </div>
+          </div>
+        </div>
+        
+        {playlist.songs.length === 0 ? (
+          <div className="empty-playlist">
+            <div className="empty-state-icon">♪</div>
+            <p>No songs in this playlist</p>
+          </div>
+        ) : (
+          <div className="playlist-songs-grid">
+            {playlist.songs.map((song, index) => (
+              <div 
+                key={song.id} 
+                className={`song-card ${song.id === currentSongId ? 'playing' : ''}`}
+                onClick={() => playSong(song)}
+              >
+                <div className="song-card-content">
+                  <div className="song-info">
+                    <div className="song-cover-mini">
+                      {song.coverUrl ? (
+                        <img 
+                          src={song.coverUrl} 
+                          alt={song.title || 'Cover'} 
+                          className="song-cover-img" 
+                          onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                        />
+                      ) : (
+                        <div className="song-cover-placeholder">♪</div>
+                      )}
+                    </div>
+                    <div className="song-details">
+                      <div className="song-title">{song.title}</div>
+                      <div className="song-artist">{song.artist || 'Unknown Artist'}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="song-card-actions">
+                    <div className="song-duration">
+                      <span className="song-duration-text">{formatTime(song.duration)}</span>
+                      <span className="song-plays">{(song.plays ?? song.playCount ?? 0)} plays</span>
+                    </div>
+                    <button 
+                      className={`like-btn ${isSongLiked && isSongLiked(song.id) ? 'liked' : ''}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (isSongLiked && !isSongLiked(song.id)) {
+                          playLikeSound();
+                        }
+                        onToggleLike && onToggleLike(song);
+                      }}
+                      title={isSongLiked && isSongLiked(song.id) ? 'Unlike' : 'Like'}
+                    >
+                      <span className="heart-icon">{isSongLiked && isSongLiked(song.id) ? '❤' : '♡'}</span>
+                    </button>
+                    <button 
+                      className={`play-btn ${song.id === currentSongId && isPlaying ? 'playing' : ''}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        playSong(song);
+                      }}
+                      title={song.id === currentSongId && isPlaying ? "Pause" : "Play"}
+                    >
+                      {song.id === currentSongId && isPlaying ? (
+                        <span className="pause-icon">⏸</span>
+                      ) : (
+                        <span className="play-icon">▶</span>
+                      )}
+                    </button>
+
+                    <div className="song-menu">
+                      <button
+                        className="menu-trigger"
+                        onClick={(e) => toggleSongMenu(song.id, e)}
+                        aria-label="More options"
+                        title="More options"
+                      >
+                        <MoreVertical size={16} />
+                      </button>
+                      {openMenuId === song.id && (
+                        <div className="menu-dropdown">
+                          <button
+                            className="menu-item"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              playSong(song);
+                              setOpenMenuId(null);
+                            }}
+                          >
+                            <Play size={14} />
+                            Play
+                          </button>
+                          <button
+                            className="menu-item"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleAddToQueue(song);
+                            }}
+                          >
+                            <ListMusic size={14} />
+                            Add to Queue
+                          </button>
+                          <button
+                            className="menu-item"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setOpenMenuId(null);
+                              if (onOpenPlaylistSidebar) {
+                                onOpenPlaylistSidebar(song);
+                              }
+                            }}
+                          >
+                            <Plus size={14} />
+                            Add to Playlist
+                          </button>
+                          <div className="menu-divider"></div>
+                          <button
+                            className="menu-item delete"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveFromPlaylist(song);
+                            }}
+                          >
+                            <Trash2 size={14} />
+                            Remove from Playlist
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
-
-// Helper function for time formatting
-const formatTime = (seconds) => {
-    if (isNaN(seconds)) return '00:00';
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = Math.floor(seconds % 60);
-    return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
-};
-
-// Playlist duration formatting (HH:MM:SS when hours present)
-const formatLongTime = (seconds) => {
-    if (isNaN(seconds)) return '00:00';
-    const total = Math.floor(seconds || 0);
-    const hrs = Math.floor(total / 3600);
-    const mins = Math.floor((total % 3600) / 60);
-    const secs = total % 60;
-    if (hrs > 0) return `${String(hrs).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
-    return `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
-};
 
 export default PlaylistDetail;

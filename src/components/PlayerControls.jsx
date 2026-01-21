@@ -1,203 +1,266 @@
 // src/components/PlayerControls.js
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Heart, MapPin } from 'lucide-react';
+import {
+  Play,
+  Pause,
+  SkipBack,
+  SkipForward,
+  Volume2,
+  VolumeX,
+  Maximize2,
+  ExternalLink,
+  Search,
+  Shuffle,
+  Repeat,
+  Gauge
+} from 'lucide-react';
 import './PlayerControl.css';
+
 const formatTime = (seconds) => {
-    if (isNaN(seconds) || seconds < 0) return '00:00';
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = Math.floor(seconds % 60);
-    const paddedMinutes = String(minutes).padStart(2, '0');
-    const paddedSeconds = String(remainingSeconds).padStart(2, '0');
-    return `${paddedMinutes}:${paddedSeconds}`;
+  if (isNaN(seconds) || seconds < 0) return '0:00';
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${s.toString().padStart(2, '0')}`;
 };
 
-function PlayerControls({ 
-    song, 
-    isPlaying, 
-    currentTime, 
-    duration, 
-    togglePlayPause, 
-    playNextSong, 
-    playPrevSong, 
-    seekTo,
-    isMuted, 
-    toggleMute,
-    volume,
-    setVolume,
-    isShuffled,
-    toggleShuffle,
-    locateSong,
-    isCurrentLiked,
-    onToggleCurrentLike,
+function PlayerControls({
+  song,
+  isPlaying,
+  currentTime,
+  duration,
+  togglePlayPause,
+  playNextSong,
+  playPrevSong,
+  seekTo,
+  isMuted,
+  toggleMute,
+  volume,
+  setVolume,
+  isShuffled,        // kept for logic if you still use keyboard shortcuts
+  toggleShuffle,
+  repeatMode,
+  toggleRepeat,
+  locateSong,
+  isCurrentLiked,
+  onToggleCurrentLike,
+  onAddToQueue,
+  queueLength,
+  playbackRate,
+  setPlaybackRate,
+  onShareSong,
+  onDownloadSong,
+  onEditSongInfo,
 }) {
-    const [showNowPlaying, setShowNowPlaying] = useState(false);
-    const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
-    const navigate = useNavigate();
+  const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
+  const navigate = useNavigate();
+  const volumeRef = useRef(null);
 
-    const handleSeek = (e) => {
-        const time = (e.target.value / 100) * duration;
-        seekTo(time);
+  const VolumeIcon = isMuted ? VolumeX : Volume2;
+
+  const handleSeek = (e) => {
+    const pct = Number(e.target.value);
+    const time = (pct / 100) * duration;
+    seekTo(time);
+  };
+
+  // optional: keep volume menu click‑outside in case you later add popovers
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (volumeRef.current && !volumeRef.current.contains(event.target)) {
+        // nothing for now
+      }
     };
-    
-    // Icon components based on state
-    const VolumeIcon = isMuted ? VolumeX : Volume2;
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-    return (
-        <>
-        <div className="player-controls">
-            {/* Song Info Section */}
-            {song ? (
-                <div className="current-song-info" onClick={() => setShowNowPlaying(true)} style={{ cursor: 'pointer' }}>
-                    <div className="song-cover">
-                        {song.coverUrl ? (
-                            <img src={song.coverUrl} alt={song.title} className="song-cover-img" />
-                        ) : (
-                            <div className="cover-placeholder">{(song.title || '?').charAt(0).toUpperCase()}</div>
-                        )}
-                    </div>
-                    <div className="song-text">
-<div className={`title ${(song?.title || '').trim().split(/[\s,_\-]+/).length > 4 ? 'two-line' : ''}`}>{song.title}</div>
-                        <div className="artist">{song.artist}</div>
-                    </div>
-                </div>
-            ) : (
-                <div className="current-song-info">
-                    <div className="song-text">No song playing</div>
-                </div>
-            )}
-
-            {/* Main Playback Controls */}
-            <div className="main-controls">
-                <button onClick={playPrevSong} disabled={!song} className="icon-btn" aria-label="Previous">
-                    <SkipBack size={20} />
-                </button>
-                <button onClick={togglePlayPause} disabled={!song} className="icon-btn icon-btn--primary" aria-label={isPlaying ? 'Pause' : 'Play'}>
-                    {isPlaying ? <Pause size={24} /> : <Play size={24} />}
-                </button>
-                <button onClick={playNextSong} disabled={!song} className="icon-btn" aria-label="Next">
-                    <SkipForward size={20} />
-                </button>
-            </div>
-
-            {/* Playback Bar */}
-            <div className="playback-bar">
-                <span className="time-current">{formatTime(currentTime)}</span>
-                <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={progressPercent}
-                    onChange={handleSeek}
-                    className="progress-slider"
-                    disabled={!song}
+  return (
+    <div className="player-controls player-controls--compact">
+      {/* LEFT: Song info */}
+      <div className="pc-left">
+        {song ? (
+          <>
+            <div className="pc-cover">
+              {song.coverUrl ? (
+                <img
+                  src={song.coverUrl}
+                  alt={song.title}
+                  className="pc-cover-img"
                 />
-                <span className="time-duration">{formatTime(duration)}</span>
-            </div>
-            
-            {/* ⭐ VOLUME/MUTE CONTROL SECTION ⭐ */}
-            <div className="volume-controls">
-                <button onClick={toggleMute} className="mute-btn icon-btn" title="Mute / Unmute" aria-label="Mute / Unmute">
-                    <VolumeIcon size={18} />
-                </button>
-                <button
-                    onClick={() => { if (song && onToggleCurrentLike) onToggleCurrentLike(song); }}
-                    className={`like-btn-mini icon-btn ${isCurrentLiked ? 'active' : ''}`}
-                    disabled={!song}
-                    title={isCurrentLiked ? 'Unlike' : 'Like'}
-                    aria-label={isCurrentLiked ? 'Unlike' : 'Like'}
-                >
-                    <Heart size={16} color={isCurrentLiked ? '#ef4444' : 'currentColor'} fill={isCurrentLiked ? '#ef4444' : 'none'} />
-                </button>
-                <button
-                    onClick={() => { if (!song) return; navigate('/library'); if (locateSong) locateSong(song.id); }}
-                    className="locate-btn icon-btn"
-                    disabled={!song}
-                    title="Locate current song"
-                    aria-label="Locate current song"
-                >
-                    <MapPin size={16} />
-                </button>
-                <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={isMuted ? 0 : Math.round((volume ?? 1) * 100)}
-                    onChange={(e) => setVolume(Number(e.target.value) / 100)}
-                    className="volume-slider"
-                    disabled={!song}
-                    aria-label="Volume"
-                />
-                <span className="vol-level">{isMuted ? 0 : Math.round((volume ?? 1) * 100)}%</span>
-            </div>
-        </div>
-        
-        {/* Now Playing Modal */}
-        {showNowPlaying && song && (
-            <div className="now-playing-modal" onClick={() => setShowNowPlaying(false)}>
-                <div className="now-playing-content" onClick={(e) => e.stopPropagation()}>
-                    <button className="close-now-playing" onClick={() => setShowNowPlaying(false)}>✕</button>
-                    <div className="now-playing-cover">
-                        {song.coverUrl ? (
-                            <img src={song.coverUrl} alt={song.title} />
-                        ) : (
-                            <div className="now-playing-placeholder">{(song.title || '?').charAt(0).toUpperCase()}</div>
-                        )}
-                        {isPlaying && (
-                            <div className="equalizer-bars">
-                                <span className="bar bar-1"></span>
-                                <span className="bar bar-2"></span>
-                                <span className="bar bar-3"></span>
-                                <span className="bar bar-4"></span>
-                            </div>
-                        )}
-                    </div>
-                    <div className="ambient-glow" style={{ backgroundImage: song.coverUrl ? `url(${song.coverUrl})` : 'none' }}></div>
-                    <div className="now-playing-info">
-                        <h2 className="now-playing-title">{song.title}</h2>
-                        <p className="now-playing-artist">{song.artist}</p>
-                        {song.album && <p className="now-playing-album">{song.album}</p>}
-                        <div className="now-playing-stats">
-                            <span className="stat-item">
-                                <span className="stat-icon">🎵</span>
-                                <span className="stat-value">{song.plays || 0} plays</span>
-                            </span>
-                            {song.duration && (
-                                <span className="stat-item">
-                                    <span className="stat-icon">⏱️</span>
-                                    <span className="stat-value">{formatTime(song.duration)}</span>
-                                </span>
-                            )}
-                        </div>
-                    </div>
-                    <div className="now-playing-progress">
-                        <span className="time-current">{formatTime(currentTime)}</span>
-                        <input
-                            type="range"
-                            min="0"
-                            max="100"
-                            value={progressPercent}
-                            onChange={handleSeek}
-                            className="progress-slider"
-                        />
-                        <span className="time-duration">{formatTime(duration)}</span>
-                    </div>
-                    <div className="now-playing-controls">
-                        <button onClick={playPrevSong} className="now-playing-btn" aria-label="Previous">
-                            <SkipBack size={22} />
-                        </button>
-                        <button onClick={togglePlayPause} className="now-playing-btn play-btn-large" aria-label={isPlaying ? 'Pause' : 'Play'}>
-                            {isPlaying ? <Pause size={28} /> : <Play size={28} />}
-                        </button>
-                        <button onClick={playNextSong} className="now-playing-btn" aria-label="Next">
-                            <SkipForward size={22} />
-                        </button>
-                    </div>
+              ) : (
+                <div className="pc-cover-placeholder">
+                  {(song.title || '?').charAt(0).toUpperCase()}
                 </div>
+              )}
             </div>
+            <div className="pc-meta">
+              <div className="pc-title">{song.title || 'Unknown title'}</div>
+              <div className="pc-artist">
+                {song.artist || 'Unknown artist'}
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="pc-meta">
+            <div className="pc-title">No song playing</div>
+          </div>
         )}
-        </>
-    );
+      </div>
+
+      {/* CENTER: Controls + progress */}
+      <div className="pc-center">
+        <div className="pc-controls-row">
+          {/* Shuffle Button */}
+          <button
+            onClick={toggleShuffle}
+            className={`pc-icon-btn pc-secondary-btn ${isShuffled ? 'active' : ''}`}
+            aria-label="Shuffle"
+            title="Shuffle"
+          >
+            <Shuffle size={18} />
+          </button>
+
+          <button
+            onClick={playPrevSong}
+            disabled={!song}
+            className="pc-icon-btn"
+            aria-label="Previous"
+          >
+            <SkipBack size={18} />
+          </button>
+
+          <button
+            onClick={togglePlayPause}
+            disabled={!song}
+            className="pc-icon-btn pc-icon-btn--primary pc-play-btn"
+            aria-label={isPlaying ? 'Pause' : 'Play'}
+          >
+            {isPlaying ? <Pause size={22} /> : <Play size={22} />}
+          </button>
+
+          <button
+            onClick={playNextSong}
+            disabled={!song}
+            className="pc-icon-btn"
+            aria-label="Next"
+          >
+            <SkipForward size={18} />
+          </button>
+
+          {/* Repeat Button */}
+          <button
+            onClick={toggleRepeat}
+            className={`pc-icon-btn pc-secondary-btn ${repeatMode !== 'off' ? 'active' : ''}`}
+            aria-label="Repeat"
+            title={`Repeat: ${repeatMode}`}
+          >
+            <Repeat size={18} />
+            {repeatMode === 'one' && <span className="repeat-one-badge">1</span>}
+          </button>
+        </div>
+
+        <div className="pc-progress-row">
+          <span className="pc-time pc-time-current">
+            {formatTime(currentTime)}
+          </span>
+          <div className="pc-progress">
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={progressPercent}
+              onChange={handleSeek}
+              className="pc-progress-slider"
+              disabled={!song}
+              aria-label="Seek"
+            />
+            <div
+              className="pc-progress-bar"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+          <span className="pc-time pc-time-total">
+            {formatTime(duration)}
+          </span>
+        </div>
+      </div>
+
+      {/* RIGHT: Volume + extra icons */}
+      <div className="pc-right">
+        <div className="pc-volume" ref={volumeRef}>
+          {/* Playback Speed Toggle */}
+          <button
+            onClick={() => {
+                const rates = [1.0, 1.25, 1.5, 2.0, 0.5];
+                const currentIndex = rates.indexOf(playbackRate || 1.0);
+                const nextRate = rates[(currentIndex + 1) % rates.length];
+                setPlaybackRate && setPlaybackRate(nextRate);
+            }}
+            className="pc-icon-btn pc-speed-btn"
+            title={`Speed: ${playbackRate || 1}x`}
+          >
+            <span className="speed-text">{playbackRate || 1}x</span>
+          </button>
+
+          <button
+            onClick={toggleMute}
+            className="pc-icon-btn"
+            aria-label={isMuted ? 'Unmute' : 'Mute'}
+          >
+            <VolumeIcon size={16} />
+          </button>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={isMuted ? 0 : Math.round((volume ?? 1) * 100)}
+            onChange={(e) => setVolume(Number(e.target.value) / 100)}
+            className="pc-volume-slider"
+            aria-label="Volume"
+          />
+        </div>
+
+        {/* Locate current song in list */}
+        <button
+          onClick={() => {
+            if (song?.id) {
+              try {
+                navigate('/library');
+              } catch {}
+              locateSong && locateSong(song.id);
+            }
+          }}
+          className="pc-icon-btn"
+          title="Locate song in list"
+          aria-label="Locate song"
+          disabled={!song}
+        >
+          <Search size={16} />
+        </button>
+
+        <button
+          onClick={() => navigate('/queue')}
+          className="pc-icon-btn"
+          title="Queue"
+          aria-label="Queue"
+        >
+          <ExternalLink size={16} />
+        </button>
+
+        <button
+          onClick={() => {
+            // if you keep a full-screen / now‑playing view, open it here
+          }}
+          className="pc-icon-btn"
+          title="Full screen"
+          aria-label="Full screen"
+        >
+          <Maximize2 size={16} />
+        </button>
+      </div>
+    </div>
+  );
 }
 
 export default PlayerControls;
