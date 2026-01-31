@@ -139,7 +139,7 @@ function PlaylistItem({
         <>
             {/* ===== MOBILE COMPACT VIEW (Phone) ===== */}
             <div 
-                className="playlist-item-mobile"
+                className={`playlist-item-mobile ${isCurrent ? 'playing' : ''}`}
                 onClick={handleSongClick}
                 data-song-id={song.id}
             >

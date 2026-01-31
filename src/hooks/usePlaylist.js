@@ -112,6 +112,12 @@ export const usePlaylist = (songs = []) => {
     return addedCount > 0;
   }, [songs]);
 
+  // New API: addToPlaylist (single or multiple IDs)
+  const addToPlaylist = useCallback((playlistId, ids) => {
+    const idsArr = Array.isArray(ids) ? ids : [ids];
+    return addMultipleSongsToPlaylist(idsArr, playlistId);
+  }, [addMultipleSongsToPlaylist]);
+
   // Remove song from playlist
   const removeSongFromPlaylist = useCallback((playlistId, songId) => {
     setPlaylists(prev => prev.map(playlist => {
@@ -119,6 +125,21 @@ export const usePlaylist = (songs = []) => {
         return {
           ...playlist,
           songs: playlist.songs.filter(s => s.id !== songId),
+          updatedAt: new Date().toISOString()
+        };
+      }
+      return playlist;
+    }));
+  }, []);
+
+  // New API: removeFromPlaylist (single or multiple IDs)
+  const removeFromPlaylist = useCallback((playlistId, ids) => {
+    const idsSet = new Set(Array.isArray(ids) ? ids : [ids]);
+    setPlaylists(prev => prev.map(playlist => {
+      if (playlist.id === playlistId) {
+        return {
+          ...playlist,
+          songs: playlist.songs.filter(s => !idsSet.has(s.id)),
           updatedAt: new Date().toISOString()
         };
       }
@@ -139,6 +160,20 @@ export const usePlaylist = (songs = []) => {
       return playlist;
     }));
   }, []);
+
+  // New API: set playlist details (name/description/public)
+  const setPlaylistDetails = useCallback((playlistId, { name, description, isPublic }) => {
+    const payload = {};
+    if (typeof name === 'string') payload.name = name.trim() || 'Untitled';
+    if (typeof description === 'string') payload.description = description.trim();
+    if (typeof isPublic === 'boolean') payload.isPublic = isPublic;
+    updatePlaylist(playlistId, payload);
+  }, [updatePlaylist]);
+
+  // New API: set playlist cover
+  const setPlaylistCover = useCallback((playlistId, coverUrl) => {
+    updatePlaylist(playlistId, { coverUrl });
+  }, [updatePlaylist]);
 
   // Delete playlist
   const deletePlaylist = useCallback((playlistId) => {
@@ -242,11 +277,159 @@ export const usePlaylist = (songs = []) => {
     return JSON.stringify(exportData, null, 2);
   }, [playlists]);
 
+  // Merge playlists (append unique songs from source into target)
+  const mergePlaylists = useCallback((sourceId, targetId) => {
+    if (sourceId === targetId) return false;
+    const source = playlists.find(p => p.id === sourceId);
+    const target = playlists.find(p => p.id === targetId);
+    if (!source || !target) return false;
+    const targetIds = new Set(target.songs.map(s => s.id));
+    const toAdd = source.songs.filter(s => !targetIds.has(s.id));
+    if (toAdd.length === 0) return false;
+    setPlaylists(prev => prev.map(p => {
+      if (p.id === targetId) {
+        return { ...p, songs: [...p.songs, ...toAdd], updatedAt: new Date().toISOString() };
+      }
+      return p;
+    }));
+    return true;
+  }, [playlists]);
+
+  // Remove duplicate songs within a playlist
+  const dedupePlaylistSongs = useCallback((playlistId) => {
+    setPlaylists(prev => prev.map(p => {
+      if (p.id === playlistId) {
+        const seen = new Set();
+        const unique = [];
+        for (const s of p.songs) {
+          if (!seen.has(s.id)) {
+            seen.add(s.id);
+            unique.push(s);
+          }
+        }
+        return { ...p, songs: unique, updatedAt: new Date().toISOString() };
+      }
+      return p;
+    }));
+  }, []);
+
+  // New API: normalizePlaylist (currently dedupe)
+  const normalizePlaylist = useCallback((playlistId) => {
+    dedupePlaylistSongs(playlistId);
+  }, [dedupePlaylistSongs]);
+
+  // Shuffle songs within a playlist
+  const shufflePlaylistSongs = useCallback((playlistId) => {
+    setPlaylists(prev => prev.map(p => {
+      if (p.id === playlistId) {
+        const arr = [...p.songs];
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return { ...p, songs: arr, updatedAt: new Date().toISOString() };
+      }
+      return p;
+    }));
+  }, []);
+
+  // New API: shufflePlaylist
+  const shufflePlaylist = useCallback((playlistId) => {
+    shufflePlaylistSongs(playlistId);
+  }, [shufflePlaylistSongs]);
+
+  // Sort songs in a playlist
+  const sortPlaylistSongs = useCallback((playlistId, field = 'title', direction = 'asc') => {
+    setPlaylists(prev => prev.map(p => {
+      if (p.id === playlistId) {
+        const arr = [...p.songs];
+        arr.sort((a, b) => {
+          let av = a[field] ?? '';
+          let bv = b[field] ?? '';
+          if (typeof av === 'string') av = av.toLowerCase();
+          if (typeof bv === 'string') bv = bv.toLowerCase();
+          const cmp = av > bv ? 1 : av < bv ? -1 : 0;
+          return direction === 'desc' ? -cmp : cmp;
+        });
+        return { ...p, songs: arr, updatedAt: new Date().toISOString() };
+      }
+      return p;
+    }));
+  }, []);
+
+  // New API: sortPlaylist
+  const sortPlaylist = useCallback((playlistId, field = 'title', direction = 'asc') => {
+    sortPlaylistSongs(playlistId, field, direction);
+  }, [sortPlaylistSongs]);
+
+  // Sort playlists list
+  const sortPlaylists = useCallback((field = 'name', direction = 'asc') => {
+    setPlaylists(prev => {
+      const arr = [...prev];
+      arr.sort((a, b) => {
+        let av = field === 'songCount' ? a.songs.length : a[field] ?? '';
+        let bv = field === 'songCount' ? b.songs.length : b[field] ?? '';
+        if (typeof av === 'string') av = av.toLowerCase();
+        if (typeof bv === 'string') bv = bv.toLowerCase();
+        const cmp = av > bv ? 1 : av < bv ? -1 : 0;
+        return direction === 'desc' ? -cmp : cmp;
+      });
+      return arr;
+    });
+  }, []);
+
+  // New API: sortAllPlaylists
+  const sortAllPlaylists = useCallback((field = 'name', direction = 'asc') => {
+    sortPlaylists(field, direction);
+  }, [sortPlaylists]);
+
+  // Import playlist from JSON string
+  const importPlaylistFromJSON = useCallback((jsonText) => {
+    if (!jsonText) return null;
+    let data;
+    try {
+      data = JSON.parse(jsonText);
+    } catch {
+      return null;
+    }
+    const name = (data.name || `Imported ${new Date().toLocaleDateString()}`).trim();
+    const description = (data.description || '').trim();
+    const created = createPlaylist(name, description);
+    if (!created) return null;
+    const wanted = Array.isArray(data.songs) ? data.songs : [];
+    const songIds = [];
+    for (const w of wanted) {
+      const match = songs.find(s =>
+        (s.title || '').toLowerCase() === (w.title || '').toLowerCase() &&
+        (s.artist || '').toLowerCase() === (w.artist || '').toLowerCase()
+      );
+      if (match) songIds.push(match.id);
+    }
+    addMultipleSongsToPlaylist(songIds, created.id);
+    return created;
+  }, [songs, createPlaylist, addMultipleSongsToPlaylist]);
+
+  // New API: importPlaylist
+  const importPlaylist = useCallback((jsonText) => {
+    return importPlaylistFromJSON(jsonText);
+  }, [importPlaylistFromJSON]);
+
   return {
     playlists,
     selectedPlaylist,
     setSelectedPlaylist,
     createPlaylist,
+    // New API
+    addToPlaylist,
+    removeFromPlaylist,
+    setPlaylistDetails,
+    setPlaylistCover,
+    normalizePlaylist,
+    shufflePlaylist,
+    sortPlaylist,
+    sortAllPlaylists,
+    importPlaylist,
+    // Backwards compatibility
     addSongToPlaylist,
     addMultipleSongsToPlaylist,
     removeSongFromPlaylist,
@@ -257,5 +440,11 @@ export const usePlaylist = (songs = []) => {
     getPlaylistStats,
     searchPlaylist,
     exportPlaylist,
+    mergePlaylists,
+    dedupePlaylistSongs,
+    shufflePlaylistSongs,
+    sortPlaylistSongs,
+    sortPlaylists,
+    importPlaylistFromJSON,
   };
 };

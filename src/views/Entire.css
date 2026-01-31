@@ -1,319 +1,3 @@
-/* global.css - Complete Theme for All Components */
-/* src/components/Sidebar.css */
-.sidebar {
-  width: 250px;
-  height: 100vh;
-  background: var(--bg-primary);
-  border-right: 1px solid var(--border-color);
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 1000;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-.sidebar-header {
-  padding: 20px;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.logo-container {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--accent-color);
-}
-
-.logo-icon {
-  font-size: 1.8rem;
-  color: var(--accent-color);
-}
-
-.logo-text {
-  background: linear-gradient(45deg, var(--accent-color), #6d28d9);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.search-box {
-  position: relative;
-  margin-top: 10px;
-}
-
-.search-input {
-  width: 100%;
-  padding: 10px 40px 10px 15px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  color: var(--text-primary);
-  font-size: 0.9rem;
-  transition: all 0.2s;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.1);
-}
-
-.search-btn {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: var(--text-secondary);
-  cursor: pointer;
-  padding: 0;
-}
-
-.search-icon {
-  transition: transform 0.2s;
-}
-
-.search-btn:hover .search-icon {
-  transform: scale(1.1);
-  color: var(--accent-color);
-}
-
-.nav-menu {
-  flex: 1;
-  padding: 20px 0;
-  overflow-y: auto;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  padding: 12px 20px;
-  color: var(--text-secondary);
-  text-decoration: none;
-  transition: all 0.2s;
-  position: relative;
-  margin: 4px 10px;
-  border-radius: 8px;
-}
-
-.nav-item:hover {
-  background: var(--bg-hover);
-  color: var(--text-primary);
-  transform: translateX(4px);
-}
-
-.nav-item.active {
-  background: var(--bg-active);
-  color: var(--accent-color);
-  font-weight: 500;
-}
-
-.nav-item.active::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: var(--accent-color);
-  border-radius: 0 2px 2px 0;
-}
-
-.nav-icon {
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 12px;
-  font-size: 1.2rem;
-}
-
-.nav-text {
-  font-size: 0.95rem;
-  white-space: nowrap;
-  flex: 1;
-}
-
-.active-indicator {
-  width: 8px;
-  height: 8px;
-  background: var(--accent-color);
-  border-radius: 50%;
-  animation: pulse 2s infinite;
-}
-
-.sidebar-footer {
-  padding: 20px;
-  border-top: 1px solid var(--border-color);
-  margin-top: auto;
-}
-
-.music-player-preview {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px;
-  background: var(--bg-secondary);
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
-}
-
-.player-icon {
-  font-size: 1.8rem;
-  color: var(--accent-color);
-}
-
-.player-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.player-title {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.player-status {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-}
-
-/* Icon Animations */
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes heartbeat {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-}
-
-@keyframes bounce {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-2px);
-  }
-}
-
-@keyframes slide {
-  0%, 100% {
-    transform: translateX(0);
-  }
-  50% {
-    transform: translateX(2px);
-  }
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(0.95);
-  }
-}
-
-/* Animation classes - only apply when active */
-.nav-item.active .icon.spin {
-  animation: spin 3s linear infinite;
-}
-
-.nav-item.active .icon.heartbeat {
-  animation: heartbeat 1.5s ease-in-out infinite;
-}
-
-.nav-item.active .icon.bounce {
-  animation: bounce 1s ease-in-out infinite;
-}
-
-.nav-item.active .icon.slide {
-  animation: slide 1.5s ease-in-out infinite;
-}
-
-.player-icon.pulse {
-  animation: pulse 2s ease-in-out infinite;
-}
-
-/* Make sure the logo icon spins */
-.logo-icon.spin {
-  animation: spin 10s linear infinite;
-}
-
-/* Hover effects for inactive icons */
-.nav-item:not(.active):hover .icon {
-  transform: scale(1.1);
-  transition: transform 0.2s;
-}
-
-/* Scrollbar styling */
-.sidebar::-webkit-scrollbar {
-  width: 4px;
-}
-
-.sidebar::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
-}
-
-.sidebar::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: 2px;
-}
-
-.sidebar::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-color);
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .sidebar {
-    width: 70px;
-  }
-  
-  .logo-text, .nav-text, .search-box, .music-player-preview {
-    display: none;
-  }
-  
-  .logo {
-    justify-content: center;
-  }
-  
-  .nav-item {
-    justify-content: center;
-    padding: 12px;
-  }
-  
-  .nav-icon {
-    margin-right: 0;
-  }
-}
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
 
 /* ===== GLOBAL RESET & BASE STYLES ===== */
@@ -324,9 +8,9 @@
 }
 
 html, body {
-    font-family: 'Cormorant Garamond', Georgia, serif;
-    background: linear-gradient(135deg, #000000 0%, #05050f 30%, #0a0a1a 100%);
-    color: rgba(220, 230, 255, 0.9);
+    font-family: var(--font-body);
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 30%, var(--bg-tertiary) 100%);
+    color: var(--text-secondary);
     line-height: 1.6;
     min-height: 100vh;
     overflow-x: hidden;
@@ -335,10 +19,10 @@ html, body {
 
 /* ===== TYPOGRAPHY SYSTEM ===== */
 h1, h2, h3, h4, h5, h6 {
-    font-family: 'Cinzel', serif;
+    font-family: var(--font-heading);
     font-weight: 700;
     letter-spacing: 2px;
-    color: #f0f8ff;
+    color: var(--text-primary);
     line-height: 1.3;
     margin-bottom: 1rem;
 }
@@ -380,7 +64,7 @@ p {
 
 small {
     font-size: 0.9rem;
-    color: rgba(200, 220, 255, 0.7);
+    color: var(--text-tertiary);
 }
 
 /* ===== LAYOUT CONTAINERS ===== */
@@ -393,8 +77,15 @@ small {
 .main-content {
     flex: 1;
     padding: 20px;
-    margin-left: 250px; /* For sidebar */
+    margin-left: 0;
     transition: margin-left 0.3s ease;
+}
+
+.main-content.full-bleed {
+    padding: 0;
+    max-width: none;
+    margin: 0;
+    width: 100%;
 }
 
 /* ===== SIDEBAR COMPONENT ===== */
@@ -404,9 +95,9 @@ small {
     top: 0;
     bottom: 0;
     width: 250px;
-    background: rgba(10, 15, 25, 0.95);
+    background: var(--surface-secondary);
     backdrop-filter: blur(20px);
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    border-right: 1px solid var(--border-color);
     padding: 25px 20px;
     z-index: 900;
     overflow-y: auto;
@@ -452,10 +143,10 @@ small {
     width: 100%;
     padding: 12px 20px;
     background: rgba(20, 25, 40, 0.7);
-    border: 1px solid rgba(135, 206, 235, 0.3);
+    border: 1px solid var(--border-accent);
     border-radius: 10px;
-    color: rgba(220, 230, 255, 0.9);
-    font-family: 'Cormorant Garamond', Georgia, serif;
+    color: var(--text-secondary);
+    font-family: var(--font-body);
     font-size: 1rem;
     transition: all 0.3s ease;
 }
@@ -463,7 +154,7 @@ small {
 .search-input:focus {
     outline: none;
     border-color: rgba(135, 206, 235, 0.7);
-    box-shadow: 0 0 20px rgba(135, 206, 235, 0.3);
+    box-shadow: 0 0 20px var(--border-accent);
     background: rgba(30, 40, 60, 0.8);
 }
 
@@ -476,13 +167,13 @@ small {
 .nav-item {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 14px 18px;
+    gap: var(--space-md);
+    padding: var(--space-md) var(--space-lg);
     color: rgba(220, 230, 255, 0.8);
     text-decoration: none;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     transition: all 0.3s ease;
-    font-family: 'Cinzel', serif;
+    font-family: var(--font-heading);
     font-weight: 600;
     letter-spacing: 0.5px;
     background: transparent;
@@ -493,8 +184,8 @@ small {
 }
 
 .nav-item:hover {
-    background: rgba(135, 206, 235, 0.1);
-    color: #f0f8ff;
+    background: var(--glow-secondary);
+    color: var(--text-primary);
     transform: translateX(5px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
@@ -503,11 +194,11 @@ small {
     background: linear-gradient(135deg, 
         rgba(30, 60, 114, 0.3) 0%, 
         rgba(40, 80, 144, 0.3) 100%);
-    border-left: 4px solid #87ceeb;
+    border-left: 4px solid var(--accent-primary);
     color: #ffffff;
     box-shadow: 
-        inset 0 0 0 1px rgba(135, 206, 235, 0.2),
-        0 5px 20px rgba(135, 206, 235, 0.2);
+        inset 0 0 0 1px var(--glow-primary),
+        0 5px 20px var(--glow-primary);
 }
 
 /* ===== HEADER COMPONENT ===== */
@@ -515,14 +206,14 @@ small {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 24px;
+    padding: 0 var(--space-lg);
     height: 70px;
-    background: linear-gradient(135deg, rgba(5, 8, 25, 0.98) 0%, rgba(8, 12, 35, 0.98) 100%);
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
     backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    border-bottom: 1px solid var(--border-color);
     box-shadow: 
-        0 4px 30px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        var(--shadow-md),
+        inset 0 1px 0 var(--border-color);
     position: relative;
     overflow: visible; /* ← Changed from hidden to visible */
     z-index: 100;
@@ -554,7 +245,7 @@ small {
 .mobile-menu-btn {
     display: none;
     background: rgba(30, 30, 40, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     color: #e0e0ff;
     width: 40px;
@@ -591,7 +282,7 @@ small {
     transform: translateY(-50%);
     width: 4px;
     height: 70%;
-    background: linear-gradient(to bottom, #4682b4, #5d8aa8);
+    background: linear-gradient(to bottom, var(--accent-secondary), #5d8aa8);
     border-radius: 2px;
     box-shadow: 0 0 8px rgba(70, 130, 180, 0.5);
 }
@@ -611,7 +302,7 @@ small {
     cursor: pointer;
     transition: all 0.3s ease;
     letter-spacing: 0.5px;
-    font-family: 'Cinzel', serif;
+    font-family: var(--font-heading);
 }
 
 .tab.active {
@@ -619,7 +310,7 @@ small {
     background: rgba(70, 130, 180, 0.25);
     box-shadow: 
         0 4px 15px rgba(70, 130, 180, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        inset 0 1px 0 var(--border-color);
 }
 
 .tab.active::after {
@@ -630,9 +321,9 @@ small {
     transform: translateX(-50%);
     width: 4px;
     height: 4px;
-    background: #4682b4;
+    background: var(--accent-secondary);
     border-radius: 50%;
-    box-shadow: 0 0 10px #4682b4;
+    box-shadow: 0 0 10px var(--accent-secondary);
 }
 
 .controls-right {
@@ -658,44 +349,44 @@ small {
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: rgba(30, 40, 60, 0.5);
-    border: 1px solid rgba(100, 149, 237, 0.3);
-    color: #a0b9d9;
+    background: var(--surface-tertiary);
+    border: 1px solid var(--border-accent);
+    color: var(--text-secondary);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.3s ease;
     backdrop-filter: blur(5px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-sm);
 }
 
 .sort-btn-big:hover {
-    background: rgba(40, 50, 80, 0.6);
-    border-color: rgba(100, 149, 237, 0.6);
-    color: #fff;
+    background: var(--surface-secondary);
+    border-color: var(--accent-tertiary);
+    color: var(--text-primary);
     transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(100, 149, 237, 0.25);
+    box-shadow: 0 6px 20px var(--glow-primary);
 }
 
 .sort-caption {
     font-size: 0.75rem;
-    color: rgba(200, 200, 220, 0.6);
+    color: var(--text-tertiary);
     letter-spacing: 0.5px;
-    font-family: 'Cinzel', serif;
+    font-family: var(--font-heading);
 }
 
 .sort-dropdown {
     position: fixed;
-    background: linear-gradient(135deg, rgba(10, 15, 35, 0.98) 0%, rgba(5, 10, 25, 0.98) 100%);
+    background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-primary) 100%);
     backdrop-filter: blur(15px);
-    border: 1px solid rgba(100, 149, 237, 0.2);
-    border-radius: 12px;
-    padding: 8px 0;
+    border: 1px solid var(--border-accent);
+    border-radius: var(--radius-md);
+    padding: var(--space-sm) 0;
     width: 220px;
     box-shadow: 
-        0 15px 35px rgba(0, 0, 0, 0.5),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        var(--shadow-lg),
+        inset 0 1px 0 var(--border-color);
     z-index: 1000;
     overflow: hidden;
     animation: fadeIn 0.2s ease;
@@ -705,11 +396,11 @@ small {
     padding: 12px 16px;
     font-size: 0.85rem;
     font-weight: 600;
-    color: rgba(220, 220, 255, 0.9);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-color);
     margin-bottom: 4px;
     background: rgba(0, 0, 0, 0.2);
-    font-family: 'Cinzel', serif;
+    font-family: var(--font-heading);
 }
 
 .sort-option {
@@ -718,13 +409,13 @@ small {
     text-align: left;
     background: transparent;
     border: none;
-    color: rgba(220, 220, 255, 0.7);
+    color: var(--text-tertiary);
     font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.2s ease;
     position: relative;
     overflow: hidden;
-    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-family: var(--font-body);
     display: flex;
     align-items: center;
     gap: 8px;
@@ -747,50 +438,50 @@ small {
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: rgba(40, 35, 50, 0.5);
-    border: 1px solid rgba(135, 206, 235, 0.3);
-    color: #87ceeb;
+    background: var(--surface-tertiary);
+    border: 1px solid var(--border-accent);
+    color: var(--accent-primary);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.3s ease;
     backdrop-filter: blur(5px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-sm);
 }
 
 .shuffle-btn-big:hover {
-    background: rgba(50, 45, 70, 0.6);
-    border-color: rgba(135, 206, 235, 0.6);
-    color: #fff;
+    background: var(--surface-secondary);
+    border-color: var(--accent-primary);
+    color: var(--text-primary);
     transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(135, 206, 235, 0.25);
+    box-shadow: 0 6px 20px var(--glow-primary);
 }
 
 .add-folder-btn {
     display: flex;
     align-items: center;
     padding: 10px 18px;
-    background: rgba(30, 40, 60, 0.5);
-    border: 1px solid rgba(70, 130, 180, 0.3);
-    border-radius: 10px;
-    color: #a0c8e0;
+    background: var(--surface-tertiary);
+    border: 1px solid var(--border-accent);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
     font-size: 0.9rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
     backdrop-filter: blur(5px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    font-family: 'Cinzel', serif;
+    box-shadow: var(--shadow-sm);
+    font-family: var(--font-heading);
     letter-spacing: 0.5px;
 }
 
 .add-folder-btn:hover {
-    background: rgba(40, 50, 80, 0.6);
-    border-color: rgba(70, 130, 180, 0.6);
-    color: #fff;
+    background: var(--surface-secondary);
+    border-color: var(--accent-secondary);
+    color: var(--text-primary);
     transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(70, 130, 180, 0.25);
+    box-shadow: 0 6px 20px var(--glow-secondary);
 }
 
 .mobile-text {
@@ -814,18 +505,18 @@ small {
 }
 
 .playlist-sidebar {
-    background: rgba(15, 20, 35, 0.95);
+    background: var(--surface-secondary);
     backdrop-filter: blur(30px);
-    border: 1px solid rgba(135, 206, 235, 0.3);
-    border-radius: 20px;
+    border: 1px solid var(--border-accent);
+    border-radius: var(--radius-xl);
     width: 90%;
     max-width: 500px;
     max-height: 90vh;
     overflow-y: auto;
-    padding: 30px;
+    padding: var(--space-xl);
     box-shadow: 
-        0 30px 60px rgba(0, 0, 0, 0.6),
-        0 0 80px rgba(135, 206, 235, 0.2);
+        var(--shadow-xl),
+        0 0 80px var(--glow-primary);
     animation: slideUp 0.4s ease;
 }
 
@@ -835,12 +526,12 @@ small {
     align-items: center;
     margin-bottom: 25px;
     padding-bottom: 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .playlist-sidebar-header h2 {
     font-size: 1.8rem;
-    color: #f0f8ff;
+    color: var(--text-primary);
     margin: 0;
     display: flex;
     align-items: center;
@@ -848,9 +539,9 @@ small {
 }
 
 .close-btn {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--border-color);
     border: none;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-secondary);
     width: 36px;
     height: 36px;
     border-radius: 50%;
@@ -863,8 +554,8 @@ small {
 }
 
 .close-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-    color: #ffffff;
+    background: var(--border-accent);
+    color: var(--text-primary);
     transform: rotate(90deg);
 }
 
@@ -872,20 +563,20 @@ small {
     display: flex;
     align-items: center;
     gap: 20px;
-    padding: 20px;
-    background: rgba(20, 25, 40, 0.5);
-    border-radius: 15px;
+    padding: var(--space-lg);
+    background: var(--surface-tertiary);
+    border-radius: var(--radius-lg);
     margin-bottom: 25px;
-    border: 1px solid rgba(135, 206, 235, 0.2);
+    border: 1px solid var(--border-accent);
 }
 
 .song-cover-large {
     width: 80px;
     height: 80px;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     overflow: hidden;
-    border: 2px solid rgba(135, 206, 235, 0.4);
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    border: 2px solid var(--border-accent);
+    box-shadow: var(--shadow-md);
 }
 
 .cover-img-large {
@@ -901,10 +592,10 @@ small {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Cinzel', serif;
+    font-family: var(--font-heading);
     font-size: 2rem;
     font-weight: 700;
-    color: #f0f8ff;
+    color: var(--text-primary);
 }
 
 .song-info-large {
@@ -912,9 +603,9 @@ small {
 }
 
 .song-title-large {
-    font-family: 'Cinzel', serif;
+    font-family: var(--font-heading);
     font-size: 1.5rem;
-    color: #f0f8ff;
+    color: var(--text-primary);
     margin-bottom: 5px;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }
@@ -928,7 +619,7 @@ small {
 
 .song-album-large {
     font-style: italic;
-    color: rgba(180, 200, 255, 0.7);
+    color: var(--text-tertiary);
 }
 
 .quick-actions {
@@ -943,8 +634,8 @@ small {
     background: rgba(30, 40, 60, 0.5);
     border: 1px solid rgba(100, 149, 237, 0.3);
     border-radius: 10px;
-    color: rgba(220, 230, 255, 0.9);
-    font-family: 'Cinzel', serif;
+    color: var(--text-secondary);
+    font-family: var(--font-heading);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -969,7 +660,7 @@ small {
 }
 
 .create-playlist-section h4 {
-    color: #f0f8ff;
+    color: var(--text-primary);
     margin-bottom: 15px;
     display: flex;
     align-items: center;
@@ -985,28 +676,28 @@ small {
     flex: 1;
     padding: 12px 18px;
     background: rgba(20, 25, 40, 0.7);
-    border: 1px solid rgba(135, 206, 235, 0.3);
+    border: 1px solid var(--border-accent);
     border-radius: 10px;
-    color: rgba(220, 230, 255, 0.9);
-    font-family: 'Cormorant Garamond', Georgia, serif;
+    color: var(--text-secondary);
+    font-family: var(--font-body);
     font-size: 1rem;
 }
 
 .playlist-name-input:focus {
     outline: none;
-    border-color: rgba(135, 206, 235, 0.7);
-    box-shadow: 0 0 20px rgba(135, 206, 235, 0.2);
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 20px var(--glow-primary);
 }
 
 .create-playlist-btn {
     padding: 12px 24px;
     background: linear-gradient(135deg, 
-        rgba(70, 130, 180, 0.8) 0%, 
-        rgba(100, 149, 237, 0.8) 100%);
-    border: 1px solid rgba(135, 206, 235, 0.4);
-    border-radius: 10px;
+        var(--accent-secondary) 0%, 
+        var(--accent-tertiary) 100%);
+    border: 1px solid var(--border-accent);
+    border-radius: var(--radius-md);
     color: #ffffff;
-    font-family: 'Cinzel', serif;
+    font-family: var(--font-heading);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -1021,7 +712,7 @@ small {
 }
 
 .existing-playlists h4 {
-    color: #f0f8ff;
+    color: var(--text-primary);
     margin-bottom: 15px;
     display: flex;
     align-items: center;
@@ -1032,7 +723,7 @@ small {
     max-height: 200px;
     overflow-y: auto;
     border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-color);
 }
 
 .playlist-item-card {
@@ -1045,12 +736,12 @@ small {
 }
 
 .playlist-item-card:hover {
-    background: rgba(135, 206, 235, 0.1);
+    background: var(--glow-secondary);
 }
 
 .playlist-item-card.selected {
     background: rgba(70, 130, 180, 0.2);
-    border-left: 4px solid #87ceeb;
+    border-left: 4px solid var(--accent-primary);
 }
 
 .playlist-checkbox {
@@ -1077,7 +768,7 @@ small {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: #87ceeb;
+    color: var(--accent-primary);
     font-size: 0.9rem;
     font-weight: bold;
 }
@@ -1088,21 +779,21 @@ small {
 
 .playlist-name {
     display: block;
-    font-family: 'Cinzel', serif;
+    font-family: var(--font-heading);
     font-weight: 600;
-    color: #f0f8ff;
+    color: var(--text-primary);
     margin-bottom: 3px;
 }
 
 .playlist-song-count {
     font-size: 0.85rem;
-    color: rgba(200, 220, 255, 0.7);
+    color: var(--text-tertiary);
 }
 
 .add-single-btn {
     background: rgba(70, 130, 180, 0.2);
     border: 1px solid rgba(135, 206, 235, 0.4);
-    color: #87ceeb;
+    color: var(--accent-primary);
     width: 30px;
     height: 30px;
     border-radius: 50%;
@@ -1121,11 +812,11 @@ small {
 .no-playlists-message {
     text-align: center;
     padding: 30px 20px;
-    color: rgba(200, 220, 255, 0.7);
+    color: var(--text-tertiary);
 }
 
 .no-playlists-message p {
-    font-family: 'Cinzel', serif;
+    font-family: var(--font-heading);
     font-weight: 600;
     margin-bottom: 5px;
 }
@@ -1141,10 +832,10 @@ small {
     flex: 1;
     padding: 15px;
     background: rgba(30, 40, 60, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-color);
     border-radius: 10px;
-    color: rgba(220, 230, 255, 0.9);
-    font-family: 'Cinzel', serif;
+    color: var(--text-secondary);
+    font-family: var(--font-heading);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -1165,7 +856,7 @@ small {
     border: 1px solid rgba(135, 206, 235, 0.4);
     border-radius: 10px;
     color: #ffffff;
-    font-family: 'Cinzel', serif;
+    font-family: var(--font-heading);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -1186,12 +877,12 @@ small {
 
 /* ===== PLAYLISTS VIEW COMPONENT ===== */
 .playlists-view {
-    background: rgba(10, 15, 25, 0.85);
+    background: var(--surface-primary);
     backdrop-filter: blur(20px);
     border-radius: 20px;
     padding: 30px;
     margin: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-color);
     box-shadow: 
         0 20px 40px rgba(0, 0, 0, 0.5),
         0 0 0 1px rgba(255, 255, 255, 0.05) inset,
@@ -1214,7 +905,7 @@ small {
 }
 
 .playlists-view .create-playlist-section h3 {
-    color: #f0f8ff;
+    color: var(--text-primary);
     margin-bottom: 20px;
     display: flex;
     align-items: center;
@@ -1230,10 +921,10 @@ small {
     flex: 1;
     padding: 12px 18px;
     background: rgba(20, 25, 40, 0.7);
-    border: 1px solid rgba(135, 206, 235, 0.3);
+    border: 1px solid var(--border-accent);
     border-radius: 10px;
-    color: rgba(220, 230, 255, 0.9);
-    font-family: 'Cormorant Garamond', Georgia, serif;
+    color: var(--text-secondary);
+    font-family: var(--font-body);
     font-size: 1rem;
 }
 
@@ -1245,7 +936,7 @@ small {
     border: 1px solid rgba(135, 206, 235, 0.4);
     border-radius: 10px;
     color: #ffffff;
-    font-family: 'Cinzel', serif;
+    font-family: var(--font-heading);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -1284,15 +975,15 @@ small {
 }
 
 .playlist-info h4 {
-    font-family: 'Cinzel', serif;
+    font-family: var(--font-heading);
     font-size: 1.3rem;
-    color: #f0f8ff;
+    color: var(--text-primary);
     margin-bottom: 10px;
 }
 
 .playlist-info small {
     font-size: 0.9rem;
-    color: rgba(200, 220, 255, 0.7);
+    color: var(--text-tertiary);
     display: flex;
     align-items: center;
     gap: 5px;
@@ -1304,8 +995,8 @@ small {
     background: rgba(30, 40, 60, 0.5);
     border: 1px solid rgba(135, 206, 235, 0.3);
     border-radius: 8px;
-    color: #87ceeb;
-    font-family: 'Cinzel', serif;
+    color: var(--accent-primary);
+    font-family: var(--font-heading);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -1321,7 +1012,7 @@ small {
 .no-playlists {
     text-align: center;
     padding: 60px 20px;
-    color: rgba(200, 220, 255, 0.7);
+    color: var(--text-tertiary);
     font-size: 1.2rem;
     font-style: italic;
 }
@@ -1340,8 +1031,8 @@ small {
         rgba(178, 34, 34, 0.3) 100%);
     border: 1px solid rgba(220, 20, 60, 0.4);
     border-radius: 10px;
-    color: #ff6b6b;
-    font-family: 'Cinzel', serif;
+    color: var(--danger);
+    font-family: var(--font-heading);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -1382,7 +1073,7 @@ small {
 /* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 1200px) {
     .main-content {
-        margin-left: 220px;
+        margin-left: 0;
     }
     
     .sidebar {

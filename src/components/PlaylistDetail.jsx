@@ -19,11 +19,26 @@ function PlaylistDetail({
   isSongLiked,
   onToggleLike,
   addToQueue,
-  onOpenPlaylistSidebar
+  onOpenPlaylistSidebar,
+  getPlaylistStats,
+  isShuffled,
+  toggleShuffle,
+  repeatMode,
+  toggleRepeat,
+  volume,
+  isMuted,
+  toggleMute,
+  setVolume,
+  onDownload
 }) {
   if (!playlist) return null;
 
   const [openMenuId, setOpenMenuId] = useState(null);
+  React.useEffect(() => {
+    try {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch {}
+  }, [playlist?.id]);
 
   const currentSong = playlist.songs.find(song => song.id === currentSongId);
   const isPlaylistPlaying = currentSong ? isPlaying : false;
@@ -101,6 +116,15 @@ function PlaylistDetail({
           if (!liked) playLikeSound();
           onToggleLike(currentSong);
         }}
+        isShuffled={isShuffled}
+        onToggleShuffle={toggleShuffle}
+        repeatMode={repeatMode}
+        onToggleRepeat={toggleRepeat}
+        volume={volume}
+        isMuted={isMuted}
+        onToggleMute={toggleMute}
+        onVolumeChange={setVolume}
+        onDownload={() => onDownload && onDownload(playlist)}
       />
       
       <div className="playlist-songs-container">

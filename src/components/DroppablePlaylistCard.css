@@ -1,9 +1,9 @@
 /* src/components/DroppablePlaylistCard.css */
 .droppable-playlist-card {
-    background: rgba(15, 20, 35, 0.6);
+    background: var(--surface-secondary);
     border-radius: 15px;
     padding: 20px;
-    border: 2px dashed rgba(135, 206, 235, 0.2);
+    border: 2px dashed var(--border-color);
     transition: all 0.3s ease;
     cursor: pointer;
     text-align: center;
@@ -18,53 +18,53 @@
 }
 
 .droppable-playlist-card:hover {
-    background: rgba(20, 25, 40, 0.8);
-    border-color: rgba(135, 206, 235, 0.4);
+    background: var(--surface-primary);
+    border-color: var(--border-accent);
     transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(135, 206, 235, 0.2);
+    box-shadow: var(--shadow-md);
 }
 
 .droppable-playlist-card.drag-over {
-    background: rgba(30, 60, 114, 0.3);
-    border-color: #87ceeb;
+    background: color-mix(in srgb, var(--accent-secondary), transparent 70%);
+    border-color: var(--accent-primary);
     border-style: solid;
-    box-shadow: 0 0 30px rgba(135, 206, 235, 0.4);
+    box-shadow: 0 0 30px var(--glow-primary);
     animation: pulse 1s infinite alternate;
 }
 
 @keyframes pulse {
-    from { box-shadow: 0 0 20px rgba(135, 206, 235, 0.4); }
-    to { box-shadow: 0 0 40px rgba(135, 206, 235, 0.6); }
+    from { box-shadow: 0 0 20px var(--glow-primary); }
+    to { box-shadow: 0 0 40px var(--glow-secondary); }
 }
 
 .playlist-icon {
-    color: #87ceeb;
+    color: var(--accent-primary);
     margin-bottom: 10px;
 }
 
 .playlist-name {
-    font-family: 'Cinzel', serif;
+    font-family: var(--font-heading);
     font-size: 1.2rem;
-    color: #f0f8ff;
+    color: var(--text-primary);
     margin: 0;
 }
 
 .playlist-count {
     font-size: 0.9rem;
-    color: rgba(200, 220, 255, 0.7);
+    color: var(--text-secondary);
     margin: 0;
 }
 
 .drop-hint {
     position: absolute;
-    bottom: 10px;
+    bottom: var(--space-sm);
     left: 0;
     right: 0;
-    background: rgba(70, 130, 180, 0.8);
-    color: white;
-    padding: 6px;
+    background: var(--accent-secondary);
+    color: var(--text-primary);
+    padding: var(--space-sm);
     font-size: 0.8rem;
-    border-radius: 0 0 13px 13px;
-    font-family: 'Cinzel', serif;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    font-family: var(--font-heading);
     font-weight: 600;
 }

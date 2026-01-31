@@ -1,3 +1,128 @@
-/* App.css - Complete Fixed CSS */
+/* App.css - Global Styles and Variables */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
+
+/* ===== CSS VARIABLES ===== */
+:root {
+  /* Night Sky Colors */
+  --bg-primary: #000000;
+  --bg-secondary: #05050f;
+  --bg-tertiary: #0a0a1a;
+  --surface-primary: rgba(10, 15, 25, 0.85);
+  --surface-secondary: rgba(15, 20, 35, 0.9);
+  --surface-tertiary: rgba(20, 25, 40, 0.8);
+
+  /* Text Colors */
+  --text-primary: #f0f8ff;
+  --text-secondary: rgba(220, 230, 255, 0.9);
+  --text-tertiary: rgba(200, 220, 255, 0.7);
+  --text-muted: rgba(180, 200, 255, 0.5);
+
+  /* Accent Colors */
+  --accent-primary: #87ceeb;
+  --accent-secondary: #4682b4;
+  --accent-tertiary: #6495ed;
+  --danger: #ff6b6b;
+  --success: #6bcf7f;
+  --warning: #ffcc00;
+
+  /* Border & Glow */
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-accent: rgba(135, 206, 235, 0.3);
+  --glow-primary: rgba(135, 206, 235, 0.2);
+  --glow-secondary: rgba(135, 206, 235, 0.1);
+
+  /* Shadows */
+  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 5px 20px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.7);
+
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 32px;
+  --radius-full: 9999px;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
+  /* Layout */
+  --sidebar-width: 250px;
+  --header-height: 80px;
+  --player-height: 90px;
+  --control-size: 44px;
+  --logo-size: 40px;
+
+  /* Fonts */
+  --font-heading: 'Cinzel', serif;
+  --font-body: 'Cormorant Garamond', Georgia, serif;
+  --font-mono: monospace;
+}
+
+/* ===== BASE STYLES ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 30%, var(--bg-tertiary) 100%);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Main Content Layout */
+.main-content {
+  flex: 1;
+  padding: var(--space-md);
+  padding-bottom: 120px;
+  /* Space for refactored player controls */
+  max-width: none;
+  margin: 0;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding-bottom: 200px;
+    /* Increased padding for stacked mobile player */
+  }
+}
 
 
+/* ===== UTILITY CLASSES ===== */
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

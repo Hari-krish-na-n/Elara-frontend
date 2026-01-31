@@ -16,6 +16,7 @@
   "dependencies": {
     "-": "^0.0.1",
     "axios": "^1.13.2",
+    "buffer": "^6.0.3",
     "compression": "^1.8.1",
     "g": "^2.0.1",
     "idb": "^8.0.3",
@@ -23,8 +24,8 @@
     "lightningcss": "^1.24.0",
     "lucide-react": "^0.553.0",
     "music-metadata-browser": "^2.5.11",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.10.0"
   },

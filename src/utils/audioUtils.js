@@ -1,4 +1,3 @@
-// src/utils/audioUtils.js
 import * as mm from 'music-metadata-browser';
 
 /**
@@ -9,6 +8,8 @@ import * as mm from 'music-metadata-browser';
 export const extractMP3Metadata = async (file) => {
   try {
     const metadata = await mm.parseBlob(file);
+    const picture = mm.selectCover(metadata.common.picture); // selectCover picks the best image
+
     return {
       title: metadata.common.title || file.name.replace(/\.[^/.]+$/, ''),
       artist: metadata.common.artist || 'Unknown Artist',
@@ -16,7 +17,7 @@ export const extractMP3Metadata = async (file) => {
       duration: metadata.format.duration || 0,
       genre: metadata.common.genre?.[0] || 'Unknown',
       year: metadata.common.year || null,
-      picture: metadata.common.picture?.[0] || null,
+      picture: picture || null, // raw picture object (data, format)
     };
   } catch (error) {
     console.error('Error extracting metadata:', error);
@@ -60,6 +61,35 @@ export const sanitizeFilename = (filename) => {
     .replace(/^_|_$/g, ''); // Remove leading/trailing underscores
 };
 
+const toTitleCase = (s) =>
+  s
+    .split(' ')
+    .map((w) => (w ? w.charAt(0).toUpperCase() + w.slice(1).toLowerCase() : ''))
+    .join(' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+export const parseFilenameToMetadata = (filename) => {
+  const base = filename.replace(/\.[^/.]+$/, '');
+  let friendly = base.replace(/[_]+/g, ' ').replace(/[-]+/g, ' ').replace(/\s+/g, ' ').trim();
+  friendly = friendly.replace(/^\W+|\W+$/g, '');
+  const parts = friendly.split(/\s{2,}|-\s+|\s+-/).map((p) => p.trim()).filter(Boolean);
+  let artist = 'Unknown Artist';
+  let title = friendly;
+  if (parts.length >= 2) {
+    artist = toTitleCase(parts[0]);
+    title = toTitleCase(parts.slice(1).join(' '));
+  } else {
+    const m = friendly.match(/^(.*?)(?:\s+|_)?(\d{1,3})$/);
+    if (m) {
+      artist = toTitleCase(m[1]);
+      title = `Track ${m[2]}`;
+    } else {
+      title = toTitleCase(friendly);
+    }
+  }
+  return { title, artist };
+};
 /**
  * Format duration in seconds to MM:SS format
  * @param {number} seconds - Duration in seconds
@@ -80,7 +110,11 @@ export const formatDuration = (seconds) => {
 export const getAlbumArtURL = (picture) => {
   if (!picture) return null;
   try {
-    const blob = new Blob([picture.data], { type: picture.format });
+    const raw = picture.data;
+    if (typeof raw === 'string') {
+      return `data:${picture.format};base64,${raw}`;
+    }
+    const blob = new Blob([raw], { type: picture.format });
     return URL.createObjectURL(blob);
   } catch (error) {
     console.error('Error creating album art URL:', error);
@@ -115,4 +149,30 @@ export const isAudioFile = (file) => {
 export const createSongId = (filename, timestamp = Date.now()) => {
   const sanitized = sanitizeFilename(filename);
   return `${sanitized}_${timestamp}_${Math.random().toString(36).substr(2, 9)}`;
+};
+
+/**
+ * Convert ArrayBuffer/Array to Base64 string
+ * @param {ArrayBuffer|Array} buffer - The buffer to convert
+ * @returns {string} Base64 representation
+ */
+export const bufferToBase64 = (buffer) => {
+  if (!buffer) return '';
+  try {
+    let binary = '';
+    // Handle if it's the { type: 'Buffer', data: [...] } structure from JSON
+    const bytes = buffer.data ? new Uint8Array(buffer.data) : new Uint8Array(buffer);
+    const len = bytes.byteLength;
+
+    // Performance optimization for large buffers could be done here, 
+    // but for cover art (usually < 500KB) this loop is generally fine.
+    // If very slow, chunking might be needed.
+    for (let i = 0; i < len; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return window.btoa(binary);
+  } catch (e) {
+    console.error("Error converting buffer to base64", e);
+    return '';
+  }
 };

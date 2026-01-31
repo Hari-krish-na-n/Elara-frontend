@@ -1,15 +1,15 @@
 /* src/components/QueueView.css */
 
 .queue-view {
-  background: rgba(10, 15, 30, 0.8);
+  background: var(--surface-primary);
   backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 24px;
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
   height: 100%;
-  border: 1px solid rgba(100, 149, 237, 0.1);
+  border: 1px solid var(--border-accent);
   box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    var(--shadow-lg),
+    inset 0 1px 0 color-mix(in srgb, var(--text-primary), transparent 95%);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -19,25 +19,25 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid rgba(100, 149, 237, 0.2);
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--border-accent);
 }
 
 .queue-header h2 {
-  font-family: 'Cinzel', serif;
+  font-family: var(--font-heading);
   font-size: 1.5rem;
   font-weight: 600;
-  color: #f0f0ff;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   margin: 0;
-  text-shadow: 0 0 10px rgba(135, 206, 235, 0.3);
+  text-shadow: 0 0 10px var(--glow-primary);
 }
 
 .queue-count {
   font-size: 0.9rem;
-  color: rgba(200, 200, 220, 0.6);
+  color: var(--text-tertiary);
   margin-left: 8px;
   font-weight: 400;
 }
@@ -47,23 +47,23 @@
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  background: rgba(220, 53, 69, 0.2);
-  border: 1px solid rgba(220, 53, 69, 0.3);
+  background: color-mix(in srgb, var(--danger), transparent 80%);
+  border: 1px solid color-mix(in srgb, var(--danger), transparent 70%);
   border-radius: 8px;
-  color: #ff6b7a;
+  color: var(--danger);
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: 'Cormorant Garamond', serif;
+  font-family: var(--font-body);
 }
 
 .clear-queue-btn:hover:not(:disabled) {
-  background: rgba(220, 53, 69, 0.3);
-  border-color: rgba(220, 53, 69, 0.5);
-  color: #ff8a95;
+  background: color-mix(in srgb, var(--danger), transparent 70%);
+  border-color: color-mix(in srgb, var(--danger), transparent 50%);
+  color: var(--danger);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--danger), transparent 80%);
 }
 
 .clear-queue-btn:disabled {
@@ -81,7 +81,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 60px 20px;
+  padding: var(--space-2xl) var(--space-lg);
   text-align: center;
   flex: 1;
 }
@@ -90,24 +90,24 @@
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: rgba(100, 149, 237, 0.1);
+  background: color-mix(in srgb, var(--accent-tertiary), transparent 90%);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
-  color: rgba(100, 149, 237, 0.5);
+  margin-bottom: var(--space-lg);
+  color: color-mix(in srgb, var(--accent-tertiary), transparent 50%);
 }
 
 .empty-title {
-  font-family: 'Cinzel', serif;
+  font-family: var(--font-heading);
   font-size: 1.2rem;
-  color: #f0f0ff;
+  color: var(--text-primary);
   margin-bottom: 8px;
 }
 
 .empty-subtitle {
-  font-family: 'Cormorant Garamond', serif;
-  color: rgba(200, 200, 220, 0.6);
+  font-family: var(--font-body);
+  color: var(--text-secondary);
   font-size: 0.95rem;
   max-width: 300px;
   line-height: 1.4;
@@ -126,13 +126,13 @@
   grid-template-columns: 50px 2fr 1fr 1fr 80px 60px;
   gap: 16px;
   padding: 12px 16px;
-  background: rgba(0, 0, 0, 0.2);
+  background: color-mix(in srgb, var(--bg-primary), transparent 80%);
   border-radius: 8px;
   margin-bottom: 8px;
-  font-family: 'Cinzel', serif;
+  font-family: var(--font-heading);
   font-size: 0.85rem;
   font-weight: 600;
-  color: rgba(200, 200, 220, 0.8);
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -158,17 +158,17 @@
 }
 
 .queue-list::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2);
+  background: color-mix(in srgb, var(--bg-primary), transparent 80%);
   border-radius: 3px;
 }
 
 .queue-list::-webkit-scrollbar-thumb {
-  background: rgba(100, 149, 237, 0.4);
+  background: color-mix(in srgb, var(--accent-tertiary), transparent 60%);
   border-radius: 3px;
 }
 
 .queue-list::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 149, 237, 0.6);
+  background: color-mix(in srgb, var(--accent-tertiary), transparent 40%);
 }
 
 /* Queue Item */
@@ -182,18 +182,18 @@
   transition: all 0.3s ease;
   border: 1px solid transparent;
   margin-bottom: 8px;
-  background: rgba(30, 40, 60, 0.3);
+  background: var(--surface-secondary);
 }
 
 .queue-item:hover {
-  background: rgba(40, 50, 80, 0.4);
-  border-color: rgba(100, 149, 237, 0.3);
+  background: var(--surface-primary);
+  border-color: var(--border-accent);
   transform: translateX(4px);
 }
 
 .queue-item-playing {
-  background: rgba(70, 130, 180, 0.15) !important;
-  border-color: rgba(70, 130, 180, 0.3) !important;
+  background: color-mix(in srgb, var(--accent-secondary), transparent 85%) !important;
+  border-color: color-mix(in srgb, var(--accent-secondary), transparent 70%) !important;
   position: relative;
 }
 
@@ -204,7 +204,7 @@
   top: 0;
   bottom: 0;
   width: 3px;
-  background: linear-gradient(to bottom, #4682b4, #87ceeb);
+  background: linear-gradient(to bottom, var(--accent-secondary), var(--accent-primary));
   border-radius: 3px 0 0 3px;
 }
 
@@ -215,8 +215,8 @@
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.2);
-  color: rgba(200, 200, 220, 0.8);
+  background: color-mix(in srgb, var(--bg-primary), transparent 80%);
+  color: var(--text-secondary);
   font-size: 0.9rem;
   font-weight: 500;
 }
@@ -237,7 +237,7 @@
 
 .playing-bars span {
   width: 3px;
-  background: linear-gradient(to bottom, #4682b4, #87ceeb);
+  background: linear-gradient(to bottom, var(--accent-secondary), var(--accent-primary));
   border-radius: 2px;
   animation: audioBar 1.5s infinite ease-in-out;
 }
@@ -274,10 +274,10 @@
 }
 
 .queue-song-title {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: var(--font-body);
   font-size: 1rem;
   font-weight: 500;
-  color: #f0f0ff;
+  color: var(--text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -286,30 +286,30 @@
 .currently-playing-badge {
   font-size: 0.7rem;
   padding: 2px 8px;
-  background: linear-gradient(135deg, #4682b4, #87ceeb);
+  background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
   color: white;
   border-radius: 10px;
   font-weight: 500;
   align-self: flex-start;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  box-shadow: 0 2px 8px rgba(70, 130, 180, 0.3);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--accent-secondary), transparent 70%);
 }
 
 .queue-song-artist,
 .queue-song-album {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: var(--font-body);
   font-size: 0.9rem;
-  color: rgba(200, 200, 220, 0.8);
+  color: var(--text-secondary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .queue-song-duration {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: var(--font-body);
   font-size: 0.9rem;
-  color: rgba(200, 200, 220, 0.7);
+  color: var(--text-tertiary);
   font-weight: 500;
   text-align: center;
 }
@@ -319,9 +319,9 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: rgba(220, 53, 69, 0.1);
-  border: 1px solid rgba(220, 53, 69, 0.2);
-  color: rgba(220, 53, 69, 0.8);
+  background: color-mix(in srgb, var(--danger), transparent 90%);
+  border: 1px solid color-mix(in srgb, var(--danger), transparent 80%);
+  color: color-mix(in srgb, var(--danger), transparent 20%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -331,9 +331,9 @@
 }
 
 .queue-remove-btn:hover {
-  background: rgba(220, 53, 69, 0.2);
-  border-color: rgba(220, 53, 69, 0.4);
-  color: #ff6b7a;
+  background: color-mix(in srgb, var(--danger), transparent 80%);
+  border-color: color-mix(in srgb, var(--danger), transparent 60%);
+  color: var(--danger);
   transform: scale(1.1);
 }
 

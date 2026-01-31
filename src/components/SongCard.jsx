@@ -1,9 +1,9 @@
 // src/components/SongCard.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import './SongCard.css';
-import './App1.css';
-import './Entire.css';
-import { playLikeSound, playAddToPlaylistSound } from './utils/soundEffects';
+import '../App1.css';
+
+import { playLikeSound, playAddToPlaylistSound } from '../utils/soundEffects';
 
 const SongCard = ({
   song,
@@ -26,9 +26,9 @@ const SongCard = ({
     const handleClickOutside = (event) => {
       // Only close if clicked outside both the button and the menu
       if (
-        menuRef.current && 
+        menuRef.current &&
         !menuRef.current.contains(event.target) &&
-        buttonRef.current && 
+        buttonRef.current &&
         !buttonRef.current.contains(event.target)
       ) {
         setShowPlaylistMenu(false);
@@ -46,7 +46,7 @@ const SongCard = ({
     if (showPlaylistMenu && buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
       const windowHeight = window.innerHeight;
-      
+
       // If there's not enough space below, show above
       if (rect.bottom + 250 > windowHeight && rect.top > 250) {
         setMenuPosition('top');
@@ -90,7 +90,22 @@ const SongCard = ({
     setShowPlaylistMenu(false);
   };
 
-  const firstLetter = song?.title?.charAt(0)?.toUpperCase() || '?';
+  /* Add state for image error */
+  const [imageError, setImageError] = useState(false);
+
+  /* Helper to get normalized cover URL */
+  const getSongCoverUrl = (song) => {
+    if (!song) return null;
+    if (song.coverUrl) return song.coverUrl;
+    if (song.cover && typeof song.cover === 'string') return song.cover;
+    if (song.picture && song.picture.url) return song.picture.url;
+    if (song.picture && song.picture.data && song.picture.format) {
+      return `data:${song.picture.format};base64,${song.picture.data}`;
+    }
+    return null;
+  };
+
+  const coverUrl = getSongCoverUrl(song);
 
   return (
     <div
@@ -112,12 +127,12 @@ const SongCard = ({
       <div className="song-card-content">
         {/* Cover + inline play */}
         <div className="song-cover">
-          {song?.coverUrl ? (
+          {!imageError && coverUrl ? (
             <img
-              src={song.coverUrl}
+              src={coverUrl}
               alt={song.title || 'Cover'}
               className="cover-img"
-              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              onError={() => setImageError(true)}
             />
           ) : (
             <div className="cover-placeholder">
@@ -177,7 +192,7 @@ const SongCard = ({
                 </button>
 
                 {showPlaylistMenu && (
-                  <div 
+                  <div
                     className="playlist-dropdown-menu"
                     ref={menuRef}
                     style={{
@@ -200,7 +215,7 @@ const SongCard = ({
                         <h4>Add to Playlist</h4>
                         <small>"{song.title}"</small>
                       </div>
-                      
+
                       <div className="playlists-list">
                         {playlists.length > 0 ? (
                           playlists.map((playlist) => (
@@ -224,9 +239,9 @@ const SongCard = ({
                           </div>
                         )}
                       </div>
-                      
+
                       <div className="dropdown-footer">
-                        <button 
+                        <button
                           className="close-btn"
                           onClick={() => setShowPlaylistMenu(false)}
                         >

@@ -14,6 +14,7 @@ body.playlist-sidebar-open {
         transform: translateY(100%);
         opacity: 0;
     }
+
     to {
         transform: translateY(0);
         opacity: 1;
@@ -25,6 +26,7 @@ body.playlist-sidebar-open {
         transform: translateY(0);
         opacity: 1;
     }
+
     to {
         transform: translateY(100%);
         opacity: 0;
@@ -32,20 +34,33 @@ body.playlist-sidebar-open {
 }
 
 @keyframes fadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
 }
 
 @keyframes fadeInOut {
-    0%, 100% { opacity: 0.3; }
-    50% { opacity: 0.7; }
+
+    0%,
+    100% {
+        opacity: 0.3;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
 }
 
 /* ===== MOBILE STYLES (768px and below) ===== */
 @media (max-width: 768px) {
+
     /* Overlay */
     .playlist-sidebar-overlay.mobile-playlist-overlay {
-        background: rgba(0, 0, 0, 0.9);
+        background: var(--surface-secondary);
         backdrop-filter: blur(10px);
         display: flex;
         align-items: flex-end;
@@ -67,7 +82,7 @@ body.playlist-sidebar-open {
         left: 0;
         right: 0;
         text-align: center;
-        color: rgba(255, 255, 255, 0.5);
+        color: var(--text-muted);
         font-size: 0.9rem;
         font-style: italic;
         pointer-events: none;
@@ -78,19 +93,20 @@ body.playlist-sidebar-open {
     .playlist-sidebar.mobile-sidebar {
         width: 100%;
         max-width: 100%;
-        height: 75vh;
-        max-height: 75vh;
-        border-radius: 20px 20px 0 0;
+        height: 60vh;
+        /* Reduced from 75vh */
+        max-height: 60vh;
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0;
         margin: 0;
-        padding: 16px 16px 20px;
+        padding: var(--space-md) var(--space-md) 20px;
         animation: slideUp 0.3s ease;
         overflow-y: auto;
         position: relative;
-        background: rgba(15, 20, 35, 0.98);
+        background: var(--surface-secondary);
         backdrop-filter: blur(20px);
-        border: 1px solid rgba(135, 206, 235, 0.2);
+        border: 1px solid var(--border-accent);
         border-bottom: none;
-        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+        box-shadow: var(--shadow-xl);
         transition: transform 0.3s ease, opacity 0.3s ease;
         touch-action: pan-y;
         cursor: default;
@@ -115,13 +131,13 @@ body.playlist-sidebar-open {
     .swipe-handle-bar {
         width: 40px;
         height: 4px;
-        background: rgba(255, 255, 255, 0.3);
+        background: var(--text-muted);
         border-radius: 2px;
         transition: background-color 0.2s;
     }
 
     .mobile-swipe-handle:active .swipe-handle-bar {
-        background: rgba(255, 255, 255, 0.5);
+        background: var(--text-secondary);
     }
 
     /* Header */
@@ -130,9 +146,9 @@ body.playlist-sidebar-open {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding-bottom: 16px;
-        margin-bottom: 16px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: var(--space-md);
+        margin-bottom: var(--space-md);
+        border-bottom: 1px solid var(--border-color);
         position: relative;
     }
 
@@ -140,31 +156,31 @@ body.playlist-sidebar-open {
         flex: 1;
         font-size: 1.1rem;
         margin: 0;
-        color: #f0f8ff;
+        color: var(--text-primary);
         text-align: center;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
-        font-family: 'Cinzel', serif;
+        font-family: var(--font-heading);
     }
 
     /* Close Buttons */
     .big-x-btn,
     .mobile-close-btn {
-        background: rgba(239, 68, 68, 0.2);
-        border: 1px solid rgba(239, 68, 68, 0.4);
-        border-radius: 12px;
-        width: 44px;
-        height: 44px;
+        background: color-mix(in srgb, var(--danger), transparent 80%);
+        border: 1px solid color-mix(in srgb, var(--danger), transparent 60%);
+        border-radius: var(--radius-md);
+        width: var(--control-size);
+        height: var(--control-size);
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #ef4444;
+        color: var(--danger);
         font-size: 1.2rem;
         cursor: pointer;
         transition: all 0.2s ease;
-        box-shadow: 0 2px 10px rgba(239, 68, 68, 0.2);
+        box-shadow: 0 2px 10px color-mix(in srgb, var(--danger), transparent 80%);
         flex-shrink: 0;
     }
 
@@ -172,640 +188,12 @@ body.playlist-sidebar-open {
     .big-x-btn:active,
     .mobile-close-btn:hover,
     .mobile-close-btn:active {
-        background: rgba(239, 68, 68, 0.3);
-        border-color: rgba(239, 68, 68, 0.6);
+        background: color-mix(in srgb, var(--danger), transparent 70%);
+        border-color: color-mix(in srgb, var(--danger), transparent 40%);
         transform: scale(1.05);
     }
 
     .header-spacer {
-        width: 44px;
-    }
-
-    /* Song Preview Compact */
-    .mobile-song-preview-compact,
-    .song-preview-card.mobile-song-preview {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 12px;
-        background: rgba(20, 25, 40, 0.4);
-        border-radius: 10px;
-        margin-bottom: 16px;
-        border: 1px solid rgba(135, 206, 235, 0.1);
-        position: relative;
-    }
-
-    .mobile-cover-compact,
-    .song-cover-large {
-        width: 50px;
-        height: 50px;
-        border-radius: 8px;
-        overflow: hidden;
-        flex-shrink: 0;
-        border: 2px solid rgba(135, 206, 235, 0.3);
-    }
-
-    .mobile-cover-compact img,
-    .cover-img-large {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .cover-placeholder-compact,
-    .cover-placeholder {
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(135deg, 
-            rgba(70, 130, 180, 0.5), 
-            rgba(100, 149, 237, 0.5));
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: bold;
-        font-size: 1.2rem;
-        font-family: 'Cinzel', serif;
-    }
-
-    .mobile-song-info-compact,
-    .song-info-large {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .mobile-song-title-compact,
-    .song-title-large {
-        font-size: 0.95rem;
-        font-family: 'Cinzel', serif;
-        font-weight: 600;
-        color: #f0f8ff;
-        margin-bottom: 4px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .mobile-song-artist-compact,
-    .song-artist-large {
-        font-size: 0.85rem;
-        color: rgba(200, 220, 255, 0.7);
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .song-album-large {
-        font-size: 0.8rem;
-        color: rgba(180, 200, 220, 0.6);
-        font-style: italic;
-        margin-top: 2px;
-    }
-
-    /* Close Preview Button */
-    .mobile-close-preview {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        background: rgba(0, 0, 0, 0.3);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 50%;
-        width: 28px;
-        height: 28px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: rgba(255, 255, 255, 0.7);
-        font-size: 12px;
-        cursor: pointer;
-    }
-
-    .mobile-close-preview:active {
-        background: rgba(255, 255, 255, 0.2);
-    }
-
-    /* Quick Actions */
-    .quick-actions,
-    .mobile-quick-action-compact {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 16px;
-    }
-
-    .quick-action-btn,
-    .mobile-quick-action-compact {
-        flex: 1;
-        padding: 12px;
-        background: rgba(30, 40, 60, 0.5);
-        border: 1px solid rgba(135, 206, 235, 0.3);
-        border-radius: 10px;
-        color: #87ceeb;
-        font-size: 0.9rem;
-        font-family: 'Cinzel', serif;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        transition: all 0.2s ease;
-        cursor: pointer;
-    }
-
-    .quick-action-btn:active,
-    .mobile-quick-action-compact:active {
-        background: rgba(40, 50, 80, 0.7);
-        transform: scale(0.98);
-    }
-
-    /* Create Playlist Section */
-    .create-playlist-section,
-    .mobile-create-playlist-compact {
-        margin-bottom: 16px;
-    }
-
-    .create-playlist-section h4 {
-        font-family: 'Cinzel', serif;
-        font-size: 1rem;
-        color: #f0f8ff;
-        margin-bottom: 12px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .create-playlist-form,
-    .mobile-form-compact {
-        display: flex;
-        gap: 8px;
-    }
-
-    .playlist-name-input,
-    .mobile-input-compact {
-        flex: 1;
-        padding: 12px 15px;
-        background: rgba(20, 25, 40, 0.6);
-        border: 1px solid rgba(135, 206, 235, 0.3);
-        border-radius: 10px;
-        color: #fff;
-        font-size: 0.9rem;
-        font-family: 'Cormorant Garamond', Georgia, serif;
-        min-height: 44px;
-    }
-
-    .playlist-name-input:focus,
-    .mobile-input-compact:focus {
-        outline: none;
-        border-color: rgba(135, 206, 235, 0.6);
-        background: rgba(30, 40, 60, 0.7);
-    }
-
-    .create-playlist-btn,
-    .mobile-create-btn-compact {
-        width: 44px;
-        height: 44px;
-        background: linear-gradient(135deg, 
-            rgba(70, 130, 180, 0.8) 0%, 
-            rgba(100, 149, 237, 0.8) 100%);
-        border: 1px solid rgba(135, 206, 235, 0.4);
-        border-radius: 10px;
-        color: #ffffff;
-        font-size: 1.2rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
-    .create-playlist-btn:active,
-    .mobile-create-btn-compact:active {
-        transform: scale(0.95);
-    }
-
-    /* Search Section */
-    .mobile-playlist-search,
-    .mobile-playlist-search-compact {
-        margin-bottom: 16px;
-    }
-
-    .search-container,
-    .search-container-compact {
-        position: relative;
-        display: flex;
-        align-items: center;
-    }
-
-    .search-icon,
-    .search-icon-compact {
-        position: absolute;
-        left: 15px;
-        color: rgba(255, 255, 255, 0.5);
-        z-index: 1;
-    }
-
-    .mobile-search-input,
-    .mobile-search-input-compact {
-        width: 100%;
-        padding: 12px 40px 12px 45px;
-        background: rgba(20, 25, 40, 0.6);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        color: #fff;
-        font-size: 0.9rem;
-        font-family: 'Cormorant Garamond', Georgia, serif;
-        min-height: 44px;
-    }
-
-    .mobile-search-input:focus,
-    .mobile-search-input-compact:focus {
-        outline: none;
-        border-color: rgba(135, 206, 235, 0.4);
-        background: rgba(30, 40, 60, 0.7);
-    }
-
-    .clear-search {
-        position: absolute;
-        right: 15px;
-        background: transparent;
-        border: none;
-        color: rgba(255, 255, 255, 0.5);
-        width: 24px;
-        height: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        z-index: 1;
-    }
-
-    /* Playlists Section */
-    .existing-playlists,
-    .mobile-playlists-compact {
-        flex: 1;
-        min-height: 0;
-        display: flex;
-        flex-direction: column;
-        margin-bottom: 16px;
-    }
-
-    .existing-playlists h4,
-    .playlists-header-compact h4 {
-        font-family: 'Cinzel', serif;
-        font-size: 1rem;
-        color: #f0f8ff;
-        margin-bottom: 12px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .playlists-list,
-    .playlists-list-compact {
-        flex: 1;
-        overflow-y: auto;
-        max-height: 35vh;
-        padding-right: 4px;
-    }
-
-    /* Scrollbar */
-    .playlists-list::-webkit-scrollbar,
-    .playlists-list-compact::-webkit-scrollbar {
-        width: 3px;
-    }
-
-    .playlists-list::-webkit-scrollbar-track,
-    .playlists-list-compact::-webkit-scrollbar-track {
-        background: rgba(0, 0, 0, 0.1);
-    }
-
-    .playlists-list::-webkit-scrollbar-thumb,
-    .playlists-list-compact::-webkit-scrollbar-thumb {
-        background: rgba(135, 206, 235, 0.3);
-        border-radius: 1.5px;
-    }
-
-    /* Playlist Items */
-    .playlist-item-card,
-    .playlist-item-compact {
-        display: flex;
-        align-items: center;
-        padding: 12px;
-        background: rgba(20, 25, 40, 0.4);
-        border-radius: 8px;
-        margin-bottom: 8px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        transition: all 0.2s ease;
-        cursor: pointer;
-        position: relative;
-    }
-
-    .playlist-item-card.selected,
-    .playlist-item-compact.selected {
-        background: rgba(70, 130, 180, 0.3);
-        border-left: 3px solid #87ceeb;
-    }
-
-    .playlist-item-card:active,
-    .playlist-item-compact:active {
-        background: rgba(30, 35, 50, 0.6);
-        transform: scale(0.98);
-    }
-
-    /* Checkbox */
-    .playlist-checkbox,
-    .checkbox-compact {
-        margin-right: 12px;
-    }
-
-    .playlist-checkbox input[type="checkbox"],
-    .checkbox-compact input[type="checkbox"] {
-        display: none;
-    }
-
-    .playlist-checkbox label,
-    .checkbox-compact label {
-        width: 22px;
-        height: 22px;
-        border: 2px solid rgba(135, 206, 235, 0.5);
-        border-radius: 5px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(0, 0, 0, 0.2);
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
-    .playlist-checkbox input[type="checkbox"]:checked + label,
-    .checkbox-compact input[type="checkbox"]:checked + label {
-        background: rgba(70, 130, 180, 0.5);
-        border-color: #87ceeb;
-    }
-
-    .playlist-checkbox input[type="checkbox"]:checked + label::after,
-    .checkbox-compact input[type="checkbox"]:checked + label::after {
-        content: '✓';
-        color: #87ceeb;
-        font-size: 0.9rem;
-        font-weight: bold;
-    }
-
-    /* Playlist Info */
-    .playlist-info,
-    .playlist-info-compact {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .playlist-name,
-    .playlist-name-compact {
-        display: block;
-        font-family: 'Cinzel', serif;
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: #f0f8ff;
-        margin-bottom: 4px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .playlist-song-count,
-    .playlist-count-compact {
-        font-size: 0.75rem;
-        color: rgba(200, 220, 255, 0.6);
-        display: flex;
-        align-items: center;
-        gap: 4px;
-    }
-
-    /* Add Button */
-    .add-single-btn,
-    .add-btn-compact {
-        width: 32px;
-        height: 32px;
-        background: rgba(70, 130, 180, 0.2);
-        border: 1px solid rgba(135, 206, 235, 0.3);
-        border-radius: 6px;
-        color: #87ceeb;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        margin-left: 8px;
-        cursor: pointer;
-        font-size: 1.2rem;
-        transition: all 0.2s ease;
-    }
-
-    .add-single-btn:active,
-    .add-btn-compact:active {
-        background: rgba(70, 130, 180, 0.4);
-        transform: scale(0.95);
-    }
-
-    /* Empty States */
-    .no-playlists-message,
-    .no-results-compact,
-    .empty-state-compact {
-        text-align: center;
-        padding: 30px 20px;
-        color: rgba(200, 220, 255, 0.7);
-    }
-
-    .no-playlists-message p,
-    .empty-state-compact p {
-        font-family: 'Cinzel', serif;
-        font-size: 0.9rem;
-        margin: 8px 0;
-    }
-
-    .clear-search-btn {
-        margin-top: 10px;
-        padding: 8px 16px;
-        background: rgba(30, 40, 60, 0.5);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
-        color: #87ceeb;
-        font-size: 0.9rem;
-        cursor: pointer;
-    }
-
-    /* Action Buttons */
-    .sidebar-actions,
-    .mobile-actions,
-    .mobile-actions-compact {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        margin-top: 16px;
-        padding-top: 16px;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .cancel-btn,
-    .mobile-cancel-btn {
-        width: 100%;
-        padding: 15px;
-        background: rgba(30, 40, 60, 0.5);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        color: rgba(220, 230, 255, 0.9);
-        font-family: 'Cinzel', serif;
-        font-size: 1rem;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
-    .cancel-btn:active,
-    .mobile-cancel-btn:active {
-        background: rgba(40, 50, 80, 0.7);
-        transform: scale(0.98);
-    }
-
-    .add-to-selected-btn,
-    .mobile-add-btn-compact {
-        width: 100%;
-        padding: 14px;
-        background: linear-gradient(135deg, 
-            rgba(70, 130, 180, 0.9) 0%, 
-            rgba(100, 149, 237, 0.9) 100%);
-        border: 1px solid rgba(135, 206, 235, 0.5);
-        border-radius: 10px;
-        color: #ffffff;
-        font-family: 'Cinzel', serif;
-        font-weight: 600;
-        font-size: 0.95rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        box-shadow: 0 4px 15px rgba(70, 130, 180, 0.3);
-    }
-
-    .add-to-selected-btn:active:not(:disabled),
-    .mobile-add-btn-compact:active:not(:disabled) {
-        transform: scale(0.98);
-    }
-
-    .add-to-selected-btn:disabled,
-    .mobile-add-btn-compact:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-
-    /* Bottom Close Button */
-    .mobile-bottom-close-btn,
-    .mobile-done-btn {
-        width: 100%;
-        padding: 16px;
-        background: rgba(30, 40, 60, 0.6);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
-        color: rgba(220, 230, 255, 0.9);
-        font-family: 'Cinzel', serif;
-        font-size: 1rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        margin-top: 12px;
-    }
-
-    .mobile-bottom-close-btn:active,
-    .mobile-done-btn:active {
-        background: rgba(40, 50, 80, 0.8);
-        transform: scale(0.98);
-    }
-
-    /* Close Area */
-    .mobile-close-area {
-        position: sticky;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: linear-gradient(to top, 
-            rgba(15, 20, 35, 0.95) 0%,
-            rgba(15, 20, 35, 0.8) 50%,
-            transparent 100%);
-        padding: 20px 0 10px;
-        margin-top: 20px;
-        z-index: 10;
-    }
-}
-
-/* ===== VERY SMALL SCREENS ===== */
-@media (max-width: 480px) {
-    .playlist-sidebar.mobile-sidebar {
-        height: 85vh;
-        max-height: 85vh;
-        padding: 15px 12px 25px;
-    }
-
-    .mobile-sidebar-header h2 {
-        font-size: 1rem;
-    }
-
-    .big-x-btn,
-    .mobile-close-btn {
-        width: 40px;
-        height: 40px;
-    }
-
-    .mobile-done-btn,
-    .mobile-bottom-close-btn {
-        padding: 14px;
-        font-size: 0.95rem;
-    }
-}
-
-/* ===== SHORT SCREENS ===== */
-@media (max-height: 600px) {
-    .playlist-sidebar.mobile-sidebar {
-        height: 70vh;
-        max-height: 70vh;
-    }
-    
-    .playlists-list,
-    .playlists-list-compact {
-        max-height: 30vh;
-    }
-}
-
-/* ===== HIGH CONTRAST MODE ===== */
-@media (prefers-contrast: high) {
-    .mobile-swipe-handle .swipe-handle-bar {
-        background: #fff;
-    }
-    
-    .big-x-btn,
-    .mobile-close-btn {
-        border: 2px solid #fff;
-    }
-    
-    .playlist-checkbox label,
-    .checkbox-compact label {
-        border-width: 3px;
-    }
-}
-
-/* ===== HOVER EFFECTS (for devices that support hover) ===== */
-@media (hover: hover) and (pointer: fine) {
-    .close-btn:hover,
-    .big-x-btn:hover,
-    .mobile-close-btn:hover,
-    .mobile-close-preview:hover {
-        background: rgba(255, 255, 255, 0.2) !important;
-    }
-
-    .mobile-swipe-handle:hover .swipe-handle-bar {
-        background: rgba(255, 255, 255, 0.5);
+        width: var(--control-size);
     }
 }

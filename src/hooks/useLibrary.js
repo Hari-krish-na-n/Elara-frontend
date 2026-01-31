@@ -1,6 +1,6 @@
 // src/hooks/useLibrary.js
 import { useState, useEffect, useCallback } from 'react';
-import { extractMP3Metadata, fileToDataURL, sanitizeFilename, getAlbumArtURL } from '../utils/audioUtils';
+import { extractMP3Metadata, fileToDataURL, parseFilenameToMetadata, getAlbumArtURL, bufferToBase64 } from '../utils/audioUtils';
 
 export const useLibrary = () => {
   const [songs, setSongs] = useState([]);
@@ -9,7 +9,16 @@ export const useLibrary = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [metadataCache, setMetadataCache] = useState(new Map());
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [sortConfig, setSortConfig] = useState({ field: 'title', direction: 'asc' });
+
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   // Load saved data
   useEffect(() => {
@@ -35,7 +44,8 @@ export const useLibrary = () => {
   // Save songs
   useEffect(() => {
     try {
-      localStorage.setItem('songsWithMetadata', JSON.stringify(songs));
+      const songsToSave = songs.map(({ coverUrl, ...rest }) => rest);
+      localStorage.setItem('songsWithMetadata', JSON.stringify(songsToSave));
     } catch (error) {
       console.error('Error saving songs:', error);
     }
@@ -52,7 +62,7 @@ export const useLibrary = () => {
 
   // Load files with metadata
   const loadFiles = useCallback(async (files) => {
-    const audioFiles = Array.from(files).filter(file => 
+    const audioFiles = Array.from(files).filter(file =>
       file.type.startsWith('audio/') || /\.(mp3|wav|ogg|m4a|flac|aac)$/i.test(file.name)
     );
 
@@ -68,22 +78,23 @@ export const useLibrary = () => {
       const loadPromises = audioFiles.map(async (file, index) => {
         try {
           const fileId = `${file.name}-${file.size}-${file.lastModified}`;
-          
+
           if (metadataCache.has(fileId)) {
             return metadataCache.get(fileId);
           }
 
           const dataURL = await fileToDataURL(file);
-          
+
           return new Promise(async (resolve) => {
             const audio = new Audio();
-            
+
             const handleLoad = async () => {
               try {
+                const baseMeta = parseFilenameToMetadata(file.name);
                 const song = {
                   id: `song-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`,
-                  title: sanitizeFilename(file.name),
-                  artist: 'Unknown Artist',
+                  title: baseMeta.title,
+                  artist: baseMeta.artist,
                   album: 'Unknown Album',
                   duration: audio.duration || 0,
                   url: dataURL,
@@ -95,17 +106,22 @@ export const useLibrary = () => {
                   addedAt: new Date().toISOString(),
                 };
 
-                const isMP3 = file.type === 'audio/mpeg' || file.name.toLowerCase().endsWith('.mp3');
-                
-                if (isMP3) {
-                  const metadata = await extractMP3Metadata(file);
-                  if (metadata) {
-                    Object.assign(song, metadata);
-                    if (metadata.picture) {
-                      const artUrl = getAlbumArtURL(metadata.picture);
-                      if (artUrl) {
-                        song.coverUrl = artUrl;
-                      }
+                const metadata = await extractMP3Metadata(file);
+                if (metadata) {
+                  Object.assign(song, {
+                    title: metadata.title || song.title,
+                    artist: metadata.artist || song.artist,
+                    album: metadata.album || song.album,
+                    duration: metadata.duration || song.duration,
+                    genre: metadata.genre || song.genre,
+                    year: metadata.year || song.year
+                  });
+                  if (metadata.picture) {
+                    const pic = { data: bufferToBase64(metadata.picture.data), format: metadata.picture.format };
+                    if (pic.data) {
+                      song.picture = pic;
+                      const artUrl = getAlbumArtURL(pic);
+                      if (artUrl) song.coverUrl = artUrl;
                     }
                   }
                 }
@@ -117,14 +133,14 @@ export const useLibrary = () => {
                 resolve(null);
               }
             };
-            
+
             audio.addEventListener('loadedmetadata', handleLoad);
             audio.addEventListener('error', () => resolve(null));
-            
+
             setTimeout(() => {
               if (audio.readyState === 0) resolve(null);
             }, 10000);
-            
+
             audio.src = dataURL;
           });
         } catch (error) {
@@ -135,7 +151,7 @@ export const useLibrary = () => {
 
       const batchSize = 5;
       const newSongs = [];
-      
+
       for (let i = 0; i < loadPromises.length; i += batchSize) {
         const batch = loadPromises.slice(i, i + batchSize);
         const batchResults = await Promise.all(batch);
@@ -146,25 +162,25 @@ export const useLibrary = () => {
         alert('Failed to load any audio files.');
         return;
       }
-      
-      const existingFileIds = new Set(songs.map(s => 
+
+      const existingFileIds = new Set(songs.map(s =>
         `${s.fileName}-${s.fileSize}-${s.lastModified}`
       ));
-      
-      const uniqueNewSongs = newSongs.filter(song => 
+
+      const uniqueNewSongs = newSongs.filter(song =>
         !existingFileIds.has(`${song.fileName}-${song.fileSize}-${song.lastModified}`)
       );
-      
+
       if (uniqueNewSongs.length === 0) {
         alert('All selected files are already in your library.');
         return;
       }
-      
+
       const updatedSongs = [...songs, ...uniqueNewSongs];
       setSongs(updatedSongs);
       setFilteredSongs(updatedSongs);
       alert(`Successfully added ${uniqueNewSongs.length} new songs!`);
-      
+
     } catch (error) {
       console.error('Error loading files:', error);
       alert('An error occurred while loading files.');
@@ -178,9 +194,9 @@ export const useLibrary = () => {
     let result = [...songs];
 
     // 1. Filter
-    if (searchQuery.trim()) {
-      const queryLower = searchQuery.toLowerCase();
-      result = result.filter(song => 
+    if (debouncedSearchQuery.trim()) {
+      const queryLower = debouncedSearchQuery.trim().toLowerCase();
+      result = result.filter(song =>
         (song.title && song.title.toLowerCase().includes(queryLower)) ||
         (song.artist && song.artist.toLowerCase().includes(queryLower)) ||
         (song.album && song.album.toLowerCase().includes(queryLower)) ||
@@ -195,16 +211,16 @@ export const useLibrary = () => {
       result.sort((a, b) => {
         let aVal = a[field];
         let bVal = b[field];
-        
+
         if (field === 'duration' || field === 'plays') {
           aVal = aVal || 0;
           bVal = bVal || 0;
           return direction === 'asc' ? aVal - bVal : bVal - aVal;
         }
-        
+
         aVal = (aVal || '').toString().toLowerCase();
         bVal = (bVal || '').toString().toLowerCase();
-        
+
         if (direction === 'asc') {
           return aVal.localeCompare(bVal);
         } else {
@@ -214,7 +230,7 @@ export const useLibrary = () => {
     }
 
     setFilteredSongs(result);
-  }, [songs, searchQuery, sortConfig]);
+  }, [songs, debouncedSearchQuery, sortConfig]);
 
   // Search songs
   const searchSongs = useCallback((query) => {
@@ -241,11 +257,11 @@ export const useLibrary = () => {
 
   // Increment play count
   const incrementPlayCount = useCallback((songId) => {
-    setSongs(prev => prev.map(song => 
+    setSongs(prev => prev.map(song =>
       song.id === songId ? { ...song, plays: (song.plays || 0) + 1 } : song
     ));
-    
-    setFilteredSongs(prev => prev.map(song => 
+
+    setFilteredSongs(prev => prev.map(song =>
       song.id === songId ? { ...song, plays: (song.plays || 0) + 1 } : song
     ));
   }, []);
@@ -264,7 +280,7 @@ export const useLibrary = () => {
       newSet.delete(songId);
       return newSet;
     });
-    
+
     return true;
   }, [songs]);
 
@@ -281,7 +297,7 @@ export const useLibrary = () => {
       songIds.forEach(id => newSet.delete(id));
       return newSet;
     });
-    
+
     return true;
   }, []);
 

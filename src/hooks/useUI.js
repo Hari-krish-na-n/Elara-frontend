@@ -26,7 +26,7 @@ export const useUI = () => {
 
   const toggleEqualizer = useCallback(() => setShowEqualizer(prev => !prev), []);
   const toggleLyrics = useCallback(() => setShowLyrics(prev => !prev), []);
-  const toggleSongInfo = useCallback(() => setShowSongInfo(prev => !prev), []);
+  const toggleNowPlaying = useCallback(() => setShowSongInfo(prev => !prev), []);
 
   // Close all modals
   const closeAllModals = useCallback(() => {
@@ -85,9 +85,9 @@ export const useUI = () => {
 
   // Overlay click handler
   const handleOverlayClick = useCallback((e) => {
-    if (e.target.classList.contains('overlay') || 
-        e.target.classList.contains('sidebar-overlay') ||
-        e.target.classList.contains('modal-overlay')) {
+    if (e.target.classList.contains('overlay') ||
+      e.target.classList.contains('sidebar-overlay') ||
+      e.target.classList.contains('modal-overlay')) {
       closeAllModals();
     }
   }, [closeAllModals]);
@@ -113,7 +113,7 @@ export const useUI = () => {
     toggleLyrics,
 
     showSongInfo,
-    toggleSongInfo,
+    toggleNowPlaying,
 
     closeAllModals,
 

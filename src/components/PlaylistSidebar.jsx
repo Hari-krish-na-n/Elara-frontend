@@ -1,9 +1,9 @@
 // src/components/PlaylistSidebar.js
 import React, { useState } from 'react';
-import './Entire.css';
-import '../App1.css';
+
 import './PlaylistSidebar.css';
 import { playAddToPlaylistSound } from '../utils/soundEffects';
+import { bufferToBase64 } from '../utils/audioUtils';
 const PlaylistSidebar = ({ song, playlists, addSongToPlaylist, onClose, createNewPlaylist }) => {
     const [newPlaylistName, setNewPlaylistName] = useState('');
     const [selectedPlaylists, setSelectedPlaylists] = useState([]);
@@ -41,12 +41,38 @@ const PlaylistSidebar = ({ song, playlists, addSongToPlaylist, onClose, createNe
     };
 
     const togglePlaylistSelection = (playlistId) => {
-        setSelectedPlaylists(prev => 
-            prev.includes(playlistId) 
+        setSelectedPlaylists(prev =>
+            prev.includes(playlistId)
                 ? prev.filter(id => id !== playlistId)
                 : [...prev, playlistId]
         );
     };
+
+    const getSongCoverUrl = (song) => {
+        if (!song) return null;
+
+        // 1. Prefer persistent Base64 regeneration from raw picture data (handles reload)
+        if (song.picture && (song.picture.data || song.picture instanceof ArrayBuffer || Array.isArray(song.picture))) {
+            try {
+                const base64String = bufferToBase64(song.picture);
+                if (base64String) {
+                    return `data:${song.picture.format};base64,${base64String}`;
+                }
+            } catch (e) {
+                // Fallback
+            }
+        }
+
+        if (song.coverUrl && !song.coverUrl.startsWith('blob:')) return song.coverUrl;
+        if (song.coverUrl) return song.coverUrl;
+
+        if (song.cover && typeof song.cover === 'string') return song.cover;
+        if (song.picture && song.picture.url) return song.picture.url;
+
+        return null;
+    };
+
+    const coverUrl = getSongCoverUrl(song);
 
     return (
         <div className="playlist-sidebar-overlay">
@@ -60,9 +86,18 @@ const PlaylistSidebar = ({ song, playlists, addSongToPlaylist, onClose, createNe
                 {/* Song Info */}
                 <div className="song-preview-card">
                     <div className="song-cover-large">
-                        <div className="cover-placeholder">
-                            {song.title.charAt(0)}
-                        </div>
+                        {coverUrl ? (
+                            <img
+                                src={coverUrl}
+                                alt={song.title}
+                                className="cover-img-large"
+                                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                            />
+                        ) : (
+                            <div className="cover-placeholder">
+                                {song.title.charAt(0)}
+                            </div>
+                        )}
                     </div>
                     <div className="song-info-large">
                         <h3 className="song-title-large">{song.title}</h3>
@@ -73,10 +108,10 @@ const PlaylistSidebar = ({ song, playlists, addSongToPlaylist, onClose, createNe
 
                 {/* Quick Actions */}
                 <div className="quick-actions">
-                    <button className="quick-action-btn" onClick={() => {/* Add to liked songs */}}>
+                    <button className="quick-action-btn" onClick={() => {/* Add to liked songs */ }}>
                         ❤️ Add to Liked Songs
                     </button>
-                    <button className="quick-action-btn" onClick={() => {/* Add to queue */}}>
+                    <button className="quick-action-btn" onClick={() => {/* Add to queue */ }}>
                         ⏭️ Add to Queue
                     </button>
                 </div>
@@ -104,8 +139,8 @@ const PlaylistSidebar = ({ song, playlists, addSongToPlaylist, onClose, createNe
                     <div className="playlists-list">
                         {playlists.length > 0 ? (
                             playlists.map(playlist => (
-                                <div 
-                                    key={playlist.id} 
+                                <div
+                                    key={playlist.id}
                                     className={`playlist-item-card ${selectedPlaylists.includes(playlist.id) ? 'selected' : ''}`}
                                 >
                                     <div className="playlist-checkbox">
@@ -123,7 +158,7 @@ const PlaylistSidebar = ({ song, playlists, addSongToPlaylist, onClose, createNe
                                             {playlist.songs.length} songs
                                         </span>
                                     </div>
-                                    <button 
+                                    <button
                                         className="add-single-btn"
                                         onClick={() => handleAddToPlaylist(playlist.id)}
                                         title={`Add to ${playlist.name}`}
@@ -146,7 +181,7 @@ const PlaylistSidebar = ({ song, playlists, addSongToPlaylist, onClose, createNe
                     <button className="cancel-btn" onClick={onClose}>
                         Cancel
                     </button>
-                    <button 
+                    <button
                         className="add-to-selected-btn"
                         onClick={handleAddToSelected}
                         disabled={selectedPlaylists.length === 0}

@@ -1,6 +1,7 @@
 // src/components/KeyboardHelpModal.jsx
 import React from 'react';
-import { KEYBOARD_SHORTCUTS } from './hooks/useKeyboardShortcuts';
+import { KEYBOARD_SHORTCUTS } from '../hooks/useKeyboardShortcuts';
+import './KeyboardHelpModal.css';
 
 const KeyboardHelpModal = ({ onClose }) => {
   return (
@@ -19,7 +20,7 @@ const KeyboardHelpModal = ({ onClose }) => {
               </div>
             ))}
           </div>
-          
+
           <div className="help-section">
             <h3>Volume</h3>
             {KEYBOARD_SHORTCUTS.volume.map((shortcut, index) => (
@@ -28,7 +29,7 @@ const KeyboardHelpModal = ({ onClose }) => {
               </div>
             ))}
           </div>
-          
+
           <div className="help-section">
             <h3>Controls</h3>
             {KEYBOARD_SHORTCUTS.controls.map((shortcut, index) => (
@@ -37,7 +38,7 @@ const KeyboardHelpModal = ({ onClose }) => {
               </div>
             ))}
           </div>
-          
+
           <div className="help-section">
             <h3>Navigation</h3>
             {KEYBOARD_SHORTCUTS.navigation.map((shortcut, index) => (

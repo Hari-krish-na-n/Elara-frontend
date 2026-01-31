@@ -1,17 +1,17 @@
 // src/App.jsx - Refactored Version
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
-import './App1.css';
-import './components/Entire.css';
+import './views/Entire.css';
+
 
 // Custom Hooks
 // In App.jsx, update these imports:
-import { useAudioPlayer } from './components/hooks/useAudioPlayer';
-import { usePlaylist } from "./components/hooks/usePlaylist";
-import { useLibrary } from './components/hooks/useLibrary';
-import { useKeyboardShortcuts } from "./components/hooks/useKeyboardShortcuts";
-import { useUI } from "./components/hooks/useUI";
+import { useAudioPlayer } from './hooks/useAudioPlayer';
+import { usePlaylist } from "./hooks/usePlaylist";
+import { useLibrary } from './hooks/useLibrary';
+import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
+import { useUI } from "./hooks/useUI";
 
 // Components
 import Header from './components/Header';
@@ -26,6 +26,15 @@ import ErrorBoundary from './components/ErrorBoundary';
 import LoadingOverlay from './components/LoadingOverlay';
 import KeyboardHelpModal from './components/KeyboardHelpModal';
 import NotificationToast from './components/NotificationToast';
+import FullscreenPlayer from './components/FullscreenPlayer';
+
+function MainContent({ children }) {
+  const { pathname } = useLocation();
+  const isFullBleed = ['/library', '/liked', '/queue', '/playlists'].some((p) =>
+    pathname.startsWith(p)
+  );
+  return <div className={`main-content ${isFullBleed ? 'full-bleed' : ''}`}>{children}</div>;
+}
 
 function App() {
   // ===== LIBRARY MANAGEMENT =====
@@ -94,6 +103,13 @@ function App() {
     duplicatePlaylist,
     reorderPlaylistSongs,
     getPlaylistStats,
+    exportPlaylist,
+    mergePlaylists,
+    dedupePlaylistSongs,
+    shufflePlaylistSongs,
+    sortPlaylistSongs,
+    sortPlaylists,
+    importPlaylistFromJSON,
   } = usePlaylist(songs);
 
   // ===== UI STATE =====
@@ -108,6 +124,10 @@ function App() {
     setFocusOnSong,
     notification,
     showNotification,
+    viewMode,
+    changeViewMode,
+    showSongInfo,
+    toggleNowPlaying,
   } = useUI();
 
   // ===== KEYBOARD SHORTCUTS =====
@@ -175,7 +195,7 @@ function App() {
           />
 
           {/* Main Content */}
-          <div className="main-content">
+          <MainContent>
             <Routes>
               <Route path="/" element={<Home />} />
 
@@ -197,6 +217,7 @@ function App() {
                       moveInQueue={moveInQueue}
                       focusTarget={focusTarget}
                       onPlaylistSelect={setSelectedPlaylist}
+                      onOpenDetails={toggleNowPlaying}
                     />
                   </>
                 }
@@ -219,6 +240,7 @@ function App() {
                       onAddToQueue={addToQueue}
                       queue={queue}
                       moveInQueue={moveInQueue}
+                      onOpenDetails={toggleNowPlaying}
                     />
                   </>
                 }
@@ -258,6 +280,27 @@ function App() {
                       addToQueue={addToQueue}
                       onOpenPlaylistSidebar={openPlaylistSidebar}
                       getPlaylistStats={getPlaylistStats}
+                      isShuffled={isShuffled}
+                      toggleShuffle={toggleShuffle}
+                      repeatMode={repeatMode}
+                      toggleRepeat={toggleRepeat}
+                      volume={volume}
+                      isMuted={isMuted}
+                      toggleMute={toggleMute}
+                      setVolume={setVolume}
+                      onDownload={(p) => {
+                        const json = exportPlaylist?.(p.id);
+                        if (!json) return;
+                        const blob = new Blob([json], { type: 'application/json' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `${p.name || 'playlist'}.json`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                      }}
                     />
                   ) : (
                     <PlaylistsView
@@ -267,12 +310,20 @@ function App() {
                       duplicatePlaylist={duplicatePlaylist}
                       updatePlaylist={updatePlaylist}
                       deletePlaylist={deletePlaylist}
+                      mergePlaylists={mergePlaylists}
+                      dedupePlaylistSongs={dedupePlaylistSongs}
+                      shufflePlaylistSongs={shufflePlaylistSongs}
+                      sortPlaylistSongs={sortPlaylistSongs}
+                      sortPlaylists={sortPlaylists}
+                      importPlaylistFromJSON={importPlaylistFromJSON}
+                      viewMode={viewMode}
+                      changeViewMode={changeViewMode}
                     />
                   )
                 }
               />
             </Routes>
-          </div>
+          </MainContent>
 
           {/* Player Controls */}
           <PlayerControls
@@ -298,10 +349,30 @@ function App() {
             isCurrentLiked={currentSong ? isSongLiked(currentSong.id) : false}
             onToggleCurrentLike={() => currentSong && toggleLike(currentSong)}
             queueLength={queue.length}
-            playbackRate={playbackRate}
-            changePlaybackRate={changePlaybackRate}
             isBuffering={isBuffering}
+            onOpenDetails={toggleNowPlaying}
           />
+
+          {/* Fullscreen Player Overlay */}
+          {showSongInfo && currentSong && (
+            <FullscreenPlayer
+              song={currentSong}
+              isPlaying={isPlaying}
+              currentTime={currentTime}
+              duration={duration}
+              togglePlayPause={togglePlayPause}
+              playNextSong={playNextSong}
+              playPrevSong={playPrevSong}
+              seekTo={seekTo}
+              onClose={toggleNowPlaying}
+              isShuffled={isShuffled}
+              toggleShuffle={toggleShuffle}
+              repeatMode={repeatMode}
+              toggleRepeat={toggleRepeat}
+              isCurrentLiked={isSongLiked(currentSong.id)}
+              onToggleCurrentLike={() => toggleLike(currentSong)}
+            />
+          )}
 
           {/* Playlist Sidebar */}
           {selectedPlaylistForAdd && (

@@ -2,70 +2,70 @@
 import React, { useState } from 'react';
 
 import { NavLink, useNavigate } from 'react-router-dom';
-import { 
-  FaHome, 
-  FaMusic, 
-  FaHeart, 
-  FaListAlt, 
+import {
+  FaHome,
+  FaMusic,
+  FaHeart,
+  FaListAlt,
   FaCog,
   FaPlayCircle,
   FaHeartbeat
 } from 'react-icons/fa';
-import { 
+import {
   HiLibrary,
   HiOutlineLibrary
 } from 'react-icons/hi';
-import { 
+import {
   MdQueueMusic,
   MdOutlineQueueMusic,
   MdPublic
 } from 'react-icons/md';
-import { 
+import {
   RiSettings4Fill,
   RiSettings4Line
 } from 'react-icons/ri';
-import './Entire.css';
+
 
 const Sidebar = ({ onSearch }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
 
   const navItems = [
-    { 
-      name: 'Home', 
-      icon: <FaHome className="icon" />, 
+    {
+      name: 'Home',
+      icon: <FaHome className="icon" />,
       outlineIcon: <FaHome className="icon" />,
-      path: '/' 
+      path: '/'
     },
-    { 
-      name: 'Music Library', 
-      icon: <FaMusic className="icon" />, 
+    {
+      name: 'Music Library',
+      icon: <FaMusic className="icon" />,
       outlineIcon: <HiLibrary className="icon" />,
-      path: '/library' 
+      path: '/library'
     },
-    { 
-      name: 'Liked Songs', 
-      icon: <FaHeart className="icon heartbeat" />, 
+    {
+      name: 'Liked Songs',
+      icon: <FaHeart className="icon heartbeat" />,
       outlineIcon: <FaHeart className="icon" />,
-      path: '/liked' 
+      path: '/liked'
     },
-    { 
-      name: 'Queue', 
-      icon: <MdQueueMusic className="icon bounce" />, 
+    {
+      name: 'Queue',
+      icon: <MdQueueMusic className="icon bounce" />,
       outlineIcon: <MdOutlineQueueMusic className="icon" />,
-      path: '/queue' 
+      path: '/queue'
     },
-    { 
-      name: 'Playlists', 
-      icon: <FaListAlt className="icon slide" />, 
+    {
+      name: 'Playlists',
+      icon: <FaListAlt className="icon slide" />,
       outlineIcon: <FaListAlt className="icon" />,
-      path: '/playlists' 
+      path: '/playlists'
     },
-    { 
-      name: 'Settings', 
-      icon: <RiSettings4Fill className="icon spin" />, 
+    {
+      name: 'Settings',
+      icon: <RiSettings4Fill className="icon spin" />,
       outlineIcon: <RiSettings4Line className="icon" />,
-      path: '/settings' 
+      path: '/settings'
     },
   ];
 
@@ -91,28 +91,20 @@ const Sidebar = ({ onSearch }) => {
       <div className="sidebar-header">
         <div className="logo-container">
           <div className="logo">
-            
+
             <img src="/icons/favicon.png.png" alt="Favicon"
-            
-      style={{ 
-    width: '160px', 
-    height: '160px',
-    borderRadius: '50%', // Makes it perfectly round
-    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-    cursor: 'pointer',
-    animation: 'spin 45s linear infinite' // Continuous rotation
-  }}
-  onMouseEnter={(e) => {
-    e.currentTarget.style.animation = 'spin 0.5s linear infinite';
-  }}
-  onMouseLeave={(e) => {
-    e.currentTarget.style.animation = 'spin 1s linear infinite';
-  }}
+
+              onMouseEnter={(e) => {
+                e.currentTarget.style.animation = 'spin 0.5s linear infinite';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.animation = 'spin 1s linear infinite';
+              }}
 
             />
           </div>
         </div>
-        
+
         <form className="search-box" onSubmit={handleSearch}>
           <input
             type="text"
@@ -124,7 +116,7 @@ const Sidebar = ({ onSearch }) => {
           />
           <button type="submit" className="search-btn">
             <svg className="search-icon" viewBox="0 0 24 24" width="18" height="18">
-              <path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+              <path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
             </svg>
           </button>
         </form>
@@ -135,7 +127,7 @@ const Sidebar = ({ onSearch }) => {
           <NavLink
             key={item.path}
             to={item.path}
-            className={({ isActive }) => 
+            className={({ isActive }) =>
               `nav-item ${isActive ? 'active' : ''}`
             }
           >
