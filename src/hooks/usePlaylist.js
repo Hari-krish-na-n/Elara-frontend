@@ -1,29 +1,44 @@
 // src/hooks/usePlaylist.js
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import * as db from '../db';
 
 export const usePlaylist = (songs = []) => {
   const [playlists, setPlaylists] = useState([]);
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
+  const isLoadedRef = useRef(false);
 
-  // Load saved playlists
+  // Load saved playlists from IndexedDB
   useEffect(() => {
-    try {
-      const savedPlaylists = localStorage.getItem('playlists');
-      if (savedPlaylists) {
-        setPlaylists(JSON.parse(savedPlaylists));
+    const loadPlaylists = async () => {
+      try {
+        const savedPlaylists = await db.getPlaylists();
+        if (savedPlaylists && savedPlaylists.length > 0) {
+          setPlaylists(savedPlaylists);
+        }
+      } catch (error) {
+        console.error('Error loading playlists from DB:', error);
+      } finally {
+        isLoadedRef.current = true;
       }
-    } catch (error) {
-      console.error('Error loading playlists:', error);
-    }
+    };
+    loadPlaylists();
   }, []);
 
-  // Save playlists
+  // Save playlists to IndexedDB whenever they change
   useEffect(() => {
-    try {
-      localStorage.setItem('playlists', JSON.stringify(playlists));
-    } catch (error) {
-      console.error('Error saving playlists:', error);
-    }
+    if (!isLoadedRef.current) return;
+
+    const saveToDb = async () => {
+      try {
+        await db.savePlaylists(playlists);
+      } catch (error) {
+        console.error('Error saving playlists to DB:', error);
+      }
+    };
+    
+    // Debounce slightly to avoid excessive writes
+    const timeoutId = setTimeout(saveToDb, 500);
+    return () => clearTimeout(timeoutId);
   }, [playlists]);
 
   // Create new playlist

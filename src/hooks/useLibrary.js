@@ -1,6 +1,7 @@
 // src/hooks/useLibrary.js
 import { useState, useEffect, useCallback } from 'react';
 import { extractMP3Metadata, fileToDataURL, parseFilenameToMetadata, getAlbumArtURL, bufferToBase64 } from '../utils/audioUtils';
+import * as db from '../db';
 
 export const useLibrary = () => {
   const [songs, setSongs] = useState([]);
@@ -20,45 +21,98 @@ export const useLibrary = () => {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Load saved data
+  // Load saved data from IndexedDB
   useEffect(() => {
-    try {
-      const savedSongs = localStorage.getItem('songsWithMetadata');
-      const savedLiked = localStorage.getItem('likedSongs');
+    async function loadFromDB() {
+      try {
+        const savedSongs = await db.getSongs();
+        const savedLiked = await db.getLikedSongs();
 
-      if (savedSongs) {
-        const parsedSongs = JSON.parse(savedSongs);
-        setSongs(parsedSongs);
-        setFilteredSongs(parsedSongs);
-        console.log(`Loaded ${parsedSongs.length} songs from storage`);
-      }
+        if (savedSongs && savedSongs.length > 0) {
+          // Check for expired blob URLs
+          const processedSongs = await Promise.all(savedSongs.map(async (song) => {
+            if (song.url && song.url.startsWith('blob:')) {
+              const isCached = await db.isAudioCached(song.id);
+              if (!isCached) {
+                return {
+                  ...song,
+                  playable: false,
+                  needsImport: true,
+                  url: null // Clear expired URL
+                };
+              } else {
+                // Restore Blob URL from IndexedDB
+                try {
+                  const blob = await db.getAudio(song.id);
+                  if (blob) {
+                    const newUrl = URL.createObjectURL(blob);
+                    return {
+                      ...song,
+                      url: newUrl,
+                      playable: true,
+                      needsImport: false
+                    };
+                  }
+                } catch (err) {
+                  console.error('Failed to restore audio blob for song:', song.id, err);
+                }
+              }
+            }
+            return song;
+          }));
 
-      if (savedLiked) {
-        setLikedSongs(new Set(JSON.parse(savedLiked)));
+          setSongs(processedSongs);
+          setFilteredSongs(processedSongs);
+          console.log(`Loaded ${processedSongs.length} songs from IndexedDB`);
+        } else {
+          // Fallback to localStorage if exists (migration)
+          const legacySongs = localStorage.getItem('songsWithMetadata');
+          if (legacySongs) {
+            const parsed = JSON.parse(legacySongs);
+            setSongs(parsed);
+            setFilteredSongs(parsed);
+            db.saveSongs(parsed);
+          } else {
+            // No saved songs, library is empty
+            setSongs([]);
+            setFilteredSongs([]);
+          }
+        }
+
+        if (savedLiked && savedLiked.length > 0) {
+          setLikedSongs(new Set(savedLiked.map(s => s.id)));
+        } else {
+          const legacyLiked = localStorage.getItem('likedSongs');
+          if (legacyLiked) {
+            const parsed = JSON.parse(legacyLiked);
+            setLikedSongs(new Set(parsed));
+          }
+        }
+      } catch (error) {
+        console.error('Error loading library data from IndexedDB:', error);
       }
-    } catch (error) {
-      console.error('Error loading library data:', error);
     }
+    loadFromDB();
   }, []);
 
-  // Save songs
+  // Save songs to IndexedDB
   useEffect(() => {
-    try {
-      const songsToSave = songs.map(({ coverUrl, ...rest }) => rest);
-      localStorage.setItem('songsWithMetadata', JSON.stringify(songsToSave));
-    } catch (error) {
-      console.error('Error saving songs:', error);
+    if (songs.length > 0) {
+      db.saveSongs(songs);
     }
   }, [songs]);
 
-  // Save liked songs
+  // Save liked songs to IndexedDB
   useEffect(() => {
-    try {
-      localStorage.setItem('likedSongs', JSON.stringify([...likedSongs]));
-    } catch (error) {
-      console.error('Error saving liked songs:', error);
-    }
-  }, [likedSongs]);
+    const list = songs
+      .filter(s => likedSongs.has(s.id))
+      .map(s => ({ id: s.id })); // Store only ID or full song? db.js expects full song?
+
+    // The current db.js STORE_LIKED uses keyPath 'id'.
+    // Let's store full objects if possible or just IDs.
+    // In useLibrary, likedSongs is a Set of IDs.
+    db.saveLikedSongs(songs.filter(s => likedSongs.has(s.id)));
+  }, [likedSongs, songs]);
 
   // Load files with metadata
   const loadFiles = useCallback(async (files) => {

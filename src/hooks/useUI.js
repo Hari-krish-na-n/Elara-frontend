@@ -1,5 +1,5 @@
 // src/hooks/useUI.js
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 export const useUI = () => {
   const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
@@ -59,13 +59,22 @@ export const useUI = () => {
 
   // Notifications
   const showNotification = useCallback((message, type = 'info', duration = 3000) => {
-    // Notifications removed
-    console.log('Notification:', message);
+    setNotification({ message, type, duration });
   }, []);
 
   const hideNotification = useCallback(() => {
     setNotification(null);
   }, []);
+
+  // Listen for global notifications
+  useEffect(() => {
+    const handleGlobalNotification = (e) => {
+      const { message, type, duration } = e.detail;
+      showNotification(message, type, duration);
+    };
+    window.addEventListener('app-notification', handleGlobalNotification);
+    return () => window.removeEventListener('app-notification', handleGlobalNotification);
+  }, [showNotification]);
 
   // Theme
   const toggleTheme = useCallback(() => {

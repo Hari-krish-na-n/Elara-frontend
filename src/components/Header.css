@@ -106,6 +106,46 @@
   animation: pulseRing 2s ease-in-out infinite;
 }
 
+/* Connectivity Indicator */
+.connectivity-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: 15px;
+  transition: all 0.3s ease;
+}
+
+.connectivity-indicator.online {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.connectivity-indicator.offline {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.indicator-text {
+  display: inline-block;
+}
+
+@media (max-width: 768px) {
+  .indicator-text {
+    display: none;
+  }
+
+  .connectivity-indicator {
+    margin-left: 8px;
+    padding: 4px;
+  }
+}
+
 .header-logo:hover .logo-image::after {
   opacity: 1;
 }

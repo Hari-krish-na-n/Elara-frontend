@@ -69,6 +69,21 @@ const Sidebar = ({ onSearch }) => {
     },
   ];
 
+  /* Live Search Effect with Debounce */
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (onSearch) {
+        onSearch(searchQuery);
+      }
+      // Auto-navigate to library if searching
+      if (searchQuery.trim() && !window.location.pathname.includes('/library')) {
+        navigate('/library');
+      }
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery, onSearch, navigate]);
+
   const handleSearch = (e) => {
     e.preventDefault();
     if (onSearch) {

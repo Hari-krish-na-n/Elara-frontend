@@ -258,6 +258,13 @@ const MusicList = ({
 
   const handleSongClick = (song) => {
     if (isDragging || openMenuId) return;
+
+    // Prevent playing demo songs that are not imported
+    if (song.type === 'demo' && !song.url) {
+      showInfoMessage(`"${song.title}" is a demo track. Please import your own music to play.`);
+      return;
+    }
+
     if (currentSongId === song.id && onOpenDetails) {
       onOpenDetails();
       return;
@@ -434,6 +441,12 @@ const MusicList = ({
                         <Music size={20} />
                       </div>
                     )}
+                    {currentSong.needsImport && (
+                      <span className="demo-badge warning">
+                        <AlertCircle size={12} />
+                        Not Imported
+                      </span>
+                    )}
                   </div>
                   <div className="current-song-info">
                     <div className="current-song-title">
@@ -582,10 +595,11 @@ const MusicList = ({
             {displayedSongs.map((song, index) => (
               <div
                 key={song.id}
-                className={`song-row ${currentSongId === song.id ? 'current' : ''}`}
+                className={`song-row ${currentSongId === song.id ? 'current' : ''} ${song.type === 'demo' ? 'demo' : ''} ${song.type === 'demo' && !song.url ? 'not-playable' : ''}`}
                 data-song-id={song.id}
                 onClick={() => handleSongClick(song)}
-                draggable
+                title={song.type === 'demo' && !song.url ? 'Demo track - import music to play' : ''}
+                draggable={song.type !== 'demo'}
                 onDragStart={(e) => {
                   const data = JSON.stringify(song);
                   e.dataTransfer.setData('text/plain', data);
@@ -608,6 +622,7 @@ const MusicList = ({
                 <div className="song-main">
                   <div className="song-title">
                     <HighlightText text={song.title || song.fileName || 'Unknown Title'} highlight={activeSearch} />
+                    {song.type === 'demo' && <span className="demo-badge warning">Not Imported</span>}
                   </div>
                   <div className="song-artist">
                     <HighlightText text={song.artist || 'Unknown Artist'} highlight={activeSearch} />

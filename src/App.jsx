@@ -124,6 +124,7 @@ function App() {
     setFocusOnSong,
     notification,
     showNotification,
+    hideNotification,
     viewMode,
     changeViewMode,
     showSongInfo,
@@ -383,6 +384,16 @@ function App() {
               addToQueue={addToQueue}
               onClose={closePlaylistSidebar}
               createNewPlaylist={createPlaylist}
+            />
+          )}
+
+          {/* Notifications */}
+          {notification && (
+            <NotificationToast
+              message={notification.message}
+              type={notification.type}
+              duration={notification.duration}
+              onClose={hideNotification}
             />
           )}
         </div>

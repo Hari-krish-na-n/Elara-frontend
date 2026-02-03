@@ -2,10 +2,11 @@
 import { openDB } from 'idb';
 
 const DB_NAME = 'elara-db';
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 const STORE_SONGS = 'songs';
 const STORE_PLAYLISTS = 'playlists';
 const STORE_LIKED = 'likedSongs';
+const STORE_AUDIO = 'audio_data';
 
 const dbPromise = openDB(DB_NAME, DB_VERSION, {
   upgrade(db, oldVersion, newVersion) {
@@ -17,6 +18,9 @@ const dbPromise = openDB(DB_NAME, DB_VERSION, {
     }
     if (!db.objectStoreNames.contains(STORE_LIKED)) {
       db.createObjectStore(STORE_LIKED, { keyPath: 'id' });
+    }
+    if (!db.objectStoreNames.contains(STORE_AUDIO)) {
+      db.createObjectStore(STORE_AUDIO, { keyPath: 'id' });
     }
   }
 });
@@ -67,12 +71,13 @@ export async function getPlaylists() {
 }
 
 export async function savePlaylists(playlists) {
-  if (!playlists || playlists.length === 0) return;
   const db = await dbPromise;
   const tx = db.transaction(STORE_PLAYLISTS, 'readwrite');
   await tx.store.clear();
-  for (const p of playlists) {
-    await tx.store.put(p);
+  if (playlists && playlists.length > 0) {
+    for (const p of playlists) {
+      await tx.store.put(p);
+    }
   }
   await tx.done;
 }
@@ -92,4 +97,27 @@ export async function saveLikedSongs(likedSongs) {
     await tx.store.put(s);
   }
   await tx.done;
+}
+
+// ===== AUDIO DATA =====
+export async function saveAudio(songId, blob) {
+  const db = await dbPromise;
+  await db.put(STORE_AUDIO, { id: songId, data: blob, timestamp: Date.now() });
+}
+
+export async function getAudio(songId) {
+  const db = await dbPromise;
+  const item = await db.get(STORE_AUDIO, songId);
+  return item ? item.data : null;
+}
+
+export async function deleteAudio(songId) {
+  const db = await dbPromise;
+  await db.delete(STORE_AUDIO, songId);
+}
+
+export async function isAudioCached(songId) {
+  const db = await dbPromise;
+  const count = await db.count(STORE_AUDIO, songId);
+  return count > 0;
 }

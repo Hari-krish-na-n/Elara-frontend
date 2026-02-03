@@ -1,5 +1,6 @@
 // src/hooks/useAudioPlayer.js
 import { useState, useEffect, useRef, useCallback } from 'react';
+import * as db from '../db';
 
 export const useAudioPlayer = (songs = [], filteredSongs = []) => {
   const [currentSongIndex, setCurrentSongIndex] = useState(null);
@@ -15,9 +16,10 @@ export const useAudioPlayer = (songs = [], filteredSongs = []) => {
   const [queue, setQueue] = useState([]);
   const [playbackRate, setPlaybackRate] = useState(1); // New: playback speed
   const [isBuffering, setIsBuffering] = useState(false); // New: buffering state
-  
+
   const audioRef = useRef(new Audio());
   const previousVolumeRef = useRef(1);
+  const activeBlobUrlRef = useRef(null);
 
   // Load saved preferences
   useEffect(() => {
@@ -53,37 +55,109 @@ export const useAudioPlayer = (songs = [], filteredSongs = []) => {
     localStorage.setItem('playbackRate', playbackRate.toString());
   }, [playbackRate]);
 
+  const cleanupBlobUrl = useCallback(() => {
+    if (activeBlobUrlRef.current) {
+      URL.revokeObjectURL(activeBlobUrlRef.current);
+      activeBlobUrlRef.current = null;
+    }
+  }, []);
+
   // Play song
-  const playSong = useCallback((song) => {
-    if (!song || !song.url) {
+  const playSong = useCallback(async (song) => {
+    if (!song) {
       console.error('Invalid song:', song);
       return;
     }
-    
+
+    // Pre-flight check for playable status
+    if (song.playable === false || song.needsImport === true) {
+      const notification = new CustomEvent('app-notification', {
+        detail: {
+          message: `"${song.title || 'Track'}" needs to be imported before it can be played.`,
+          type: 'warning'
+        }
+      });
+      window.dispatchEvent(notification);
+      return;
+    }
+
     try {
+      const isOffline = !navigator.onLine;
+      let playUrl = null;
+
+      if (!song.id) {
+        throw new Error('Song missing ID');
+      }
+
+      const cachedBlob = await db.getAudio(song.id);
+
+      if (cachedBlob) {
+        cleanupBlobUrl();
+        playUrl = URL.createObjectURL(cachedBlob);
+        activeBlobUrlRef.current = playUrl;
+        console.log(`Using cached audio for: "${song.title}"`);
+      } else if (song.url && !song.url.startsWith('blob:')) {
+        // Only trust non-blob URLs from the metadata
+        playUrl = song.url;
+      }
+
+      // Relaxed offline check to allow Service Worker cached responses
+      /* 
+      if (isOffline && !cachedBlob && (!playUrl || !playUrl.startsWith('data:'))) {
+        const notification = new CustomEvent('app-notification', {
+          detail: { message: `"${song.title || 'Track'}" is not available offline.`, type: 'error' }
+        });
+        window.dispatchEvent(notification);
+        return;
+      } 
+      */
+
+      if (!playUrl) {
+        const notification = new CustomEvent('app-notification', {
+          detail: {
+            message: `"${song.title || 'Track'}" needs to be re-imported. The local link has expired.`,
+            type: 'warning'
+          }
+        });
+        window.dispatchEvent(notification);
+        return;
+      }
+
       setCurrentSongId(song.id);
       setLastPlayedSong(song);
       const songIndex = filteredSongs.findIndex(s => s.id === song.id);
       setCurrentSongIndex(songIndex !== -1 ? songIndex : null);
-      
+
       const audio = audioRef.current;
-      if (audio.src !== song.url) {
-        audio.src = song.url;
+
+      if (audio.src !== playUrl) {
+        audio.pause();
+        audio.src = playUrl;
+        audio.load();
       }
-      
+
       audio.playbackRate = playbackRate;
-      
-      audio.play().then(() => {
+
+      try {
+        await audio.play();
         setIsPlaying(true);
         console.log(`Now playing: "${song.title}" by ${song.artist}`);
-      }).catch(error => {
-        console.error('Error playing song:', error);
+      } catch (playError) {
+        console.error('Playback failed:', playError);
         setIsPlaying(false);
-      });
+        const notification = new CustomEvent('app-notification', {
+          detail: { message: `Unable to play "${song.title}". The file might be corrupted or missing.`, type: 'error' }
+        });
+        window.dispatchEvent(notification);
+      }
     } catch (error) {
       console.error('Error in playSong:', error);
+      const notification = new CustomEvent('app-notification', {
+        detail: { message: `An error occurred while trying to play this song.`, type: 'error' }
+      });
+      window.dispatchEvent(notification);
     }
-  }, [filteredSongs, playbackRate]);
+  }, [filteredSongs, playbackRate, cleanupBlobUrl]);
 
   // Toggle play/pause
   const togglePlayPause = useCallback(() => {
@@ -138,8 +212,8 @@ export const useAudioPlayer = (songs = [], filteredSongs = []) => {
       return;
     }
 
-    const prevIndex = currentSongIndex === 0 
-      ? filteredSongs.length - 1 
+    const prevIndex = currentSongIndex === 0
+      ? filteredSongs.length - 1
       : currentSongIndex - 1;
 
     setCurrentSongIndex(prevIndex);
@@ -273,13 +347,18 @@ export const useAudioPlayer = (songs = [], filteredSongs = []) => {
   useEffect(() => {
     audioRef.current.volume = volume;
   }, [volume]);
-  
+
   // Keep index in sync with filteredSongs based on currentSongId
   useEffect(() => {
     if (currentSongId == null) return;
     const idx = filteredSongs.findIndex(s => s.id === currentSongId);
     setCurrentSongIndex(idx !== -1 ? idx : null);
   }, [filteredSongs, currentSongId]);
+
+  // Cleanup blob URLs on unmount
+  useEffect(() => {
+    return () => cleanupBlobUrl();
+  }, [cleanupBlobUrl]);
 
   // Get current song
   const currentSong = (currentSongId != null
@@ -302,7 +381,7 @@ export const useAudioPlayer = (songs = [], filteredSongs = []) => {
     playbackRate,
     isBuffering,
     audioRef,
-    
+
     // Playback controls
     playSong,
     togglePlayPause,
@@ -311,18 +390,18 @@ export const useAudioPlayer = (songs = [], filteredSongs = []) => {
     seekTo,
     skipForward,
     skipBackward,
-    
+
     // Volume controls
     toggleMute,
     setVolume,
     increaseVolume,
     decreaseVolume,
-    
+
     // Playback modes
     toggleShuffle,
     toggleRepeat,
     changePlaybackRate,
-    
+
     // Queue management
     addToQueue,
     addMultipleToQueue,

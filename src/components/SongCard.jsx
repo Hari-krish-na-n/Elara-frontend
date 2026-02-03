@@ -1,9 +1,10 @@
-// src/components/SongCard.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import './SongCard.css';
 import '../App1.css';
-
 import { playLikeSound, playAddToPlaylistSound } from '../utils/soundEffects';
+import { Download, CheckCircle, CloudOff, Loader2 } from 'lucide-react';
+import { useDownload } from '../hooks/useDownload';
+import { useOffline } from '../hooks/useOffline';
 
 const SongCard = ({
   song,
@@ -14,6 +15,13 @@ const SongCard = ({
   onToggleLike,
   isLiked = false,
 }) => {
+  const { isDownloaded, isDownloading, downloadSong, removeDownload } = useDownload();
+  const isOffline = useOffline();
+
+  const downloaded = isDownloaded(song.id);
+  const downloading = isDownloading(song.id);
+  const isUnavailable = isOffline && !downloaded;
+
   const [showActions, setShowActions] = useState(false);
   const [showPlaylistMenu, setShowPlaylistMenu] = useState(false);
   const [menuPosition, setMenuPosition] = useState('bottom');
@@ -109,7 +117,7 @@ const SongCard = ({
 
   return (
     <div
-      className={`song-card ${isCurrent ? 'is-current' : ''}`}
+      className={`song-card ${isCurrent ? 'is-current' : ''} ${isUnavailable ? 'is-unavailable' : ''}`}
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => {
         // Don't hide actions immediately when moving to menu
@@ -121,7 +129,7 @@ const SongCard = ({
           }, 100);
         }
       }}
-      onClick={handleCardClick}
+      onClick={isUnavailable ? null : handleCardClick}
       ref={containerRef}
     >
       <div className="song-card-content">
@@ -136,11 +144,17 @@ const SongCard = ({
             />
           ) : (
             <div className="cover-placeholder">
-              {firstLetter}
+              {song.title?.charAt(0) || '?'}
             </div>
           )}
 
-          {showActions && (
+          {isUnavailable && (
+            <div className="unavailable-overlay">
+              <CloudOff size={24} />
+            </div>
+          )}
+
+          {showActions && !isUnavailable && (
             <button
               className="play-btn"
               onClick={handlePlayClick}
@@ -252,6 +266,29 @@ const SongCard = ({
                   </div>
                 )}
               </div>
+
+              {/* Download */}
+              <button
+                className={`action-btn download-btn ${downloaded ? 'is-downloaded' : ''} ${downloading ? 'is-downloading' : ''}`}
+                title={downloaded ? 'Remove from offline' : 'Download for offline'}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (downloaded) {
+                    removeDownload(song.id);
+                  } else {
+                    downloadSong(song);
+                  }
+                }}
+                disabled={downloading}
+              >
+                {downloading ? (
+                  <Loader2 className="spinning" size={18} />
+                ) : downloaded ? (
+                  <CheckCircle size={18} />
+                ) : (
+                  <Download size={18} />
+                )}
+              </button>
 
               {/* More options */}
               <button

@@ -17,10 +17,14 @@ import {
   ListMusic,
   List,
   Settings,
-  Search
+  Search,
+  Wifi,
+  WifiOff
 } from 'lucide-react';
+import { useOffline } from '../hooks/useOffline';
 
 function Header({ loadFiles, onShufflePlay, onSort, onSearch }) {
+  const isOffline = useOffline();
   const [sortDropdown, setSortDropdown] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileActionsOpen, setMobileActionsOpen] = useState(false);
@@ -45,9 +49,25 @@ function Header({ loadFiles, onShufflePlay, onSort, onSearch }) {
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
   }, []);
 
-  /* Handle Search */
+  /* Live Search Effect with Debounce */
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (onSearch) {
+        onSearch(searchQuery);
+      }
+      // Auto-navigate to library if searching
+      if (searchQuery.trim() && !window.location.pathname.includes('/library')) {
+        navigate('/library');
+      }
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery, onSearch, navigate]);
+
+  /* Handle Search (Manual Trigger) */
   const handleSearch = (e) => {
     e.preventDefault();
+    // Immediate search
     if (onSearch) {
       onSearch(searchQuery);
     }
@@ -129,6 +149,10 @@ function Header({ loadFiles, onShufflePlay, onSort, onSearch }) {
           <div className="header-logo" onClick={() => navigate('/')}>
             <img src={logoImage} alt="ELARA Music Player" className="logo-image" />
             <span className="logo-text">ELARA</span>
+            <div className={`connectivity-indicator ${isOffline ? 'offline' : 'online'}`} title={isOffline ? 'Offline Mode' : 'Online'}>
+              {isOffline ? <WifiOff size={16} /> : <Wifi size={16} />}
+              <span className="indicator-text">{isOffline ? 'Offline' : 'Online'}</span>
+            </div>
           </div>
           {/* LEFT - Navigation */}
           <nav className="header-nav desktop-nav">

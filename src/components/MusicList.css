@@ -500,6 +500,53 @@
   box-shadow: 0 0 10px var(--pc-accent, #87ceeb);
 }
 
+/* Non-playable demo song styles */
+.song-row.not-playable {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+}
+
+.song-row.not-playable:hover {
+  background: transparent !important;
+}
+
+.song-row.not-playable .play-trigger,
+.song-row.not-playable .song-index {
+  pointer-events: none;
+}
+
+/* Demo / Not Imported Styles */
+.song-row.demo {
+  opacity: 0.7;
+}
+
+.song-row.demo:hover {
+  opacity: 0.9;
+}
+
+.demo-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  background: var(--surface-tertiary);
+  border: 1px solid var(--border-color);
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-left: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  vertical-align: middle;
+}
+
+.demo-badge.warning {
+  color: var(--warning, #ffcc00);
+  border-color: color-mix(in srgb, var(--warning, #ffcc00), transparent 50%);
+  background: color-mix(in srgb, var(--warning, #ffcc00), transparent 90%);
+}
+
 .active-song-indicator {
   display: flex;
   align-items: center;
