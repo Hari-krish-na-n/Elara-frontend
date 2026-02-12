@@ -15,3 +15,13 @@ createRoot(document.getElementById('root')).render(
   </StrictMode>,
 )
 
+serviceWorkerRegistration.register({
+  onSuccess: () => console.log('[PWA] Service Worker ready: offline enabled'),
+  onUpdate: (registration) => {
+    console.log('[PWA] Update available for Service Worker');
+    if (registration && registration.waiting) {
+      registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+    }
+  },
+});
+

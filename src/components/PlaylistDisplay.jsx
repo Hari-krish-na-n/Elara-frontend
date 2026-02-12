@@ -88,20 +88,27 @@ function PlaylistDisplay({
             <p className="playlist-description">{playlist.description}</p>
           )}
           
-          <div className="playlist-stats-row">
-            <div className="stat-item">
-              <ListMusic size={16} />
-              <span>{playlist.songs.length} songs</span>
+          <div className="playlist-stats-grid">
+            <div className="stat-block">
+              <div className="stat-label">Songs</div>
+              <div className="stat-value">
+                <ListMusic size={14} />
+                <span>{playlist.songs.length}</span>
+              </div>
             </div>
-            <div className="stat-divider">•</div>
-            <div className="stat-item">
-              <Clock size={16} />
-              <span>{formatTime(totalDuration)}</span>
+            <div className="stat-block">
+              <div className="stat-label">Duration</div>
+              <div className="stat-value">
+                <Clock size={14} />
+                <span>{formatTime(totalDuration)}</span>
+              </div>
             </div>
-            <div className="stat-divider">•</div>
-            <div className="stat-item">
-              <TrendingUp size={16} />
-              <span>{totalPlays} plays</span>
+            <div className="stat-block">
+              <div className="stat-label">Plays</div>
+              <div className="stat-value">
+                <TrendingUp size={14} />
+                <span>{totalPlays}</span>
+              </div>
             </div>
           </div>
 
@@ -189,6 +196,7 @@ function PlaylistDisplay({
           >
             {isPlaying ? <Pause size={32} /> : <Play size={32} />}
           </button>
+          <span className="play-label">Play playlist</span>
           
           <button 
             className="control-btn-modern next-btn"
@@ -304,8 +312,8 @@ function PlaylistDisplay({
       {(!playlist.songs || playlist.songs.length === 0) && (
         <div className="playlist-empty-state">
           <Music size={60} className="empty-icon" />
-          <h3>No songs in this playlist</h3>
-          <p>Add some songs to get started</p>
+          <h3>No songs added yet</h3>
+          <p>Add songs to build your playlist</p>
         </div>
       )}
     </div>

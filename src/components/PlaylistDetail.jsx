@@ -132,17 +132,29 @@ function PlaylistDetail({
           <div className="songs-header-info">
             <h2 className="playlist-title">{playlist.name}</h2>
             <div className="playlist-stats">
-              <span className="stat-item">{playlist.songs.length} songs</span>
+              <span className="stat-item">Songs</span>
+              <span className="stat-value">{playlist.songs.length}</span>
               <span className="stat-divider">•</span>
-              <span className="stat-item">{formatTime(totalDuration)}</span>
+              <span className="stat-item">Duration</span>
+              <span className="stat-value">{formatTime(totalDuration)}</span>
             </div>
+            {playlist.songs.length === 1 && (
+              <div className="playlist-note">1 song — Playlist will grow as you add more</div>
+            )}
           </div>
+          <div className="songs-section-divider"><span>Songs</span></div>
         </div>
         
         {playlist.songs.length === 0 ? (
           <div className="empty-playlist">
             <div className="empty-state-icon">♪</div>
-            <p>No songs in this playlist</p>
+            <p>No songs added yet</p>
+            <button
+              className="add-songs-btn"
+              onClick={() => onOpenPlaylistSidebar && onOpenPlaylistSidebar()}
+            >
+              Add songs
+            </button>
           </div>
         ) : (
           <div className="playlist-songs-grid">

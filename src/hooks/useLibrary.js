@@ -61,9 +61,10 @@ export const useLibrary = () => {
             return song;
           }));
 
-          setSongs(processedSongs);
-          setFilteredSongs(processedSongs);
-          console.log(`Loaded ${processedSongs.length} songs from IndexedDB`);
+          const pruned = processedSongs.filter(s => s.playable !== false && s.needsImport !== true);
+          setSongs(pruned);
+          setFilteredSongs(pruned);
+          console.log(`Loaded ${pruned.length} songs from IndexedDB`);
         } else {
           // Fallback to localStorage if exists (migration)
           const legacySongs = localStorage.getItem('songsWithMetadata');
@@ -158,6 +159,7 @@ export const useLibrary = () => {
                   fileSize: file.size,
                   lastModified: file.lastModified,
                   addedAt: new Date().toISOString(),
+                  playable: true
                 };
 
                 const metadata = await extractMP3Metadata(file);
@@ -245,7 +247,7 @@ export const useLibrary = () => {
 
   // Filter and Sort Effect
   useEffect(() => {
-    let result = [...songs];
+    let result = songs.filter(s => s.playable !== false && s.needsImport !== true);
 
     // 1. Filter
     if (debouncedSearchQuery.trim()) {

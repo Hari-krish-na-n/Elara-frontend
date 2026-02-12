@@ -69,17 +69,7 @@ export const useAudioPlayer = (songs = [], filteredSongs = []) => {
       return;
     }
 
-    // Pre-flight check for playable status
-    if (song.playable === false || song.needsImport === true) {
-      const notification = new CustomEvent('app-notification', {
-        detail: {
-          message: `"${song.title || 'Track'}" needs to be imported before it can be played.`,
-          type: 'warning'
-        }
-      });
-      window.dispatchEvent(notification);
-      return;
-    }
+    const needsImport = song.playable === false || song.needsImport === true;
 
     try {
       const isOffline = !navigator.onLine;
@@ -99,6 +89,23 @@ export const useAudioPlayer = (songs = [], filteredSongs = []) => {
       } else if (song.url && !song.url.startsWith('blob:')) {
         // Only trust non-blob URLs from the metadata
         playUrl = song.url;
+        try {
+          if (!isOffline && /^https?:/i.test(song.url)) {
+            const resp = await fetch(song.url, { mode: 'cors' }).catch(() => null);
+            if (resp && resp.ok) {
+              const blob = await resp.blob();
+              if (blob && blob.size > 0 && blob.size <= 15 * 1024 * 1024) {
+                await db.saveAudio(song.id, blob);
+                cleanupBlobUrl();
+                const url = URL.createObjectURL(blob);
+                activeBlobUrlRef.current = url;
+                playUrl = url;
+              }
+            }
+          }
+        } catch (e) {
+          console.warn('Failed to cache remote audio for offline use:', e);
+        }
       }
 
       // Relaxed offline check to allow Service Worker cached responses
@@ -111,6 +118,36 @@ export const useAudioPlayer = (songs = [], filteredSongs = []) => {
         return;
       } 
       */
+
+      if (!playUrl) {
+        if (needsImport && window.showOpenFilePicker) {
+          try {
+            const pickers = await window.showOpenFilePicker({
+              multiple: false,
+              types: [
+                {
+                  description: 'Audio',
+                  accept: {
+                    'audio/*': ['.mp3', '.wav', '.ogg', '.m4a', '.flac', '.aac']
+                  }
+                }
+              ]
+            });
+            if (pickers && pickers.length > 0) {
+              const handle = pickers[0];
+              const perm = await handle.requestPermission?.({ mode: 'read' });
+              if (perm !== 'denied') {
+                const file = await handle.getFile();
+                await db.saveFileHandle(song.id, handle);
+                cleanupBlobUrl();
+                const url = URL.createObjectURL(file);
+                activeBlobUrlRef.current = url;
+                playUrl = url;
+              }
+            }
+          } catch {}
+        }
+      }
 
       if (!playUrl) {
         const notification = new CustomEvent('app-notification', {

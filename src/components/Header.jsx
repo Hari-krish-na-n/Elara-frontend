@@ -140,7 +140,7 @@ function Header({ loadFiles, onShufflePlay, onSort, onSearch }) {
     { name: 'Playlists', icon: <List size={20} />, path: '/playlists' },
 
   ];
-  const desktopNavItems = navItems.filter((i) => i.name !== 'Library');
+  const desktopNavItems = navItems;
 
   return (
     <>
@@ -242,7 +242,12 @@ function Header({ loadFiles, onShufflePlay, onSort, onSearch }) {
             {/* Shuffle Button */}
             <button
               className="control-btn shuffle-btn"
-              onClick={onShufflePlay}
+              onClick={() => {
+                if (location.pathname !== '/library') navigate('/library');
+                setTimeout(() => {
+                  handleShuffleClick();
+                }, 0);
+              }}
               aria-label="Shuffle and play"
             >
               <Shuffle size={20} />

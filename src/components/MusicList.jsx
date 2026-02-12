@@ -1,5 +1,6 @@
 // src/components/MusicList.jsx - Fixed Cover Image Version
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Heart,
   MoreVertical,
@@ -59,6 +60,7 @@ const MusicList = ({
   isLikedView = false,
   onOpenDetails,
 }) => {
+  const navigate = useNavigate();
   const [openMenuId, setOpenMenuId] = useState(null);
   const [modalSong, setModalSong] = useState(null);
   const [imageErrors, setImageErrors] = useState(new Set());
@@ -474,7 +476,7 @@ const MusicList = ({
           onDragOver={handleLikedDragOver}
           onDragLeave={handleLikedDragLeave}
           onDrop={handleLikedDrop}
-          onClick={onNavigateToLiked}
+          onClick={() => navigate('/liked')}
         >
           <div className="side-liked-icon">
             <Heart
@@ -500,11 +502,10 @@ const MusicList = ({
                 key={playlist.id}
                 className={`side-playlist-card ${dropTargetPlaylist === playlist.id ? 'drop-target' : ''
                   }`}
-                onClick={() =>
-                  !isDragging &&
-                  onPlaylistSelect &&
-                  onPlaylistSelect(playlist)
-                }
+                onClick={() => {
+                  if (isDragging) return;
+                  navigate(`/playlists/${playlist.id}`);
+                }}
                 onDragOver={(e) => handlePlaylistDragOver(e, playlist.id)}
                 onDragLeave={(e) => handlePlaylistDragLeave(e, playlist.id)}
                 onDrop={(e) => handlePlaylistDrop(e, playlist)}

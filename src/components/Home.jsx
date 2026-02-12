@@ -89,7 +89,7 @@ export default function Home() {
         </div>
         
         <h1 className="hero-title">Welcome to Elara</h1>
-        <p className="hero-subtitle">Where words fail, music speaks and Elara listens.</p>
+        <p className="hero-subtitle">Music has a way of finding you even in the darkest of places</p>
         <button className="hero-button" onClick={() => navigate('/library')}>
           Start Listening
         </button>

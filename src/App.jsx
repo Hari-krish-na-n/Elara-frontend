@@ -19,14 +19,15 @@ import MusicList from './components/MusicList';
 import PlayerControls from './components/PlayerControls';
 import PlaylistSidebar from './components/PlaylistSidebar';
 import PlaylistsView from './components/PlaylistView';
-import PlaylistDetail from './components/PlaylistDetail';
 import QueueView from './components/QueueView';
 import Home from './components/Home';
 import ErrorBoundary from './components/ErrorBoundary';
 import LoadingOverlay from './components/LoadingOverlay';
-import KeyboardHelpModal from './components/KeyboardHelpModal';
+
 import NotificationToast from './components/NotificationToast';
 import FullscreenPlayer from './components/FullscreenPlayer';
+import PlaylistPage from './pages/PlaylistPage';
+import LikedSongsPage from './pages/LikedSongsPage';
 
 function MainContent({ children }) {
   const { pathname } = useLocation();
@@ -35,6 +36,7 @@ function MainContent({ children }) {
   );
   return <div className={`main-content ${isFullBleed ? 'full-bleed' : ''}`}>{children}</div>;
 }
+
 
 function App() {
   // ===== LIBRARY MANAGEMENT =====
@@ -161,9 +163,10 @@ function App() {
 
   // ===== SHUFFLE PLAY =====
   const handleShufflePlay = () => {
-    if (filteredSongs.length === 0) return;
-    const randomIndex = Math.floor(Math.random() * filteredSongs.length);
-    playSongWithTracking(filteredSongs[randomIndex]);
+    const pool = filteredSongs && filteredSongs.length > 0 ? filteredSongs : songs;
+    if (!pool || pool.length === 0) return;
+    const randomIndex = Math.floor(Math.random() * pool.length);
+    playSongWithTracking(pool[randomIndex]);
   };
 
   // ===== SORT HANDLER =====
@@ -217,7 +220,6 @@ function App() {
                       queue={queue}
                       moveInQueue={moveInQueue}
                       focusTarget={focusTarget}
-                      onPlaylistSelect={setSelectedPlaylist}
                       onOpenDetails={toggleNowPlaying}
                     />
                   </>
@@ -227,23 +229,20 @@ function App() {
               <Route
                 path="/liked"
                 element={
-                  <>
-                    <MusicList
-                      songs={likedSongsList}
-                      isLikedView={true}
-                      playSong={playSongWithTracking}
-                      currentSongId={currentSong?.id}
-                      playlists={playlists}
-                      addSongToPlaylist={addSongToPlaylist}
-                      onOpenPlaylistSidebar={openPlaylistSidebar}
-                      isSongLiked={isSongLiked}
-                      onToggleLike={toggleLike}
-                      onAddToQueue={addToQueue}
-                      queue={queue}
-                      moveInQueue={moveInQueue}
-                      onOpenDetails={toggleNowPlaying}
-                    />
-                  </>
+                  <LikedSongsPage
+                    likedSongsList={likedSongsList}
+                    currentSong={currentSong}
+                    playlists={playlists}
+                    addSongToPlaylist={addSongToPlaylist}
+                    openPlaylistSidebar={openPlaylistSidebar}
+                    isSongLiked={isSongLiked}
+                    toggleLike={toggleLike}
+                    addToQueue={addToQueue}
+                    queue={queue}
+                    moveInQueue={moveInQueue}
+                    toggleNowPlaying={toggleNowPlaying}
+                    playSongWithTracking={playSongWithTracking}
+                  />
                 }
               />
 
@@ -264,63 +263,51 @@ function App() {
               <Route
                 path="/playlists"
                 element={
-                  selectedPlaylist ? (
-                    <PlaylistDetail
-                      playlist={selectedPlaylist}
-                      onBack={() => setSelectedPlaylist(null)}
-                      playSong={playSongWithTracking}
-                      currentSongId={currentSong?.id}
-                      removeSongFromPlaylist={removeSongFromPlaylist}
-                      deletePlaylist={deletePlaylist}
-                      isPlaying={isPlaying}
-                      togglePlayPause={togglePlayPause}
-                      playNextSong={playNextSong}
-                      playPrevSong={playPrevSong}
-                      isSongLiked={isSongLiked}
-                      onToggleLike={toggleLike}
-                      addToQueue={addToQueue}
-                      onOpenPlaylistSidebar={openPlaylistSidebar}
-                      getPlaylistStats={getPlaylistStats}
-                      isShuffled={isShuffled}
-                      toggleShuffle={toggleShuffle}
-                      repeatMode={repeatMode}
-                      toggleRepeat={toggleRepeat}
-                      volume={volume}
-                      isMuted={isMuted}
-                      toggleMute={toggleMute}
-                      setVolume={setVolume}
-                      onDownload={(p) => {
-                        const json = exportPlaylist?.(p.id);
-                        if (!json) return;
-                        const blob = new Blob([json], { type: 'application/json' });
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = `${p.name || 'playlist'}.json`;
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                        URL.revokeObjectURL(url);
-                      }}
-                    />
-                  ) : (
-                    <PlaylistsView
-                      playlists={playlists}
-                      createNewPlaylist={createPlaylist}
-                      onPlaylistSelect={setSelectedPlaylist}
-                      duplicatePlaylist={duplicatePlaylist}
-                      updatePlaylist={updatePlaylist}
-                      deletePlaylist={deletePlaylist}
-                      mergePlaylists={mergePlaylists}
-                      dedupePlaylistSongs={dedupePlaylistSongs}
-                      shufflePlaylistSongs={shufflePlaylistSongs}
-                      sortPlaylistSongs={sortPlaylistSongs}
-                      sortPlaylists={sortPlaylists}
-                      importPlaylistFromJSON={importPlaylistFromJSON}
-                      viewMode={viewMode}
-                      changeViewMode={changeViewMode}
-                    />
-                  )
+                  <PlaylistsView
+                    playlists={playlists}
+                    createNewPlaylist={createPlaylist}
+                    onPlaylistSelect={setSelectedPlaylist}
+                    duplicatePlaylist={duplicatePlaylist}
+                    updatePlaylist={updatePlaylist}
+                    deletePlaylist={deletePlaylist}
+                    mergePlaylists={mergePlaylists}
+                    dedupePlaylistSongs={dedupePlaylistSongs}
+                    shufflePlaylistSongs={shufflePlaylistSongs}
+                    sortPlaylistSongs={sortPlaylistSongs}
+                    sortPlaylists={sortPlaylists}
+                    importPlaylistFromJSON={importPlaylistFromJSON}
+                    viewMode={viewMode}
+                    changeViewMode={changeViewMode}
+                  />
+                }
+              />
+              <Route
+                path="/playlists/:playlistId"
+                element={
+                  <PlaylistPage
+                    playlists={playlists}
+                    playSongWithTracking={playSongWithTracking}
+                    currentSong={currentSong}
+                    removeSongFromPlaylist={removeSongFromPlaylist}
+                    deletePlaylist={deletePlaylist}
+                    isPlaying={isPlaying}
+                    togglePlayPause={togglePlayPause}
+                    playNextSong={playNextSong}
+                    playPrevSong={playPrevSong}
+                    isSongLiked={isSongLiked}
+                    toggleLike={toggleLike}
+                    openPlaylistSidebar={openPlaylistSidebar}
+                    getPlaylistStats={getPlaylistStats}
+                    isShuffled={isShuffled}
+                    toggleShuffle={toggleShuffle}
+                    repeatMode={repeatMode}
+                    toggleRepeat={toggleRepeat}
+                    volume={volume}
+                    isMuted={isMuted}
+                    toggleMute={toggleMute}
+                    setVolume={setVolume}
+                    exportPlaylist={exportPlaylist}
+                  />
                 }
               />
             </Routes>
