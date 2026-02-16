@@ -145,7 +145,7 @@ export const useAudioPlayer = (songs = [], filteredSongs = []) => {
                 playUrl = url;
               }
             }
-          } catch {}
+          } catch { }
         }
       }
 
@@ -224,7 +224,14 @@ export const useAudioPlayer = (songs = [], filteredSongs = []) => {
 
     let nextIndex;
     if (isShuffled) {
-      nextIndex = Math.floor(Math.random() * filteredSongs.length);
+      // Pick a random song that is NOT the current one (if there are multiple songs)
+      if (filteredSongs.length > 1) {
+        do {
+          nextIndex = Math.floor(Math.random() * filteredSongs.length);
+        } while (nextIndex === currentSongIndex);
+      } else {
+        nextIndex = 0;
+      }
     } else {
       nextIndex = (currentSongIndex + 1) % filteredSongs.length;
     }
@@ -297,8 +304,17 @@ export const useAudioPlayer = (songs = [], filteredSongs = []) => {
 
   // Playback controls
   const toggleShuffle = useCallback(() => {
-    setIsShuffled(!isShuffled);
-  }, [isShuffled]);
+    const newShuffleState = !isShuffled;
+    setIsShuffled(newShuffleState);
+
+    // If turning shuffle ON and we have songs, pick a random one to play
+    if (newShuffleState && filteredSongs.length > 0) {
+      const randomIndex = Math.floor(Math.random() * filteredSongs.length);
+      // Avoid playing the same index if it's already playing, or just play it anyway for immediate feedback
+      // Here we just play the random one to satisfy "play a random song when clicked"
+      playSong(filteredSongs[randomIndex]);
+    }
+  }, [isShuffled, filteredSongs, playSong]);
 
   const toggleRepeat = useCallback(() => {
     setRepeatMode(current => {

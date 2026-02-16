@@ -154,10 +154,70 @@
 
 .song-card.playing {
   background: linear-gradient(135deg,
-      color-mix(in srgb, var(--accent-secondary), transparent 65%) 0%,
-      color-mix(in srgb, var(--accent-tertiary), transparent 65%) 100%);
+      rgba(135, 206, 235, 0.15) 0%,
+      rgba(70, 130, 180, 0.22) 50%,
+      rgba(135, 206, 235, 0.15) 100%);
+  background-size: 200% 100%;
+  animation: current-track-gradient 4s ease infinite, current-track-pulse-card 2s ease-in-out infinite;
   border-left: 3px solid var(--accent-primary);
-  box-shadow: 0 0 0 1px var(--border-accent) inset, 0 0 18px var(--glow-secondary);
+  border-color: rgba(135, 206, 235, 0.4);
+  box-shadow:
+    0 4px 15px rgba(0, 0, 0, 0.2),
+    0 0 12px rgba(135, 206, 235, 0.2),
+    inset 0 0 0 1px rgba(135, 206, 235, 0.1);
+  transform: translateY(-2px);
+}
+
+@keyframes current-track-gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes current-track-pulse-card {
+
+  0%,
+  100% {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), 0 0 12px rgba(135, 206, 235, 0.2);
+  }
+
+  50% {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), 0 0 20px rgba(135, 206, 235, 0.4);
+  }
+}
+
+.song-card.current-track-highlight {
+  animation: highlight-pulse-glow-playlist 2s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(135, 206, 235, 0.3) !important;
+  border-color: #87ceeb !important;
+  z-index: 10;
+}
+
+@keyframes highlight-pulse-glow-playlist {
+  0% {
+    background: rgba(135, 206, 235, 0.6);
+    box-shadow: 0 0 0 0 rgba(135, 206, 235, 0.7), 0 0 30px rgba(135, 206, 235, 0.4);
+    transform: scale(1.02);
+  }
+
+  30% {
+    box-shadow: 0 0 0 10px rgba(135, 206, 235, 0), 0 0 40px rgba(135, 206, 235, 0.3);
+    transform: scale(1.01);
+  }
+
+  100% {
+    background: transparent;
+    box-shadow: 0 0 0 0 rgba(135, 206, 235, 0), 0 0 0 rgba(135, 206, 235, 0);
+    transform: scale(1);
+  }
 }
 
 .song-card.playing::after {
@@ -197,9 +257,9 @@
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid var(--border-color);
-  background: linear-gradient(135deg, 
-    color-mix(in srgb, var(--accent-secondary), transparent 70%), 
-    color-mix(in srgb, var(--accent-tertiary), transparent 70%));
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--accent-secondary), transparent 70%),
+      color-mix(in srgb, var(--accent-tertiary), transparent 70%));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -467,16 +527,16 @@
 }
 
 .playlist-songs-grid::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, 
-    color-mix(in srgb, var(--accent-secondary), transparent 40%), 
-    color-mix(in srgb, var(--accent-tertiary), transparent 40%));
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--accent-secondary), transparent 40%),
+      color-mix(in srgb, var(--accent-tertiary), transparent 40%));
   border-radius: 2px;
 }
 
 .playlist-songs-grid::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, 
-    color-mix(in srgb, var(--accent-tertiary), transparent 20%), 
-    color-mix(in srgb, var(--accent-primary), transparent 20%));
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--accent-tertiary), transparent 20%),
+      color-mix(in srgb, var(--accent-primary), transparent 20%));
 }
 
 @media (max-width: 768px) {

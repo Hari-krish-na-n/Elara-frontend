@@ -109,9 +109,9 @@ const MusicList = ({
         console.error('Error scrolling to element:', error);
       }
 
-      targetEl.classList.add('locate-highlight');
+      targetEl.classList.add('current-track-highlight');
       setTimeout(() => {
-        if (targetEl) targetEl.classList.remove('locate-highlight');
+        if (targetEl) targetEl.classList.remove('current-track-highlight');
       }, 2000);
     }
   }, [focusTarget]);

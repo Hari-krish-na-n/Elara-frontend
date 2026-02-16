@@ -239,6 +239,164 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   margin-bottom: 10px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Extreme Disco Upgrade - Desktop Only */
+@media (min-width: 769px) {
+  .now-playing-section {
+    padding: 32px 24px;
+    margin-bottom: 24px;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: extreme-gradient 15s ease infinite;
+    border: 2px solid transparent;
+    border-radius: 16px;
+    /* Using a trick for animated rainbow border with border-radius */
+    background-clip: padding-box, border-box;
+    background-origin: padding-box, border-box;
+    background-image: linear-gradient(-45deg, rgba(20, 20, 25, 0.9), rgba(30, 30, 40, 0.9)),
+      linear-gradient(to right, #ff0080, #7928ca, #0070f3, #00dfd8);
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+      0 20px 40px rgba(0, 0, 0, 0.4),
+      inset 0 0 20px rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px);
+  }
+
+  @keyframes extreme-gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  .now-playing-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center,
+        rgba(255, 255, 255, 0.1) 0%,
+        transparent 70%);
+    animation: disco-spin 10s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @keyframes disco-spin {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .now-playing-indicator {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 20px;
+  }
+
+  .now-playing-text {
+    font-size: 0.95rem;
+    letter-spacing: 5px;
+    color: #fff;
+    text-shadow:
+      0 0 10px #00ffff,
+      0 0 20px #00ffff;
+    font-weight: 900;
+  }
+
+  .current-song-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .current-song-cover-mini {
+    width: 140px !important;
+    height: 140px !important;
+    border-radius: 20px;
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .current-song-cover-mini::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right,
+        transparent,
+        rgba(255, 255, 255, 0.4),
+        transparent);
+    animation: cover-shimmer 2s infinite;
+  }
+
+  @keyframes cover-shimmer {
+    0% {
+      left: -100%;
+    }
+
+    100% {
+      left: 200%;
+    }
+  }
+
+  .current-song-title {
+    font-size: 1.25rem !important;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 6px;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+  }
+
+  .current-song-artist {
+    font-size: 1rem !important;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  }
+
+  .current-song-album {
+    margin-top: 15px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    font-size: 0.9rem;
+    color: #00ffff;
+    border: 1px solid rgba(0, 255, 255, 0.2);
+  }
+
+  .pulse-dot {
+    background: #ff0080;
+    box-shadow: 0 0 15px #ff0080, 0 0 30px #ff0080;
+  }
 }
 
 .now-playing-indicator {
@@ -471,10 +629,42 @@
 
 .song-row.current {
   background: linear-gradient(90deg,
-      rgba(135, 206, 235, 0.08) 0%,
-      rgba(70, 130, 180, 0.12) 100%);
-  border-color: rgba(135, 206, 235, 0.3);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(135, 206, 235, 0.1);
+      rgba(135, 206, 235, 0.12) 0%,
+      rgba(70, 130, 180, 0.18) 50%,
+      rgba(135, 206, 235, 0.12) 100%);
+  background-size: 200% 100%;
+  animation: current-track-gradient 4s ease infinite, current-track-pulse 2s ease-in-out infinite;
+  border-color: rgba(135, 206, 235, 0.4);
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    0 0 15px rgba(135, 206, 235, 0.2);
+  z-index: 2;
+}
+
+@keyframes current-track-gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes current-track-pulse {
+
+  0%,
+  100% {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 15px rgba(135, 206, 235, 0.2);
+  }
+
+  50% {
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.4), 0 0 25px rgba(135, 206, 235, 0.4);
+  }
 }
 
 .song-row.current .song-title {
@@ -498,6 +688,34 @@
   background: var(--pc-accent, #87ceeb);
   border-radius: 0 4px 4px 0;
   box-shadow: 0 0 10px var(--pc-accent, #87ceeb);
+}
+
+/* Highlight Effect for Locating Current Track */
+.song-row.current-track-highlight {
+  animation: highlight-pulse-glow 2s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(135, 206, 235, 0.3) !important;
+  border-color: #87ceeb !important;
+  position: relative;
+  z-index: 10;
+}
+
+@keyframes highlight-pulse-glow {
+  0% {
+    background: rgba(135, 206, 235, 0.6);
+    box-shadow: 0 0 0 0 rgba(135, 206, 235, 0.7), 0 0 30px rgba(135, 206, 235, 0.4);
+    transform: scale(1.01);
+  }
+
+  30% {
+    box-shadow: 0 0 0 10px rgba(135, 206, 235, 0), 0 0 40px rgba(135, 206, 235, 0.3);
+    transform: scale(1.005);
+  }
+
+  100% {
+    background: transparent;
+    box-shadow: 0 0 0 0 rgba(135, 206, 235, 0), 0 0 0 rgba(135, 206, 235, 0);
+    transform: scale(1);
+  }
 }
 
 /* Non-playable demo song styles */

@@ -27,7 +27,8 @@ export default function PlaylistPage(props) {
     isMuted,
     toggleMute,
     setVolume,
-    exportPlaylist
+    exportPlaylist,
+    focusTarget
   } = props;
   const playlist = playlists.find(p => String(p.id) === String(playlistId));
   if (!playlist) return null;
@@ -45,7 +46,7 @@ export default function PlaylistPage(props) {
       playPrevSong={playPrevSong}
       isSongLiked={isSongLiked}
       onToggleLike={toggleLike}
-      addToQueue={() => {}}
+      addToQueue={() => { }}
       onOpenPlaylistSidebar={openPlaylistSidebar}
       getPlaylistStats={getPlaylistStats}
       isShuffled={isShuffled}
@@ -69,6 +70,7 @@ export default function PlaylistPage(props) {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
       }}
+      focusTarget={focusTarget}
     />
   );
 }

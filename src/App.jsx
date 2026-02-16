@@ -165,8 +165,15 @@ function App() {
   const handleShufflePlay = () => {
     const pool = filteredSongs && filteredSongs.length > 0 ? filteredSongs : songs;
     if (!pool || pool.length === 0) return;
-    const randomIndex = Math.floor(Math.random() * pool.length);
-    playSongWithTracking(pool[randomIndex]);
+
+    // Ensure shuffle mode is ON if it's not already
+    if (!isShuffled) {
+      toggleShuffle();
+    } else {
+      // If already shuffled, just pick a random song as requested
+      const randomIndex = Math.floor(Math.random() * pool.length);
+      playSongWithTracking(pool[randomIndex]);
+    }
   };
 
   // ===== SORT HANDLER =====
@@ -242,6 +249,7 @@ function App() {
                     moveInQueue={moveInQueue}
                     toggleNowPlaying={toggleNowPlaying}
                     playSongWithTracking={playSongWithTracking}
+                    focusTarget={focusTarget}
                   />
                 }
               />
@@ -307,6 +315,7 @@ function App() {
                     toggleMute={toggleMute}
                     setVolume={setVolume}
                     exportPlaylist={exportPlaylist}
+                    focusTarget={focusTarget}
                   />
                 }
               />
@@ -327,13 +336,11 @@ function App() {
             toggleMute={toggleMute}
             volume={volume}
             setVolume={setVolume}
-            isShuffled={isShuffled}
-            toggleShuffle={toggleShuffle}
             repeatMode={repeatMode}
             toggleRepeat={toggleRepeat}
             playbackRate={playbackRate}
             setPlaybackRate={changePlaybackRate}
-            locateSong={setFocusOnSong}
+            locateSong={() => currentSong && setFocusOnSong(currentSong.id)}
             isCurrentLiked={currentSong ? isSongLiked(currentSong.id) : false}
             onToggleCurrentLike={() => currentSong && toggleLike(currentSong)}
             queueLength={queue.length}

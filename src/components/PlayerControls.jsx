@@ -16,7 +16,8 @@ import {
   Repeat,
   Gauge,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  MapPin
 } from 'lucide-react';
 import './PlayerControl.css';
 import FullscreenPlayer from './FullscreenPlayer';
@@ -213,6 +214,15 @@ function PlayerControls({
                   title="Up Next"
                 >
                   <ExternalLink size={16} />
+                </button>
+
+                <button
+                  onClick={() => locateSong && locateSong()}
+                  disabled={!song}
+                  className="pc-ctrl-btn pc-mini"
+                  title="Locate currently playing song"
+                >
+                  <MapPin size={16} />
                 </button>
               </div>
             </div>

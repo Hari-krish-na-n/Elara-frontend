@@ -5,11 +5,11 @@ import './PlaylistDetail.css';
 import { MoreVertical, Play, ListMusic, Trash2, Plus } from 'lucide-react';
 import { playLikeSound } from '../utils/soundEffects';
 
-function PlaylistDetail({ 
-  playlist, 
-  onBack, 
-  playSong, 
-  currentSongId, 
+function PlaylistDetail({
+  playlist,
+  onBack,
+  playSong,
+  currentSongId,
   removeSongFromPlaylist,
   deletePlaylist,
   isPlaying,
@@ -29,7 +29,8 @@ function PlaylistDetail({
   isMuted,
   toggleMute,
   setVolume,
-  onDownload
+  onDownload,
+  focusTarget
 }) {
   if (!playlist) return null;
 
@@ -37,15 +38,41 @@ function PlaylistDetail({
   React.useEffect(() => {
     try {
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    } catch {}
+    } catch { }
   }, [playlist?.id]);
+
+  // Locate and highlight song when focusTarget changes
+  React.useEffect(() => {
+    if (!focusTarget || !focusTarget.id) return;
+
+    let targetEl = null;
+    const cards = document.querySelectorAll('.song-card');
+    cards.forEach((el) => {
+      if (el && el.dataset && el.dataset.songId === focusTarget.id) {
+        targetEl = el;
+      }
+    });
+
+    if (targetEl) {
+      try {
+        targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } catch (error) {
+        console.error('Error scrolling to element:', error);
+      }
+
+      targetEl.classList.add('current-track-highlight');
+      setTimeout(() => {
+        if (targetEl) targetEl.classList.remove('current-track-highlight');
+      }, 2000);
+    }
+  }, [focusTarget]);
 
   const currentSong = playlist.songs.find(song => song.id === currentSongId);
   const isPlaylistPlaying = currentSong ? isPlaying : false;
-  
+
   const handlePlayPlaylist = () => {
     if (!playlist || playlist.songs.length === 0) return;
-    
+
     if (isPlaylistPlaying) {
       togglePlayPause();
     } else if (currentSong) {
@@ -54,16 +81,16 @@ function PlaylistDetail({
       playSong(playlist.songs[0]);
     }
   };
-  
+
   const formatTime = (seconds) => {
     if (!seconds) return '0:00';
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
-  
+
   const totalDuration = playlist.songs.reduce((total, song) => total + (song.duration || 0), 0);
-  
+
   const toggleSongMenu = (songId, e) => {
     e.stopPropagation();
     setOpenMenuId(openMenuId === songId ? null : songId);
@@ -87,9 +114,9 @@ function PlaylistDetail({
         <button onClick={onBack} className="back-btn">
           ← Back
         </button>
-        
+
         <div className="header-actions">
-          <button 
+          <button
             className="delete-btn"
             onClick={() => {
               if (window.confirm(`Are you sure you want to delete "${playlist.name}"?`)) {
@@ -101,7 +128,7 @@ function PlaylistDetail({
           </button>
         </div>
       </div>
-      
+
       <PlaylistDisplay
         playlist={playlist}
         isPlaying={isPlaylistPlaying}
@@ -126,7 +153,7 @@ function PlaylistDetail({
         onVolumeChange={setVolume}
         onDownload={() => onDownload && onDownload(playlist)}
       />
-      
+
       <div className="playlist-songs-container">
         <div className="songs-list-header">
           <div className="songs-header-info">
@@ -144,7 +171,7 @@ function PlaylistDetail({
           </div>
           <div className="songs-section-divider"><span>Songs</span></div>
         </div>
-        
+
         {playlist.songs.length === 0 ? (
           <div className="empty-playlist">
             <div className="empty-state-icon">♪</div>
@@ -159,19 +186,20 @@ function PlaylistDetail({
         ) : (
           <div className="playlist-songs-grid">
             {playlist.songs.map((song, index) => (
-              <div 
-                key={song.id} 
+              <div
+                key={song.id}
                 className={`song-card ${song.id === currentSongId ? 'playing' : ''}`}
+                data-song-id={song.id}
                 onClick={() => playSong(song)}
               >
                 <div className="song-card-content">
                   <div className="song-info">
                     <div className="song-cover-mini">
                       {song.coverUrl ? (
-                        <img 
-                          src={song.coverUrl} 
-                          alt={song.title || 'Cover'} 
-                          className="song-cover-img" 
+                        <img
+                          src={song.coverUrl}
+                          alt={song.title || 'Cover'}
+                          className="song-cover-img"
                           onError={(e) => { e.currentTarget.style.display = 'none'; }}
                         />
                       ) : (
@@ -183,13 +211,13 @@ function PlaylistDetail({
                       <div className="song-artist">{song.artist || 'Unknown Artist'}</div>
                     </div>
                   </div>
-                  
+
                   <div className="song-card-actions">
                     <div className="song-duration">
                       <span className="song-duration-text">{formatTime(song.duration)}</span>
                       <span className="song-plays">{(song.plays ?? song.playCount ?? 0)} plays</span>
                     </div>
-                    <button 
+                    <button
                       className={`like-btn ${isSongLiked && isSongLiked(song.id) ? 'liked' : ''}`}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -202,7 +230,7 @@ function PlaylistDetail({
                     >
                       <span className="heart-icon">{isSongLiked && isSongLiked(song.id) ? '❤' : '♡'}</span>
                     </button>
-                    <button 
+                    <button
                       className={`play-btn ${song.id === currentSongId && isPlaying ? 'playing' : ''}`}
                       onClick={(e) => {
                         e.stopPropagation();

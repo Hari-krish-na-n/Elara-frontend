@@ -2,7 +2,7 @@ import React from 'react';
 import MusicList from '../components/MusicList';
 
 export default function LikedSongsPage(props) {
-  const { likedSongsList, currentSong, playlists, addSongToPlaylist, openPlaylistSidebar, isSongLiked, toggleLike, addToQueue, queue, moveInQueue, toggleNowPlaying, playSongWithTracking } = props;
+  const { likedSongsList, currentSong, playlists, addSongToPlaylist, openPlaylistSidebar, isSongLiked, toggleLike, addToQueue, queue, moveInQueue, toggleNowPlaying, playSongWithTracking, focusTarget } = props;
   return (
     <MusicList
       songs={likedSongsList}
@@ -18,6 +18,7 @@ export default function LikedSongsPage(props) {
       queue={queue}
       moveInQueue={moveInQueue}
       onOpenDetails={toggleNowPlaying}
+      focusTarget={focusTarget}
     />
   );
 }
